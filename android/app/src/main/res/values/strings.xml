@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">crowncare</string>
+    <string name="title_activity_main">crowncare</string>
+    <string name="package_name">com.crowncare.app</string>
+    <string name="custom_url_scheme">com.crowncare.app</string>
+</resources>
