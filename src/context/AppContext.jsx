@@ -1,4 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { auth, db } from '../firebase';
+import { onAuthStateChanged, signInAnonymously } from 'firebase/auth';
+import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 
 const AppContext = createContext();
 export const useApp = () => useContext(AppContext);
@@ -21,6 +24,43 @@ const load = (key, fallback) => {
 const save = (key, val) => localStorage.setItem(key, JSON.stringify(val));
 
 export const AppProvider = ({ children }) => {
+    // Firebase Auth & Premium State
+    const [user, setUser] = useState(null);
+    const [isPremium, setIsPremium] = useState(false);
+    const [authLoading, setAuthLoading] = useState(true);
+
+    useEffect(() => {
+        // Sign in anonymously if no user is present, to ensure a sterile profile
+        const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
+            if (currentUser) {
+                setUser(currentUser);
+                setAuthLoading(false);
+
+                // Listen to the user's Firestore document for subscription changes
+                const userRef = doc(db, 'users', currentUser.uid);
+                const unsubscribeDoc = onSnapshot(userRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        setIsPremium(!!docSnap.data().isPremium);
+                    } else {
+                        // Create initial doc if it doesn't exist
+                        setDoc(userRef, { isPremium: false }, { merge: true });
+                        setIsPremium(false);
+                    }
+                });
+                return () => unsubscribeDoc();
+            } else {
+                try {
+                    await signInAnonymously(auth);
+                } catch (error) {
+                    console.error("Firebase Anonymous Auth failed", error);
+                    setAuthLoading(false);
+                }
+            }
+        });
+
+        return () => unsubscribeAuth();
+    }, []);
+
     // Theme
     const [theme, setTheme] = useState(() => localStorage.getItem(STORAGE_KEYS.theme) || 'light');
     useEffect(() => {
@@ -117,6 +157,7 @@ export const AppProvider = ({ children }) => {
 
     return (
         <AppContext.Provider value={{
+            user, isPremium, authLoading,
             theme, toggleTheme,
             onboarding, completeOnboarding,
             photos, addPhoto, deletePhoto,

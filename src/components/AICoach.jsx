@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { askGemini, loadApiKey, saveApiKey, loadSavedAnswers, persistSavedAnswers } from '../services/GeminiService';
 import { Sparkles, Send, X, Save, Trash2, MessageCircle, Key } from 'lucide-react';
+import PremiumGate from './PremiumGate';
 import './AICoach.css';
 
 const QUICK_QUESTIONS = [
@@ -143,7 +144,7 @@ export default function AICoach({ isOverlay, onClose }) {
                 </div>
             ) : (
                 /* Chat */
-                <>
+                <PremiumGate featureName="AI Coach">
                     <div className="ai-messages">
                         {chat.length === 0 && (
                             <div className="ai-welcome">
@@ -204,7 +205,7 @@ export default function AICoach({ isOverlay, onClose }) {
                             <Send size={18} />
                         </button>
                     </form>
-                </>
+                </PremiumGate>
             )}
         </div>
     );
