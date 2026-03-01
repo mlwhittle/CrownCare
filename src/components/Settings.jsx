@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { db } from '../firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, collection, addDoc, onSnapshot } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { Settings as SettingsIcon, Sun, MoonStar, Crown, Trash2, User, Zap } from 'lucide-react';
 import settingsImg from '../assets/images/settings.png';
 import './Settings.css';
@@ -9,6 +10,40 @@ import './Settings.css';
 export default function Settings() {
     const { theme, toggleTheme, onboarding, completeOnboarding, user, isPremium } = useApp();
     const [isCanceling, setIsCanceling] = useState(false);
+    const [isUpgrading, setIsUpgrading] = useState(false);
+
+    const handleUpgrade = async () => {
+        if (!user) return alert("Please log in first.");
+        setIsUpgrading(true);
+        try {
+            // Create a checkout session document for the Stripe Firebase Extension
+            const checkoutSessionRef = await addDoc(
+                collection(db, 'users', user.uid, 'checkout_sessions'),
+                {
+                    price: 'price_1QynkCIunC29aUXhm4gRveiZ', // FuelFlow Premium $9.99/mo
+                    success_url: window.location.origin,
+                    cancel_url: window.location.origin,
+                }
+            );
+
+            // Listen for the extension to attach the Stripe Checkout URL
+            onSnapshot(checkoutSessionRef, (snap) => {
+                const data = snap.data();
+                if (data?.error) {
+                    alert(`An error occurred: ${data.error.message}`);
+                    setIsUpgrading(false);
+                }
+                if (data?.url) {
+                    // Redirect to the Stripe Hosted Checkout page!
+                    window.location.assign(data.url);
+                }
+            });
+        } catch (error) {
+            console.error(error);
+            alert("Failed to start checkout. Please make sure the Stripe Extension is configured.");
+            setIsUpgrading(false);
+        }
+    };
 
     const clearAll = () => {
         if (confirm('This will delete ALL your data — photos, logs, everything. Are you sure?')) {
@@ -96,16 +131,22 @@ export default function Settings() {
                                 style={{ width: '100%', borderColor: 'var(--error)', color: 'var(--error)' }}
                                 disabled={isCanceling}
                                 onClick={async () => {
-                                    if (confirm("Are you sure you want to cancel your Premium subscription?")) {
+                                    if (confirm("To cancel, you will be redirected to the Stripe Customer Portal. Continue?")) {
                                         setIsCanceling(true);
                                         try {
-                                            if (user) {
-                                                const userRef = doc(db, 'users', user.uid);
-                                                await updateDoc(userRef, { isPremium: false });
-                                                alert("Your subscription has been cancelled successfully.");
-                                            }
+                                            // Call the Stripe Extension Cloud Function to get the Portal URL
+                                            const functions = getFunctions(db.app, 'us-central1'); // Check your deployment region if this fails
+                                            const functionRef = httpsCallable(functions, 'ext-firestore-stripe-payments-createPortalLink');
+
+                                            const { data } = await functionRef({
+                                                // @ts-ignore
+                                                returnUrl: window.location.origin
+                                            });
+                                            // Redirect gracefully to Stripe portal
+                                            window.location.assign(data.url);
                                         } catch (e) {
-                                            alert("Failed to cancel subscription.");
+                                            console.error(e);
+                                            alert("Failed to connect to the Stripe Billing Portal. Ensure the Firebase Stripe Extension is correctly configured.");
                                         } finally {
                                             setIsCanceling(false);
                                         }
@@ -117,15 +158,8 @@ export default function Settings() {
                         </div>
                     ) : (
                         <div style={{ marginTop: 'var(--space-lg)', borderTop: '1px solid var(--border-color)', paddingTop: 'var(--space-md)' }}>
-                            <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => {
-                                // Simulate opening the paywall manually from settings
-                                if (user) {
-                                    const userRef = doc(db, 'users', user.uid);
-                                    updateDoc(userRef, { isPremium: true });
-                                    alert("Upgraded to Premium (Mock Developer Mode)!");
-                                }
-                            }}>
-                                <Zap size={16} /> Upgrade to Premium
+                            <button className="btn btn-primary" style={{ width: '100%' }} disabled={isUpgrading} onClick={handleUpgrade}>
+                                <Zap size={16} /> {isUpgrading ? 'Redirecting to Stripe...' : 'Upgrade to Premium'}
                             </button>
                         </div>
                     )}

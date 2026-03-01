@@ -1,20 +1,45 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { db } from '../firebase';
+import { collection, addDoc, onSnapshot } from 'firebase/firestore';
 import { Sparkles, CheckCircle2, Lock } from 'lucide-react';
 
 export default function PremiumGate({ children, featureName = "this feature" }) {
-    const { isPremium, authLoading } = useApp();
+    const { isPremium, authLoading, user } = useApp();
     const [isSimulatingUpgrade, setIsSimulatingUpgrade] = useState(false);
 
-    // Provide a way to test the upgrade flow before Stripe is connected
-    const handleUpgradeMock = () => {
+    const handleUpgradeMock = async () => {
+        if (!user) return alert("Please log in first.");
         setIsSimulatingUpgrade(true);
-        // In a real app, this would redirect to Stripe Checkout
-        // For development, we'll alert the user and simulate a success
-        setTimeout(() => {
-            alert("This will redirect to Stripe Checkout in the production version. \n\nFor now, the database expects 'isPremium: true' on your user document.");
+
+        try {
+            // Create a checkout session document for the Stripe Firebase Extension
+            const checkoutSessionRef = await addDoc(
+                collection(db, 'users', user.uid, 'checkout_sessions'),
+                {
+                    price: 'price_1QynkCIunC29aUXhm4gRveiZ', // FuelFlow Premium $9.99/mo
+                    success_url: window.location.origin,
+                    cancel_url: window.location.origin,
+                }
+            );
+
+            // Listen for the extension to attach the Stripe Checkout URL
+            onSnapshot(checkoutSessionRef, (snap) => {
+                const data = snap.data();
+                if (data?.error) {
+                    alert(`An error occurred: ${data.error.message}`);
+                    setIsSimulatingUpgrade(false);
+                }
+                if (data?.url) {
+                    // Redirect to the Stripe Hosted Checkout page!
+                    window.location.assign(data.url);
+                }
+            });
+        } catch (error) {
+            console.error(error);
+            alert("Failed to start checkout. Please make sure the Stripe Extension is configured.");
             setIsSimulatingUpgrade(false);
-        }, 1500);
+        }
     };
 
     if (authLoading) {

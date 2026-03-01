@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { auth, db } from '../firebase';
 import { onAuthStateChanged, signInAnonymously } from 'firebase/auth';
-import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, setDoc, onSnapshot, collection, query, where } from 'firebase/firestore';
 
 const AppContext = createContext();
 export const useApp = () => useContext(AppContext);
@@ -36,18 +36,18 @@ export const AppProvider = ({ children }) => {
                 setUser(currentUser);
                 setAuthLoading(false);
 
-                // Listen to the user's Firestore document for subscription changes
+                // Ensure the user document exists
                 const userRef = doc(db, 'users', currentUser.uid);
-                const unsubscribeDoc = onSnapshot(userRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        setIsPremium(!!docSnap.data().isPremium);
-                    } else {
-                        // Create initial doc if it doesn't exist
-                        setDoc(userRef, { isPremium: false }, { merge: true });
-                        setIsPremium(false);
-                    }
+                setDoc(userRef, { lastSeen: new Date().toISOString() }, { merge: true });
+
+                // Listen to the 'subscriptions' subcollection created by the Stripe Extension
+                const subsRef = collection(db, 'users', currentUser.uid, 'subscriptions');
+                const q = query(subsRef, where('status', 'in', ['trialing', 'active']));
+                const unsubscribeSubs = onSnapshot(q, (snapshot) => {
+                    // If there is any active subscription document, the user is Premium
+                    setIsPremium(!snapshot.empty);
                 });
-                return () => unsubscribeDoc();
+                return () => unsubscribeSubs();
             } else {
                 try {
                     await signInAnonymously(auth);
