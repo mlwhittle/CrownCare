@@ -1,10 +1,14 @@
+import { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Settings as SettingsIcon, Sun, MoonStar, Crown, Trash2, User } from 'lucide-react';
+import { db } from '../firebase';
+import { doc, updateDoc } from 'firebase/firestore';
+import { Settings as SettingsIcon, Sun, MoonStar, Crown, Trash2, User, Zap } from 'lucide-react';
 import settingsImg from '../assets/images/settings.png';
 import './Settings.css';
 
 export default function Settings() {
-    const { theme, toggleTheme, onboarding, completeOnboarding } = useApp();
+    const { theme, toggleTheme, onboarding, completeOnboarding, user, isPremium } = useApp();
+    const [isCanceling, setIsCanceling] = useState(false);
 
     const clearAll = () => {
         if (confirm('This will delete ALL your data — photos, logs, everything. Are you sure?')) {
@@ -56,6 +60,75 @@ export default function Settings() {
                         {theme === 'light' ? <Sun size={16} /> : <MoonStar size={16} />}
                         {theme === 'light' ? 'Light' : 'Dark'}
                     </div>
+                </div>
+            </div>
+
+            {/* Subscription Management */}
+            <div className="card mb-lg" style={{
+                border: isPremium ? '2px solid var(--gold-400)' : '2px solid var(--border-color)',
+                background: isPremium ? 'var(--gold-50)' : 'var(--bg-secondary)'
+            }}>
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
+                    <Crown size={20} style={{ color: 'var(--gold-500)' }} /> Subscription
+                </h3>
+
+                <div style={{ padding: 'var(--space-md)', background: 'var(--bg-primary)', borderRadius: 'var(--radius-lg)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-sm)' }}>
+                        <span style={{ fontWeight: 600 }}>Current Plan</span>
+                        <span className={`badge ${isPremium ? 'badge-gold' : 'badge-sky'}`}>
+                            {isPremium ? 'Premium ($9.99/mo)' : 'Free Tier'}
+                        </span>
+                    </div>
+
+                    <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)', marginBottom: 'var(--space-md)' }}>
+                        {isPremium
+                            ? "You have full access to the AI Hair Coach and advanced clinical tracking features."
+                            : "Upgrade to Premium to unlock personalized AI coaching and detailed clinical logs."}
+                    </p>
+
+                    {isPremium ? (
+                        <div style={{ marginTop: 'var(--space-lg)', borderTop: '1px solid var(--border-color)', paddingTop: 'var(--space-md)' }}>
+                            <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)', marginBottom: 'var(--space-sm)' }}>
+                                You can cancel anytime. If you cancel, you will keep access until the end of your billing cycle.
+                            </p>
+                            <button
+                                className="btn btn-outline"
+                                style={{ width: '100%', borderColor: 'var(--error)', color: 'var(--error)' }}
+                                disabled={isCanceling}
+                                onClick={async () => {
+                                    if (confirm("Are you sure you want to cancel your Premium subscription?")) {
+                                        setIsCanceling(true);
+                                        try {
+                                            if (user) {
+                                                const userRef = doc(db, 'users', user.uid);
+                                                await updateDoc(userRef, { isPremium: false });
+                                                alert("Your subscription has been cancelled successfully.");
+                                            }
+                                        } catch (e) {
+                                            alert("Failed to cancel subscription.");
+                                        } finally {
+                                            setIsCanceling(false);
+                                        }
+                                    }
+                                }}
+                            >
+                                {isCanceling ? "Canceling..." : "Cancel Subscription"}
+                            </button>
+                        </div>
+                    ) : (
+                        <div style={{ marginTop: 'var(--space-lg)', borderTop: '1px solid var(--border-color)', paddingTop: 'var(--space-md)' }}>
+                            <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => {
+                                // Simulate opening the paywall manually from settings
+                                if (user) {
+                                    const userRef = doc(db, 'users', user.uid);
+                                    updateDoc(userRef, { isPremium: true });
+                                    alert("Upgraded to Premium (Mock Developer Mode)!");
+                                }
+                            }}>
+                                <Zap size={16} /> Upgrade to Premium
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 
