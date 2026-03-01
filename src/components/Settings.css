@@ -1,0 +1,67 @@
+.settings {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: var(--space-xl);
+    animation: fadeIn .4s ease-out
+}
+
+.settings h2 {
+    margin-bottom: var(--space-xl)
+}
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--border-color)
+}
+
+.setting-row:last-child {
+    border-bottom: none
+}
+
+.setting-row span:first-child {
+    font-weight: 500;
+    color: var(--text-secondary)
+}
+
+.theme-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    background: var(--bg-tertiary);
+    font-size: var(--font-size-sm);
+    font-weight: 600
+}
+
+.danger-card {
+    border: 2px solid rgba(212, 85, 85, .2)
+}
+
+.btn-danger {
+    background: rgba(212, 85, 85, .1);
+    color: var(--error);
+    border: 2px solid rgba(212, 85, 85, .3);
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm)
+}
+
+.btn-danger:hover {
+    background: var(--error);
+    color: #fff
+}
+
+@media(max-width:768px) {
+    .settings {
+        padding: var(--space-md)
+    }
+}
