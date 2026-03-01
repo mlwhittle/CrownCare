@@ -100,113 +100,115 @@ export default function AICoach({ isOverlay, onClose }) {
             </div>
 
             {/* API key setup */}
-            {showSetup ? (
-                <div className="ai-setup">
-                    <Sparkles size={36} style={{ color: 'var(--sky-500)', marginBottom: 'var(--space-md)' }} />
-                    <h3>Connect Gemini AI</h3>
-                    <p>Enter your Google Gemini API key to enable the AI Hair Coach.</p>
-                    <a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer" style={{ fontSize: 'var(--font-size-sm)' }}>
-                        Get a free key →
-                    </a>
-                    <input
-                        className="form-input"
-                        type="password"
-                        placeholder="Paste API key..."
-                        value={apiKey}
-                        onChange={(e) => setApiKey(e.target.value)}
-                        style={{ marginTop: 'var(--space-md)' }}
-                    />
-                    <button className="btn btn-primary" onClick={handleSaveKey} style={{ width: '100%', marginTop: 'var(--space-md)' }}>
-                        Save & Connect
-                    </button>
-                </div>
-            ) : showSaved ? (
-                /* Saved answers */
-                <div className="ai-saved">
-                    <h3 style={{ marginBottom: 'var(--space-md)' }}>Saved Answers ({savedAnswers.length}/3)</h3>
-                    {savedAnswers.map(sa => (
-                        <div key={sa.id} className="saved-card">
-                            <div className="saved-q">Q: {sa.question}</div>
-                            <div className="saved-a">{sa.answer}</div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'var(--space-sm)' }}>
-                                <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)' }}>
-                                    {new Date(sa.date).toLocaleDateString()}
-                                </span>
-                                <button onClick={() => deleteSaved(sa.id)} style={{ background: 'none', border: 'none', color: 'var(--text-tertiary)', cursor: 'pointer' }}>
-                                    <Trash2 size={14} />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                    <button className="btn btn-secondary btn-sm" onClick={() => setShowSaved(false)} style={{ width: '100%', marginTop: 'var(--space-md)' }}>
-                        Back to Chat
-                    </button>
-                </div>
-            ) : (
-                /* Chat */
-                <PremiumGate featureName="AI Coach">
-                    <div className="ai-messages">
-                        {chat.length === 0 && (
-                            <div className="ai-welcome">
-                                <Sparkles size={36} style={{ color: 'var(--sky-400)' }} />
-                                <h3>Ask me anything about hair</h3>
-                                <p>I'm trained as a trichologist — covering hair science, treatments, nutrition, scalp health, and more.</p>
-                                <div className="quick-chips">
-                                    {QUICK_QUESTIONS.map((q, i) => (
-                                        <button key={i} className="quick-chip" onClick={() => quickAsk(q)}>
-                                            {q.length > 40 ? q.slice(0, 38) + '…' : q}
-                                        </button>
-                                    ))}
+            <PremiumGate featureName="AI Coach">
+                {showSetup ? (
+                    <div className="ai-setup">
+                        <Sparkles size={36} style={{ color: 'var(--sky-500)', marginBottom: 'var(--space-md)' }} />
+                        <h3>Connect Gemini AI</h3>
+                        <p>Enter your Google Gemini API key to enable the AI Hair Coach.</p>
+                        <a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer" style={{ fontSize: 'var(--font-size-sm)' }}>
+                            Get a free key →
+                        </a>
+                        <input
+                            className="form-input"
+                            type="password"
+                            placeholder="Paste API key..."
+                            value={apiKey}
+                            onChange={(e) => setApiKey(e.target.value)}
+                            style={{ marginTop: 'var(--space-md)' }}
+                        />
+                        <button className="btn btn-primary" onClick={handleSaveKey} style={{ width: '100%', marginTop: 'var(--space-md)' }}>
+                            Save & Connect
+                        </button>
+                    </div>
+                ) : showSaved ? (
+                    /* Saved answers */
+                    <div className="ai-saved">
+                        <h3 style={{ marginBottom: 'var(--space-md)' }}>Saved Answers ({savedAnswers.length}/3)</h3>
+                        {savedAnswers.map(sa => (
+                            <div key={sa.id} className="saved-card">
+                                <div className="saved-q">Q: {sa.question}</div>
+                                <div className="saved-a">{sa.answer}</div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'var(--space-sm)' }}>
+                                    <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)' }}>
+                                        {new Date(sa.date).toLocaleDateString()}
+                                    </span>
+                                    <button onClick={() => deleteSaved(sa.id)} style={{ background: 'none', border: 'none', color: 'var(--text-tertiary)', cursor: 'pointer' }}>
+                                        <Trash2 size={14} />
+                                    </button>
                                 </div>
                             </div>
-                        )}
-                        {chat.map((msg, i) => (
-                            <div key={i} className={`chat-msg ${msg.role}`}>
-                                {msg.role === 'user' && (
-                                    <div className="msg-label"><MessageCircle size={12} /> You</div>
-                                )}
-                                {msg.role === 'ai' && (
-                                    <div className="msg-label">
-                                        <Sparkles size={12} /> AI Coach
-                                        <button
-                                            className="save-btn"
-                                            onClick={() => {
-                                                const prevQ = chat.slice(0, i).reverse().find(m => m.role === 'user');
-                                                handleSaveAnswer(msg.text, prevQ?.text || '');
-                                            }}
-                                        >
-                                            <Save size={12} /> Save
-                                        </button>
-                                    </div>
-                                )}
-                                {msg.role === 'error' && <div className="msg-label" style={{ color: 'var(--error)' }}>⚠️ Error</div>}
-                                <div className="msg-body">{msg.text}</div>
-                            </div>
                         ))}
-                        {loading && (
-                            <div className="chat-msg ai">
-                                <div className="msg-label"><Sparkles size={12} /> AI Coach</div>
-                                <div className="typing"><span /><span /><span /></div>
-                            </div>
-                        )}
-                        <div ref={chatEndRef} />
-                    </div>
-
-                    <form id="ai-form" className="ai-input-bar" onSubmit={handleAsk}>
-                        <input
-                            className="ai-input"
-                            type="text"
-                            placeholder="Ask about hair growth, treatments, scalp health..."
-                            value={question}
-                            onChange={(e) => setQuestion(e.target.value)}
-                            disabled={loading}
-                        />
-                        <button type="submit" className="ai-send" disabled={loading || !question.trim()}>
-                            <Send size={18} />
+                        <button className="btn btn-secondary btn-sm" onClick={() => setShowSaved(false)} style={{ width: '100%', marginTop: 'var(--space-md)' }}>
+                            Back to Chat
                         </button>
-                    </form>
-                </PremiumGate>
-            )}
+                    </div>
+                ) : (
+                    /* Chat */
+                    <>
+                        <div className="ai-messages">
+                            {chat.length === 0 && (
+                                <div className="ai-welcome">
+                                    <Sparkles size={36} style={{ color: 'var(--sky-400)' }} />
+                                    <h3>Ask me anything about hair</h3>
+                                    <p>I'm trained as a trichologist — covering hair science, treatments, nutrition, scalp health, and more.</p>
+                                    <div className="quick-chips">
+                                        {QUICK_QUESTIONS.map((q, i) => (
+                                            <button key={i} className="quick-chip" onClick={() => quickAsk(q)}>
+                                                {q.length > 40 ? q.slice(0, 38) + '…' : q}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            {chat.map((msg, i) => (
+                                <div key={i} className={`chat-msg ${msg.role}`}>
+                                    {msg.role === 'user' && (
+                                        <div className="msg-label"><MessageCircle size={12} /> You</div>
+                                    )}
+                                    {msg.role === 'ai' && (
+                                        <div className="msg-label">
+                                            <Sparkles size={12} /> AI Coach
+                                            <button
+                                                className="save-btn"
+                                                onClick={() => {
+                                                    const prevQ = chat.slice(0, i).reverse().find(m => m.role === 'user');
+                                                    handleSaveAnswer(msg.text, prevQ?.text || '');
+                                                }}
+                                            >
+                                                <Save size={12} /> Save
+                                            </button>
+                                        </div>
+                                    )}
+                                    {msg.role === 'error' && <div className="msg-label" style={{ color: 'var(--error)' }}>⚠️ Error</div>}
+                                    <div className="msg-body">{msg.text}</div>
+                                </div>
+                            ))}
+                            {loading && (
+                                <div className="chat-msg ai">
+                                    <div className="msg-label"><Sparkles size={12} /> AI Coach</div>
+                                    <div className="typing"><span /><span /><span /></div>
+                                </div>
+                            )}
+                            <div ref={chatEndRef} />
+                        </div>
+
+                        <form id="ai-form" className="ai-input-bar" onSubmit={handleAsk}>
+                            <input
+                                className="ai-input"
+                                type="text"
+                                placeholder="Ask about hair growth, treatments, scalp health..."
+                                value={question}
+                                onChange={(e) => setQuestion(e.target.value)}
+                                disabled={loading}
+                            />
+                            <button type="submit" className="ai-send" disabled={loading || !question.trim()}>
+                                <Send size={18} />
+                            </button>
+                        </form>
+                    </>
+                )}
+            </PremiumGate>
         </div>
     );
 
