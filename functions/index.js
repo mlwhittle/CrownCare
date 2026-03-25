@@ -59,8 +59,19 @@ exports.createOnboardingLink = onRequest((req, res) => {
 // WEBHOOK: Listens for successful out-of-app web payments
 exports.stripeWebhook = onRequest((req, res) => {
     cors(req, res, async () => {
-        let event = req.body;
-        
+        const sig = req.headers['stripe-signature'];
+        const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+        let event;
+
+        try {
+            // Verify payload origin using the raw body buffer
+            event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
+        } catch (err) {
+            logger.error(`Webhook signature verification failed:`, err.message);
+            return res.status(400).send(`Webhook Error: ${err.message}`);
+        }
+
         try {
             if (event.type === 'checkout.session.completed') {
                 const session = event.data.object;
