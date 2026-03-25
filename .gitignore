@@ -1,0 +1,15 @@
+node_modules
+dist
+dist-ssr
+*.local
+.env
+.env.*
+.DS_Store
+*.p12
+*.mobileprovision
+*.p8
+*.certSigningRequest
+*.key
+GITHUB_SECRETS.txt
+ios/App/App.xcarchive
+ios/App/export
