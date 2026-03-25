@@ -1,0 +1,15 @@
+{
+  "overview": "Resumen",
+  "welcome_back": "Bienvenida de nuevo",
+  "mission_title": "La Misión de CrownCare",
+  "quick_actions": {
+    "profile": "Perfil",
+    "nutrition": "Nutrición",
+    "journal": "Diario de Voz",
+    "routines": "Rutinas",
+    "treatments": "Tratamientos",
+    "narrative": "Narrativa",
+    "dashboard": "Reporte de Crecimiento",
+    "reports": "Métricas de App"
+  }
+}

@@ -1,0 +1,198 @@
+.badge-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(18, 16, 12, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: fadeIn var(--transition-fast);
+    padding: var(--space-lg);
+}
+
+.badge-modal-glass {
+    position: relative;
+    width: 100%;
+    max-width: 360px;
+    padding: var(--space-2xl) var(--space-xl);
+    border-radius: var(--radius-2xl);
+    text-align: center;
+    
+    /* 2026 Liquid Glass styling */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+        0 8px 32px 0 rgba(0, 0, 0, 0.3),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+        0 0 40px var(--glow-color);
+        
+    /* Shimmer effect simulating tilt */
+    overflow: hidden;
+    animation: slideUp var(--transition-base), hoverFloat 6s ease-in-out infinite;
+}
+
+.badge-modal-glass::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.1) 40%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0.1) 60%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(30deg);
+    animation: liquidShimmer 4s infinite linear;
+    pointer-events: none;
+}
+
+@keyframes liquidShimmer {
+    0% { transform: translateY(-100%) rotate(30deg); }
+    100% { transform: translateY(100%) rotate(30deg); }
+}
+
+@keyframes hoverFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.badge-close {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    z-index: 10;
+}
+
+.badge-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.badge-crown {
+    font-size: 2rem;
+    margin-bottom: var(--space-sm);
+    position: relative;
+    z-index: 2;
+    animation: dropIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s both;
+}
+
+.badge-icon-container {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto var(--space-xl);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: scaleIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.4s both;
+}
+
+.badge-glow-ring {
+    position: absolute;
+    inset: -15px;
+    border-radius: 50%;
+    border: 2px solid var(--glow-color);
+    animation: pulseRing 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+    opacity: 0;
+}
+
+.badge-content {
+    position: relative;
+    z-index: 2;
+    color: white;
+    margin-bottom: var(--space-xl);
+    animation: slideUpFade 0.6s ease-out 0.6s both;
+}
+
+.badge-eyebrow {
+    display: block;
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: var(--space-sm);
+}
+
+.badge-content h2 {
+    font-family: var(--font-serif);
+    font-size: var(--font-size-2xl);
+    color: white;
+    margin-bottom: var(--space-sm);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.badge-content p {
+    font-size: var(--font-size-sm);
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+}
+
+.btn-share-story {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    background: white;
+    color: var(--neutrals-900);
+    border: none;
+    border-radius: var(--radius-full);
+    padding: var(--space-md);
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--font-size-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all var(--transition-fast);
+    animation: slideUpFade 0.6s ease-out 0.8s both;
+}
+
+.btn-share-story:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Animations */
+@keyframes dropIn {
+    0% { transform: translateY(-30px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes scaleIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pulseRing {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    100% { transform: scale(1.3); opacity: 0; }
+}
+
+@keyframes slideUpFade {
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}

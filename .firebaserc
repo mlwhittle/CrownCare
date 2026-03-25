@@ -1,5 +1,22 @@
 {
   "projects": {
     "default": "crowncare-116e4"
-  }
+  },
+  "targets": {
+    "church-website-357206": {
+      "hosting": {
+        "app": [
+          "crowncare-116e4"
+        ]
+      }
+    },
+    "crowncare-116e4": {
+      "hosting": {
+        "app": [
+          "crowncare-116e4"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
