@@ -5,7 +5,8 @@ import { Crown, Sparkles, ShieldCheck, CheckCircle2, ArrowRight, ShieldAlert } f
 const STRIPE_LINKS = {
     solo: "https://buy.stripe.com/eVq3cwbJ5b8O7WzbQ2fUQ04",
     connected: "https://buy.stripe.com/14A8wQfZlgt8a4HdYafUQ05",
-    stylist: "https://buy.stripe.com/aFa00kcN97WCgt5g6ifUQ06"
+    stylist: "https://buy.stripe.com/aFa00kcN97WCgt5g6ifUQ06",
+    founders: "https://buy.stripe.com/8x228sfZl2Ci4Kn07kfUQ09"
 };
 
 export default function Paywall({ onSubscribeSuccess }) {
@@ -135,9 +136,9 @@ export default function Paywall({ onSubscribeSuccess }) {
                         </div>
 
                         {/* Tier 2: Connected */}
-                        <div style={{ background: 'var(--bg-secondary)', border: '2px solid var(--crown-gold)', borderRadius: 'var(--radius-2xl)', padding: 'var(--space-xl)', position: 'relative', display: 'flex', flexDirection: 'column', boxShadow: '0 10px 30px rgba(212, 175, 55, 0.1)' }}>
-                            <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: 'var(--gradient-gold)', color: 'var(--gray-900)', padding: '4px 12px', borderRadius: '100px', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                Recommended
+                        <div style={{ background: 'var(--bg-secondary)', border: '2px solid var(--blue-500)', borderRadius: 'var(--radius-2xl)', padding: 'var(--space-xl)', position: 'relative', display: 'flex', flexDirection: 'column', boxShadow: '0 10px 30px rgba(59, 130, 246, 0.1)' }}>
+                            <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: 'var(--blue-500)', color: 'white', padding: '4px 12px', borderRadius: '100px', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                Popular
                             </div>
                             
                             <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>Stylist-Connected</h2>
@@ -146,13 +147,35 @@ export default function Paywall({ onSubscribeSuccess }) {
                             <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 900, color: 'var(--text-primary)', marginBottom: 'var(--space-xl)' }}>$29.99<span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)', fontWeight: 400 }}>/mo</span></div>
                             
                             <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)', marginBottom: 'var(--space-2xl)', flexGrow: 1 }}>
-                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--crown-gold)', flexShrink: 0, marginTop: '2px' }}/> Everything in Solo</li>
-                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--crown-gold)', flexShrink: 0, marginTop: '2px' }}/> Live Sync to Stylist Portal</li>
-                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--crown-gold)', flexShrink: 0, marginTop: '2px' }}/> Real-time product recommendations from your cosmetologist</li>
+                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--blue-500)', flexShrink: 0, marginTop: '2px' }}/> Everything in Solo</li>
+                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--blue-500)', flexShrink: 0, marginTop: '2px' }}/> Live Sync to Stylist Portal</li>
+                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--blue-500)', flexShrink: 0, marginTop: '2px' }}/> Real-time product recommendations from your cosmetologist</li>
                             </ul>
 
-                            <button onClick={() => handleCheckout(STRIPE_LINKS.connected)} disabled={isLoading} className="btn btn-primary" style={{ width: '100%', padding: 'var(--space-md)' }}>
+                            <button onClick={() => handleCheckout(STRIPE_LINKS.connected)} disabled={isLoading} className="btn btn-primary" style={{ width: '100%', padding: 'var(--space-md)', background: 'var(--blue-500)' }}>
                                 {isLoading ? 'Processing...' : 'Start Connected Trial'}
+                            </button>
+                        </div>
+
+                        {/* Tier 3: FOUNDERS LIFETIME */}
+                        <div style={{ background: 'var(--bg-secondary)', border: '2px solid var(--crown-gold)', borderRadius: 'var(--radius-2xl)', padding: 'var(--space-xl)', position: 'relative', display: 'flex', flexDirection: 'column', boxShadow: '0 10px 40px rgba(212, 175, 55, 0.2)' }}>
+                            <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: 'var(--gradient-gold)', color: 'var(--gray-900)', padding: '4px 12px', borderRadius: '100px', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                VIP Launch Offer (1 of 1,000)
+                            </div>
+                            
+                            <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: 800, color: 'var(--crown-gold)', marginBottom: '4px' }}>Founders Special</h2>
+                            <span style={{ color: 'var(--text-tertiary)', marginBottom: 'var(--space-lg)' }}>Forever access. No subscriptions.</span>
+                            
+                            <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 900, color: 'var(--text-primary)', marginBottom: 'var(--space-xl)' }}>$69.99<span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)', fontWeight: 400 }}>/life</span></div>
+                            
+                            <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)', marginBottom: 'var(--space-2xl)', flexGrow: 1 }}>
+                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--crown-gold)', flexShrink: 0, marginTop: '2px' }}/> Unlimited Stylist-Connected access forever</li>
+                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--crown-gold)', flexShrink: 0, marginTop: '2px' }}/> Zero monthly payments or hidden fees</li>
+                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--crown-gold)', flexShrink: 0, marginTop: '2px' }}/> Limited to the first 1000 early-adopters</li>
+                            </ul>
+
+                            <button onClick={() => handleCheckout(STRIPE_LINKS.founders)} disabled={isLoading} className="btn" style={{ width: '100%', padding: 'var(--space-md)', background: 'var(--gradient-gold)', color: '#000', fontWeight: '900' }}>
+                                {isLoading ? 'Processing...' : 'Claim Founders Offer'}
                             </button>
                         </div>
 
