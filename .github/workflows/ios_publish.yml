@@ -122,4 +122,20 @@ jobs:
                       f.write(secret)
           "
           
-          xcrun altool --upload-app -f $RUNNER_TEMP/export/App.ipa -t ios --apiKey "$KEY_ID" --apiIssuer "$ISSUER_ID"
+          mkdir -p fastlane
+          cat << 'EOF' > fastlane/Fastfile
+          lane :deploy do
+            app_store_connect_api_key(
+              key_id: ENV["KEY_ID"],
+              issuer_id: ENV["ISSUER_ID"],
+              key_filepath: ENV["FILE_PATH"],
+              in_house: false
+            )
+            upload_to_app_store(
+              ipa: ENV["IPA_PATH"]
+            )
+          end
+          EOF
+          
+          export IPA_PATH="$RUNNER_TEMP/export/App.ipa"
+          fastlane deploy
