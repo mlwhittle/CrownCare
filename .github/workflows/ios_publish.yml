@@ -89,7 +89,7 @@ jobs:
           set -x
           export IPA_PATH="$RUNNER_TEMP/export/App.ipa"
           cat << 'EOF' > jwt_upload.cjs
-          const { execSync } = require('child_process');
+          const https = require('https');
           const crypto = require('crypto');
           
           const keyId = process.env.APP_STORE_CONNECT_API_KEY_KEY_ID.replace(/[^A-Za-z0-9]/g, '');
@@ -136,15 +136,34 @@ jobs:
           const rsSignature = Buffer.concat([pad(rBytes), pad(sBytes)]);
           const jwt = `${tokenData}.${rsSignature.toString('base64url')}`;
           
-          console.log('JWT successfully generated! Invoking iTMSTransporter...');
+          console.log('JWT successfully generated! Pinging Apple API directly...');
           
-          try {
-            const ipaPath = process.env.IPA_PATH;
-            execSync(`xcrun iTMSTransporter -m upload -jwt "${jwt}" -f "${ipaPath}"`, { stdio: 'inherit' });
-          } catch (e) {
-            console.error('Upload failed!', e.message);
+          const options = {
+            hostname: 'api.appstoreconnect.apple.com',
+            path: '/v1/users',
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${jwt}`
+            }
+          };
+          
+          const req = https.request(options, (res) => {
+            console.log(`STATUS: ${res.statusCode}`);
+            let data = '';
+            res.on('data', chunk => data += chunk);
+            res.on('end', () => {
+              console.log(data);
+              if (res.statusCode !== 200) {
+                process.exit(1);
+              }
+            });
+          });
+          
+          req.on('error', (e) => {
+            console.error(e);
             process.exit(1);
-          }
+          });
+          req.end();
           EOF
           
           node jwt_upload.cjs
