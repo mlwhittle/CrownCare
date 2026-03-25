@@ -87,28 +87,64 @@ jobs:
           APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
         run: |
           set -x
-          mkdir -p fastlane
-          cat << 'EOF' > fastlane/Fastfile
-          lane :deploy do
-            clean_key = ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"].to_s.gsub(/[^A-Za-z0-9]/, '')
-            clean_issuer = ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"].to_s.gsub(/[^A-Za-z0-9\-]/, '')
-            clean_base64 = ENV["APP_STORE_CONNECT_API_KEY_BASE64"].to_s.gsub(/[^A-Za-z0-9+\/=]/, '')
-            
-            app_store_connect_api_key(
-              key_id: clean_key,
-              issuer_id: clean_issuer,
-              key_content: clean_base64,
-              is_key_content_base64: true,
-              in_house: false
-            )
-            upload_to_app_store(
-              ipa: ENV["IPA_PATH"],
-              app_identifier: "com.crowncare.app",
-              skip_screenshots: true,
-              skip_metadata: true
-            )
-          end
+          export IPA_PATH="$RUNNER_TEMP/export/App.ipa"
+          cat << 'EOF' > jwt_upload.cjs
+          const { execSync } = require('child_process');
+          const crypto = require('crypto');
+          
+          const keyId = process.env.APP_STORE_CONNECT_API_KEY_KEY_ID.replace(/[^A-Za-z0-9]/g, '');
+          const issuerId = process.env.APP_STORE_CONNECT_API_KEY_ISSUER_ID.replace(/[^A-Za-z0-9\-]/g, '');
+          const base64Key = process.env.APP_STORE_CONNECT_API_KEY_BASE64.replace(/[^A-Za-z0-9+\/=]/g, '');
+          
+          const privateKeyPem = Buffer.from(base64Key, 'base64').toString('utf8');
+          
+          const header = { alg: 'ES256', kid: keyId, typ: 'JWT' };
+          const payload = {
+            iss: issuerId,
+            exp: Math.floor(Date.now() / 1000) + 10 * 60,
+            aud: 'appstoreconnect-v1'
+          };
+          
+          const encodedHeader = Buffer.from(JSON.stringify(header)).toString('base64url');
+          const encodedPayload = Buffer.from(JSON.stringify(payload)).toString('base64url');
+          const tokenData = `${encodedHeader}.${encodedPayload}`;
+          
+          const sign = crypto.createSign('SHA256');
+          sign.update(tokenData);
+          sign.end();
+          
+          const signature = sign.sign(privateKeyPem);
+          let offset = 2;
+          if (signature[1] > 0x80) offset += signature[1] - 0x80;
+          if (signature[offset] !== 0x02) throw new Error("Expected Integer");
+          let rLen = signature[offset + 1];
+          let rBytes = signature.subarray(offset + 2, offset + 2 + rLen);
+          if (rBytes.length === 33 && rBytes[0] === 0x00) rBytes = rBytes.subarray(1);
+          offset += 2 + rLen;
+          if (signature[offset] !== 0x02) throw new Error("Expected Integer");
+          let sLen = signature[offset + 1];
+          let sBytes = signature.subarray(offset + 2, offset + 2 + sLen);
+          if (sBytes.length === 33 && sBytes[0] === 0x00) sBytes = sBytes.subarray(1);
+          
+          const pad = (buf) => {
+            if (buf.length >= 32) return buf;
+            const target = Buffer.alloc(32);
+            buf.copy(target, 32 - buf.length);
+            return target;
+          };
+          
+          const rsSignature = Buffer.concat([pad(rBytes), pad(sBytes)]);
+          const jwt = `${tokenData}.${rsSignature.toString('base64url')}`;
+          
+          console.log('JWT successfully generated! Invoking iTMSTransporter...');
+          
+          try {
+            const ipaPath = process.env.IPA_PATH;
+            execSync(`xcrun iTMSTransporter -m upload -jwt "${jwt}" -f "${ipaPath}"`, { stdio: 'inherit' });
+          } catch (e) {
+            console.error('Upload failed!', e.message);
+            process.exit(1);
+          }
           EOF
           
-          export IPA_PATH="$RUNNER_TEMP/export/App.ipa"
-          fastlane deploy
+          node jwt_upload.cjs
