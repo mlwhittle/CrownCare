@@ -2,7 +2,7 @@
 const STORAGE_KEY = 'cc_gemini_key';
 const STORAGE_SAVED = 'cc_saved_answers';
 
-export const loadApiKey = () => localStorage.getItem(STORAGE_KEY) || 'AIzaSyCoFnPkcDpJN9DfEtEaB1SjRVi2E4EBrE8';
+export const loadApiKey = () => localStorage.getItem(STORAGE_KEY) || import.meta.env.VITE_GEMINI_API_KEY || '';
 export const saveApiKey = (key) => localStorage.setItem(STORAGE_KEY, key);
 
 export const loadSavedAnswers = () => {
