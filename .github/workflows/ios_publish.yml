@@ -90,49 +90,21 @@ jobs:
           export KEY_ID=$(echo "$APP_STORE_CONNECT_API_KEY_KEY_ID" | tr -d '[:space:]')
           export ISSUER_ID=$(echo "$APP_STORE_CONNECT_API_KEY_ISSUER_ID" | tr -d '[:space:]')
           
-          mkdir -p ~/private_keys
-          export FILE_PATH=~/private_keys/AuthKey_${KEY_ID}.p8
-          
-          python3 -c "
-          import os, base64
-          secret = os.environ.get('APP_STORE_CONNECT_API_KEY_BASE64', '')
-          print(f'Secret length: {len(secret)}')
-          if 'BEGIN PRIVATE KEY' in secret:
-              print('Detected raw PEM')
-              with open(os.environ.get('FILE_PATH'), 'w') as f:
-                  f.write(secret)
-          else:
-              print('Attempting base64 decode...')
-              secret_clean = secret.replace('\n', '').replace('\r', '').replace(' ', '')
-              print(f'Clean length: {len(secret_clean)}')
-              try:
-                  decoded = base64.b64decode(secret_clean).decode('utf-8')
-                  print('Successfully decoded base64')
-                  print(f'Decoded length: {len(decoded)}')
-                  if 'BEGIN PRIVATE KEY' in decoded:
-                      print('Found PEM headers in decoded string')
-                  else:
-                      print('WARNING: Decoded string does not look like a PEM file!')
-                  with open(os.environ.get('FILE_PATH'), 'w') as f:
-                      f.write(decoded)
-              except Exception as e:
-                  print(f'Decode failed: {e}')
-                  print('Writing raw secret just in case')
-                  with open(os.environ.get('FILE_PATH'), 'w') as f:
-                      f.write(secret)
-          "
-          
           mkdir -p fastlane
           cat << 'EOF' > fastlane/Fastfile
           lane :deploy do
             app_store_connect_api_key(
               key_id: ENV["KEY_ID"],
               issuer_id: ENV["ISSUER_ID"],
-              key_filepath: ENV["FILE_PATH"],
+              key_content: ENV["APP_STORE_CONNECT_API_KEY_BASE64"],
+              is_key_content_base64: true,
               in_house: false
             )
             upload_to_app_store(
-              ipa: ENV["IPA_PATH"]
+              ipa: ENV["IPA_PATH"],
+              app_identifier: "com.crowncare.app",
+              skip_screenshots: true,
+              skip_metadata: true
             )
           end
           EOF
