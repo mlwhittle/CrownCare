@@ -47,5 +47,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>CrownCare requires camera access to allow you to take and upload progress photos to your Visual Hair Diary.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>CrownCare requires access to save downloaded progress photos directly to your photo library.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>CrownCare requires access to your photo library so you can select and upload existing photos to your Visual Hair Diary.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>CrownCare requires microphone access for recording video diaries of your hair progress.</string>
 </dict>
 </plist>
