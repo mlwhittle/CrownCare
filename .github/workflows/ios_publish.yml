@@ -91,11 +91,23 @@ jobs:
             const fs = require('fs');
             let secret = process.env.APP_STORE_CONNECT_API_KEY_BASE64 || '';
             let isBase64 = !secret.includes('PRIVATE KEY');
-            if (isBase64) {
-              fs.writeFileSync(process.env.authKeyPath, Buffer.from(secret.replace(/[\r\n\s]+/g, ''), 'base64'));
-            } else {
-              fs.writeFileSync(process.env.authKeyPath, secret);
+            
+            // 1. Extract the raw text from either base64 or plaintext
+            let rawContent = isBase64 ? Buffer.from(secret.replace(/[\r\n\s]+/g, ''), 'base64').toString('utf8') : secret;
+            
+            // 2. Strip headers, footers, and all whitespace/newlines to isolate the naked encryption string
+            let nakedKey = rawContent.replace(/-----BEGIN PRIVATE KEY-----/g, '')
+                                     .replace(/-----END PRIVATE KEY-----/g, '')
+                                     .replace(/[\r\n\s]+/g, '');
+                                     
+            // 3. Reconstruct a 100% perfect Apple-compliant PEM format (Unix newlines, 64-char chunks)
+            let formattedPem = '-----BEGIN PRIVATE KEY-----\n';
+            for (let i = 0; i < nakedKey.length; i += 64) {
+               formattedPem += nakedKey.substring(i, i + 64) + '\n';
             }
+            formattedPem += '-----END PRIVATE KEY-----\n';
+            
+            fs.writeFileSync(process.env.authKeyPath, formattedPem);
           "
           
           xcrun altool --upload-app -f $RUNNER_TEMP/export/App.ipa -t ios --apiKey "$CLEAN_KEY_ID" --apiIssuer "$CLEAN_ISSUER_ID"
