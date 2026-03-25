@@ -83,7 +83,9 @@ jobs:
           # Sanitize inputs to remove corrupted clipboard line breaks
           CLEAN_ISSUER_ID=$(printenv RAW_ISSUER_ID | tr -d '\n\r ')
           CLEAN_KEY_ID=$(printenv RAW_KEY_ID | tr -d '\n\r ')
-          export authKeyPath="$RUNNER_TEMP/AuthKey_${CLEAN_KEY_ID}.p8"
+          
+          mkdir -p $HOME/private_keys
+          export authKeyPath="$HOME/private_keys/AuthKey_${CLEAN_KEY_ID}.p8"
           
           node -e "
             const fs = require('fs');
