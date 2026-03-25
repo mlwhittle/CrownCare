@@ -3,9 +3,9 @@ import { useApp } from '../context/AppContext';
 import { Crown, Sparkles, ShieldCheck, CheckCircle2, ArrowRight, ShieldAlert } from 'lucide-react';
 
 const STRIPE_LINKS = {
-    solo: "https://buy.stripe.com/test_solo_1999",
-    connected: "https://buy.stripe.com/test_connected_2999",
-    stylist: "https://buy.stripe.com/test_stylist_4999"
+    solo: "https://buy.stripe.com/eVq3cwbJ5b8O7WzbQ2fUQ04",
+    connected: "https://buy.stripe.com/14A8wQfZlgt8a4HdYafUQ05",
+    stylist: "https://buy.stripe.com/aFa00kcN97WCgt5g6ifUQ06"
 };
 
 export default function Paywall({ onSubscribeSuccess }) {
@@ -21,12 +21,16 @@ export default function Paywall({ onSubscribeSuccess }) {
     // Mocking the Stripe Redirect
     const handleCheckout = (link) => {
         setIsLoading(true);
-        // In production, this redirects to window.location.href = link;
-        // For local testing, we simulate a successful 7-day trial activation after 1.5 seconds.
-        setTimeout(() => {
-            setIsLoading(false);
-            onSubscribeSuccess(true);
-        }, 1500);
+        if (import.meta.env.DEV) {
+            // For local testing, we simulate a successful 7-day trial activation after 1.5 seconds.
+            setTimeout(() => {
+                setIsLoading(false);
+                onSubscribeSuccess(true);
+            }, 1500);
+        } else {
+            // In production, force a hard redirect to the live Stripe Payment URL
+            window.location.href = link;
+        }
     };
 
     const handleClaim = async () => {
@@ -35,7 +39,11 @@ export default function Paywall({ onSubscribeSuccess }) {
         setClaimMessage('');
         
         try {
-            const req = await fetch('http://127.0.0.1:5001/crowncare-116e4/us-central1/claimWebSubscription', {
+            const apiEndpoint = import.meta.env.DEV 
+                ? 'http://127.0.0.1:5001/crowncare-116e4/us-central1/claimWebSubscription' 
+                : 'https://us-central1-crowncare-116e4.cloudfunctions.net/claimWebSubscription';
+
+            const req = await fetch(apiEndpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: claimEmail, uid: user.uid })
