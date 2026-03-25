@@ -62,7 +62,11 @@ jobs:
           cd ios/App
           # Auto-increment the build number so Apple accepts new uploads
           xcrun agvtool next-version -all || true
-          xcodebuild -project App.xcodeproj -scheme App -configuration Release clean archive -archivePath $RUNNER_TEMP/App.xcarchive
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release clean archive -archivePath $RUNNER_TEMP/App.xcarchive \
+            CODE_SIGN_STYLE="Manual" \
+            DEVELOPMENT_TEAM="6LW5TYA8KT" \
+            PROVISIONING_PROFILE_SPECIFIER="CrownCare App Store Profile" \
+            CODE_SIGN_IDENTITY="Apple Distribution"
 
       - name: Export App Binary (.ipa)
         run: |
