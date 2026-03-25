@@ -87,16 +87,17 @@ jobs:
           APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
         run: |
           set -x
-          export KEY_ID=$(echo "$APP_STORE_CONNECT_API_KEY_KEY_ID" | tr -d '[:space:]')
-          export ISSUER_ID=$(echo "$APP_STORE_CONNECT_API_KEY_ISSUER_ID" | tr -d '[:space:]')
-          
           mkdir -p fastlane
           cat << 'EOF' > fastlane/Fastfile
           lane :deploy do
+            clean_key = ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"].to_s.gsub(/[^A-Za-z0-9]/, '')
+            clean_issuer = ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"].to_s.gsub(/[^A-Za-z0-9\-]/, '')
+            clean_base64 = ENV["APP_STORE_CONNECT_API_KEY_BASE64"].to_s.gsub(/[^A-Za-z0-9+\/=]/, '')
+            
             app_store_connect_api_key(
-              key_id: ENV["KEY_ID"],
-              issuer_id: ENV["ISSUER_ID"],
-              key_content: ENV["APP_STORE_CONNECT_API_KEY_BASE64"],
+              key_id: clean_key,
+              issuer_id: clean_issuer,
+              key_content: clean_base64,
               is_key_content_base64: true,
               in_house: false
             )
