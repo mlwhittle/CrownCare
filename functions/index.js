@@ -6,7 +6,7 @@ const cors = require('cors')({ origin: true });
 admin.initializeApp();
 
 // Pulling the Stripe key securely from Firebase Environment Variables to pass GitHub Security Scans
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || 'sk_test_mock');
 
 exports.createStripeAccount = onRequest((req, res) => {
     cors(req, res, async () => {
