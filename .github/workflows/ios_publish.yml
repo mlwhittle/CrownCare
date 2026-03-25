@@ -62,7 +62,7 @@ jobs:
           cd ios/App
           # Auto-increment the build number so Apple accepts new uploads
           xcrun agvtool next-version -all || true
-          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release clean archive -archivePath $RUNNER_TEMP/App.xcarchive
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release clean archive -archivePath $RUNNER_TEMP/App.xcarchive
 
       - name: Export App Binary (.ipa)
         run: |
