@@ -2,17 +2,22 @@
 .desktop-header {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 64px;
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-color);
-    padding: 0 var(--space-xl);
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 1400px;
+    height: 72px;
+    background: rgba(16, 18, 23, 0.75);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 40px;
+    padding: 0 var(--space-2xl);
     align-items: center;
     justify-content: space-between;
     z-index: 800;
-    backdrop-filter: blur(12px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 @media (min-width: 769px) {
@@ -105,17 +110,25 @@
     background: var(--blue-50);
 }
 
-/* Mobile bottom tabs */
+/* Mobile floating glass capsule */
 .mobile-tabs {
     display: flex;
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border-color);
-    padding: var(--space-xs) 0 env(safe-area-inset-bottom, var(--space-xs));
-    z-index: 800;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 48px);
+    max-width: 450px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(0, 31, 63, 0.1);
+    border-radius: 40px;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 16px;
+    z-index: 1000;
+    box-shadow: 0 16px 40px rgba(0, 31, 63, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 @media (min-width: 769px) {
@@ -125,25 +138,47 @@
 }
 
 .mobile-tab {
-    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
-    padding: var(--space-sm) 0;
+    justify-content: center;
+    gap: 4px;
     background: none;
     border: none;
     color: var(--text-tertiary);
     font-size: 10px;
     font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
     cursor: pointer;
-    transition: color var(--transition-fast);
 }
 
 .mobile-tab.active {
-    color: var(--blue-500);
+    color: var(--brand-primary);
+    background: rgba(0, 31, 63, 0.05);
 }
 
-.mobile-tab span {
-    display: block;
+.mobile-tab:hover {
+    color: var(--brand-primary);
+}
+
+.nav-ai-button {
+    background: linear-gradient(135deg, #FCD34D 0%, #B45309 100%);
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    box-shadow: 0 4px 20px rgba(252, 211, 77, 0.5), inset 0px 2px 4px rgba(255, 255, 255, 0.4);
+    color: #050508;
+    margin-top: -36px;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.nav-ai-button:active {
+    transform: scale(0.9);
 }

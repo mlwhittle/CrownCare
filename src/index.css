@@ -14,80 +14,45 @@
 }
 
 :root {
-    /* Brand Colors — Blue / Gold / Sky (Light Blue) */
-    --blue-50: #EFF6FF;
-    --blue-100: #DBEAFE;
-    --blue-200: #BFDBFE;
-    --blue-300: #93C5FD;
-    --blue-400: #60A5FA;
-    --blue-500: #3B82F6;
-    /* Royal Blue */
-    --blue-600: #2563EB;
-    --blue-700: #1D4ED8;
-    --blue-800: #1E40AF;
-    --blue-900: #1E3A8A;
+    /* Brand Colors — Clinical Cleanliness & Authority */
+    --brand-primary: #001F3F; /* Deep Navy */
+    --brand-secondary: #003366; 
+    --gold-primary: #D4AF37; /* Soft Gold */
+    --gold-light: #F9F1D8;
+    
+    /* Semantic Health Colors */
+    --success: #5D8A66; /* Soft Mint Green */
+    --success-light: #EAF4EC;
+    --warning: #E07A5F; /* Muted Coral */
+    --warning-light: #FDECE8;
+    --error: #B91C1C;
+    --info: #0369A1;
 
-    --gold-50: #FFFBEB;
-    --gold-100: #FEF3C7;
-    --gold-200: #FDE68A;
-    --gold-300: #FCD34D;
-    --gold-400: #FBBF24;
-    --gold-500: #F59E0B;
-    /* Rich Gold */
-    --gold-600: #D97706;
-    --gold-700: #B45309;
-    --gold-800: #92400E;
-    --gold-900: #78350F;
+    /* Main App Background - Minimalist Clinical Light Theme */
+    --bg-primary: #F8F9FA; /* Off-White / Light Grey */
+    --bg-secondary: #FFFFFF; /* Pure White Cards */
+    --bg-tertiary: #E9ECEF;
+    --border-color: rgba(0, 31, 63, 0.1); /* Navy border with 10% opacity */
 
-    --sky-50: #F0F9FF;
-    --sky-100: #E0F2FE;
-    --sky-200: #BAE6FD;
-    --sky-300: #7DD3FC;
-    --sky-400: #38BDF8;
-    --sky-500: #0EA5E9;
-    /* Sky Blue */
-    --sky-600: #0284C7;
-    --sky-700: #0369A1;
-    --sky-800: #075985;
-    --sky-900: #0C4A6E;
+    /* Primary Text */
+    --text-primary: #001F3F; /* Deep Navy for maximum contrast & authority */
+    --text-secondary: #495057;
+    --text-tertiary: #868E96;
 
-    --warm-50: #FFFBF0;
-    --warm-100: #FFEFCE;
-    --warm-200: #FFDDA3;
-    --warm-300: #FFC473;
-    --warm-400: #FFA647;
-    --warm-500: #FB923C;
-    /* Soft peach */
-
-    /* Neutrals */
-    --gray-50: #FAF8F9;
-    --gray-100: #F3EFF1;
-    --gray-200: #E6E0E3;
-    --gray-300: #D1C8CC;
-    --gray-400: #A89BA0;
-    --gray-500: #7F7377;
-    --gray-600: #5F5357;
-    --gray-700: #433A3D;
-    --gray-800: #2B2426;
-    --gray-900: #1A1517;
-
-    /* Semantic */
-    --success: #34D399;
-    --warning: #FBBF24;
-    --error: #F87171;
-    --info: #60A5FA;
-
-    /* Light theme (default) */
-    --bg-primary: #FFFFFF;
-    --bg-secondary: #F0F9FF;
-    --bg-tertiary: #F8FAFC;
-    --text-primary: #0F172A;
-    --text-secondary: #334155;
-    --text-tertiary: #64748B;
-    --border-color: #BAE6FD;
+    /* Legacy Map (Ensures components relying on old colors render in the new Theme) */
+    --blue-500: var(--brand-primary);
+    --gold-300: var(--gold-primary);
+    --gold-400: var(--gold-primary);
+    --sky-500: #0284C7;
+    --brand-800: var(--brand-primary);
+    --brand-900: var(--brand-primary);
+    --brand-500: var(--brand-secondary);
+    --brand-600: var(--brand-secondary);
+    --brand-400: var(--gold-primary);
 
     /* Typography */
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-serif: 'Playfair Display', Georgia, serif;
     --font-size-xs: 0.75rem;
     --font-size-sm: 0.875rem;
     --font-size-base: 1rem;
@@ -114,11 +79,11 @@
     --radius-2xl: 28px;
     --radius-full: 9999px;
 
-    /* Shadows */
-    --shadow-sm: 0 2px 8px rgba(244, 114, 182, 0.08);
-    --shadow-md: 0 4px 16px rgba(244, 114, 182, 0.12);
-    --shadow-lg: 0 10px 30px rgba(244, 114, 182, 0.15);
-    --shadow-xl: 0 20px 40px rgba(244, 114, 182, 0.2);
+    /* Shadows Premium */
+    --shadow-sm: 0 2px 8px rgba(0, 31, 63, 0.04);
+    --shadow-md: 0 8px 24px rgba(0, 31, 63, 0.06);
+    --shadow-lg: 0 16px 40px rgba(0, 31, 63, 0.08);
+    --shadow-xl: 0 24px 48px rgba(0, 31, 63, 0.12);
 
     /* Transitions */
     --transition-fast: 150ms ease;
@@ -126,29 +91,13 @@
     --transition-slow: 400ms ease;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, var(--gold-400) 0%, var(--blue-500) 100%);
-    --gradient-warm: linear-gradient(135deg, var(--gold-200) 0%, var(--warm-300) 100%);
-    --gradient-hero: linear-gradient(135deg, var(--blue-600) 0%, var(--sky-500) 50%, var(--gold-500) 100%);
-    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.2) 100%);
+    --gradient-primary: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+    --gradient-warm: linear-gradient(135deg, var(--gold-primary) 0%, #B8962E 100%);
+    --gradient-hero: linear-gradient(135deg, #001F3F 0%, #001122 100%);
+    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.7) 100%);
 }
 
-/* ---- DARK MODE ---- */
-[data-theme="dark"] {
-    --bg-primary: #0F172A;
-    --bg-secondary: #1E293B;
-    --bg-tertiary: #334155;
-    --text-primary: #F8FAFC;
-    --text-secondary: #CBD5E1;
-    --text-tertiary: #94A3B8;
-    --border-color: #1E3A8A;
 
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.5);
-    --shadow-xl: 0 24px 40px rgba(0, 0, 0, 0.6);
-
-    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
-}
 
 /* ---- BASE ---- */
 html {
@@ -172,9 +121,11 @@ h3,
 h4,
 h5,
 h6 {
+    font-family: var(--font-serif);
     line-height: 1.25;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--text-primary);
+    letter-spacing: -0.01em;
 }
 
 a {
@@ -211,16 +162,17 @@ img {
 /* ---- CARDS ---- */
 .card {
     background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-sm);
     padding: var(--space-lg);
 }
 
 .card-glass {
-    background: var(--gradient-glass);
+    background: rgba(255, 255, 255, 0.4);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: var(--radius-xl);
     padding: var(--space-lg);
 }
@@ -576,13 +528,16 @@ input[type="range"]::-webkit-slider-thumb {
 .ai-panel {
     width: 100%;
     max-width: 600px;
+    height: 85dvh;
     max-height: 85vh;
-    background: var(--bg-secondary);
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border-color);
     border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
     box-shadow: var(--shadow-xl);
     display: flex;
     flex-direction: column;
     animation: slideUp 0.3s ease-out;
+    overflow: hidden;
 }
 
 @media (min-width: 769px) {
@@ -716,4 +671,21 @@ input[type="range"]::-webkit-slider-thumb {
     border-radius: var(--radius-xl);
     margin-bottom: var(--space-xl);
     box-shadow: var(--shadow-md);
+}
+
+/* ---- QUIZ OPTIONS ---- */
+.quiz-option {
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.quiz-option.quiz-option-selected {
+    border: 2px solid var(--brand-400);
+    background: rgba(183, 110, 121, 0.15); /* rose gold glow */
+    color: var(--gold-300);
+}
+
+.quiz-option.quiz-option-selected .quiz-option-label {
+    color: var(--gold-300);
 }
