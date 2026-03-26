@@ -40,9 +40,7 @@ export default function Paywall({ onSubscribeSuccess }) {
         setClaimMessage('');
         
         try {
-            const apiEndpoint = import.meta.env.DEV 
-                ? 'http://127.0.0.1:5001/crowncare-116e4/us-central1/claimWebSubscription' 
-                : 'https://us-central1-crowncare-116e4.cloudfunctions.net/claimWebSubscription';
+            const apiEndpoint = 'https://claimwebsubscription-6tvsh2cpua-uc.a.run.app';
 
             const req = await fetch(apiEndpoint, {
                 method: 'POST',
@@ -104,6 +102,7 @@ export default function Paywall({ onSubscribeSuccess }) {
                         </ul>
 
                         <button 
+                            type="button"
                             onClick={() => handleCheckout(STRIPE_LINKS.stylist)}
                             disabled={isLoading}
                             className="btn btn-primary btn-lg" 
@@ -130,7 +129,7 @@ export default function Paywall({ onSubscribeSuccess }) {
                                 <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--blue-500)', flexShrink: 0, marginTop: '2px' }}/> Nutrition & Routine Planners</li>
                             </ul>
 
-                            <button onClick={() => handleCheckout(STRIPE_LINKS.solo)} disabled={isLoading} style={{ width: '100%', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: 'var(--space-md)', borderRadius: 'var(--radius-lg)', fontWeight: 'bold' }}>
+                            <button type="button" onClick={() => handleCheckout(STRIPE_LINKS.solo)} disabled={isLoading} style={{ width: '100%', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: 'var(--space-md)', borderRadius: 'var(--radius-lg)', fontWeight: 'bold' }}>
                                 Start Solo Trial
                             </button>
                         </div>
@@ -152,7 +151,7 @@ export default function Paywall({ onSubscribeSuccess }) {
                                 <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--blue-500)', flexShrink: 0, marginTop: '2px' }}/> Real-time product recommendations from your cosmetologist</li>
                             </ul>
 
-                            <button onClick={() => handleCheckout(STRIPE_LINKS.connected)} disabled={isLoading} className="btn btn-primary" style={{ width: '100%', padding: 'var(--space-md)', background: 'var(--blue-500)' }}>
+                            <button type="button" onClick={() => handleCheckout(STRIPE_LINKS.connected)} disabled={isLoading} className="btn btn-primary" style={{ width: '100%', padding: 'var(--space-md)', background: 'var(--blue-500)' }}>
                                 {isLoading ? 'Processing...' : 'Start Connected Trial'}
                             </button>
                         </div>
@@ -174,7 +173,7 @@ export default function Paywall({ onSubscribeSuccess }) {
                                 <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--crown-gold)', flexShrink: 0, marginTop: '2px' }}/> Limited to the first 1000 early-adopters</li>
                             </ul>
 
-                            <button onClick={() => handleCheckout(STRIPE_LINKS.founders)} disabled={isLoading} className="btn" style={{ width: '100%', padding: 'var(--space-md)', background: 'var(--gradient-gold)', color: '#000', fontWeight: '900' }}>
+                            <button type="button" onClick={() => handleCheckout(STRIPE_LINKS.founders)} disabled={isLoading} className="btn" style={{ width: '100%', padding: 'var(--space-md)', background: 'var(--gradient-gold)', color: '#000', fontWeight: '900' }}>
                                 {isLoading ? 'Processing...' : 'Claim Founders Offer'}
                             </button>
                         </div>
@@ -189,12 +188,15 @@ export default function Paywall({ onSubscribeSuccess }) {
                 <div style={{ marginTop: 'var(--space-2xl)', borderTop: '1px solid var(--border-color)', paddingTop: 'var(--space-xl)', textAlign: 'center' }}>
                     <h3 style={{ fontSize: 'var(--font-size-md)', marginBottom: 'var(--space-sm)' }}>Already purchased on Crowncare.app?</h3>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: 'var(--space-md)' }}>Enter the email address you used to purchase to instantly unlock the app.</p>
-                    <div style={{ display: 'flex', gap: '8px', maxWidth: '400px', margin: '0 auto' }}>
+                    <form 
+                        onSubmit={(e) => { e.preventDefault(); handleClaim(); }}
+                        style={{ display: 'flex', gap: '8px', maxWidth: '400px', margin: '0 auto' }}
+                    >
                         <input type="email" placeholder="client@email.com" className="form-input" value={claimEmail} onChange={e => setClaimEmail(e.target.value)} style={{ flex: 1 }} />
-                        <button className="btn btn-outline" onClick={handleClaim} disabled={isClaiming || !claimEmail}>
+                        <button type="submit" className="btn btn-outline" disabled={isClaiming || !claimEmail}>
                             {isClaiming ? 'Restoring...' : 'Restore'}
                         </button>
-                    </div>
+                    </form>
                     {claimMessage && <p style={{ marginTop: 'var(--space-md)', fontSize: '13px', color: claimMessage.includes('❌') ? 'var(--error)' : 'var(--success)', fontWeight: 'bold' }}>{claimMessage}</p>}
                 </div>
 
