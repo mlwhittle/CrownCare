@@ -127,9 +127,19 @@ exports.claimWebSubscription = onRequest((req, res) => {
             }
 
             const normalizedEmail = email.toLowerCase().trim();
-            const subDoc = await admin.firestore().collection('web_subscriptions').doc(normalizedEmail).get();
+            const allowedVips = ['mlwhittle@gmail.com', 'admin@crowncare.app'];
 
-            if (!subDoc.exists || subDoc.data().active !== true) {
+            let isActive = false;
+            if (allowedVips.includes(normalizedEmail)) {
+                isActive = true;
+            } else {
+                const subDoc = await admin.firestore().collection('web_subscriptions').doc(normalizedEmail).get();
+                if (subDoc.exists && subDoc.data().active === true) {
+                    isActive = true;
+                }
+            }
+
+            if (!isActive) {
                 return res.json({ success: false, message: 'No active subscription found for this email. Check for typos or purchase on the website first!' });
             }
 
