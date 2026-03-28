@@ -8,11 +8,11 @@ const puppeteer = require('puppeteer');
     });
     const page = await browser.newPage();
 
-    // Set viewport to mobile size natively
-    await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+    // Set viewport to exactly 1284x2778 (428x926 @ 3x) for Apple 6.5-inch Display requirement
+    await page.setViewport({ width: 428, height: 926, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
 
     console.log('Navigating to app...');
-    await page.goto('https://localhost:5176/', { waitUntil: 'domcontentloaded' });
+    await page.goto('https://localhost:5173/', { waitUntil: 'domcontentloaded' });
 
     // Inject onboarding state into localStorage so we bypass the quiz
     await page.evaluate(() => {
@@ -30,7 +30,7 @@ const puppeteer = require('puppeteer');
     await page.reload({ waitUntil: 'domcontentloaded' });
     await new Promise(r => setTimeout(r, 6000)); // give it time to load fonts & UI
 
-    const baseDest = 'C:/Users/mlwhi/.gemini/antigravity/scratch/crowncare-landing-page/public/';
+    const baseDest = 'C:/Users/mlwhi/Desktop/';
 
     // Screenshot 1: Home Dashboard
     await page.screenshot({ path: baseDest + 'app_ui_reports.png' });
