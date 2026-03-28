@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
+import { Capacitor } from '@capacitor/core';
+import { Purchases, LOG_LEVEL } from '@revenuecat/purchases-capacitor';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from './components/Header';
 import Home from './components/Home';
@@ -25,8 +27,23 @@ import { Sparkles } from 'lucide-react';
 const MAIN_TABS = ['home', 'treatments', 'diary', 'nutrition', 'routines', 'stylist-portal', 'reports', 'settings'];
 
 function AppInner() {
-    const { onboarding, completeOnboarding, isPremium, redeemVipCode } = useApp();
+    const { onboarding, completeOnboarding, isPremium, isTrialExpired, redeemVipCode } = useApp();
     
+    useEffect(() => {
+        const initRevenueCat = async () => {
+            if (Capacitor.isNativePlatform()) {
+                await Purchases.setLogLevel(LOG_LEVEL.DEBUG);
+                // The user must replace these securely with the keys from the RevenueCat dashboard
+                if (Capacitor.getPlatform() === 'ios') {
+                    await Purchases.configure({ apiKey: "appl_rmJkhAccGqKfBficXZljJwWggOD" });
+                } else if (Capacitor.getPlatform() === 'android') {
+                    await Purchases.configure({ apiKey: "REPLACE_WITH_GOOGLE_REVENUECAT_KEY_HERE" });
+                }
+            }
+        };
+        initRevenueCat();
+    }, []);
+
     // Auto-Reset Legacy Saves: If the onboarding save doesn't have the new 'userType', wipe it so they see the new flow.
     if (onboarding && !onboarding.userType) {
         localStorage.removeItem('cc_onboarding');
@@ -64,8 +81,8 @@ function AppInner() {
         return <OnboardingQuiz onComplete={completeOnboarding} />;
     }
 
-    // If onboarding exists but not premium, strictly enforce Paywall 
-    if (!isPremium) {
+    // 7-DAY FREE TRIAL LOGIC: Only strictly enforce the Paywall if their 168 hours have mathematically expired.
+    if (!isPremium && isTrialExpired) {
         return <Paywall onSubscribeSuccess={() => redeemVipCode('FAMILY-VIP')} />;
     }
 
