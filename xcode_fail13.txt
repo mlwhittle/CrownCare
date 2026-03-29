@@ -1,0 +1,39 @@
+﻿build-and-deploy	Upload to App Store Connect	∩╗┐2026-03-25T20:48:05.3636280Z ##[group]Run set -x
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3636850Z [36;1mset -x[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3637220Z [36;1mKEY_ID=$(echo "$APP_STORE_CONNECT_API_KEY_KEY_ID" | tr -d '[:space:]')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3637770Z [36;1mISSUER_ID=$(echo "$APP_STORE_CONNECT_API_KEY_ISSUER_ID" | tr -d '[:space:]')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3638120Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3638310Z [36;1mmkdir -p ~/private_keys[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3638590Z [36;1mFILE_PATH=~/private_keys/AuthKey_${KEY_ID}.p8[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3638860Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3639180Z [36;1mif [[ "$APP_STORE_CONNECT_API_KEY_BASE64" == *"BEGIN PRIVATE KEY"* ]]; then[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3639580Z [36;1m  echo "$APP_STORE_CONNECT_API_KEY_BASE64" > "$FILE_PATH"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3639860Z [36;1melse[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3640160Z [36;1m  echo "$APP_STORE_CONNECT_API_KEY_BASE64" | tr -d ' ' | base64 --decode > "$FILE_PATH"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3640500Z [36;1mfi[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3640650Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3641110Z [36;1mxcrun altool --upload-app -f $RUNNER_TEMP/export/App.ipa -t ios --apiKey "$KEY_ID" --apiIssuer "$ISSUER_ID"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3678800Z shell: /bin/bash -e {0}
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3679020Z env:
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3679550Z   APP_STORE_CONNECT_API_KEY_ISSUER_ID: ***
+build-and-deploy	Upload to App Store Connect	
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3679970Z   APP_STORE_CONNECT_API_KEY_KEY_ID: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3680310Z   APP_STORE_CONNECT_API_KEY_BASE64: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.3680540Z ##[endgroup]
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.4180320Z ++ echo '***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.4245310Z ***'
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.4256810Z ++ tr -d '[:space:]'
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.4266930Z + KEY_ID=***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.4285010Z ++ echo '***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.4288590Z ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.4289870Z '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.4290200Z ++ tr -d '[:space:]'
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.4290890Z + ISSUER_ID=***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.4291290Z + mkdir -p /Users/runner/private_keys
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.4315890Z + FILE_PATH=/Users/runner/private_keys/AuthKey_***.p8
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.4317220Z + [[ *** == *\B\E\G\I\N\ \P\R\I\V\A\T\E\ \K\E\Y* ]]
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.4319370Z + echo '***'
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.4321670Z + tr -d ' '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.4323670Z + base64 --decode
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.4349510Z base64: stdin: (null): error decoding base64 input stream
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:48:05.4364210Z ##[error]Process completed with exit code 1.

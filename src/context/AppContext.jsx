@@ -41,13 +41,24 @@ export const AppProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [isVIP, setIsVIP] = useState(() => load('cc_vip', false));
     const [isPremium, setIsPremium] = useState(false); // Defaults to false
+    const [isTrialExpired, setIsTrialExpired] = useState(false); // 168-hour lock
     const [authLoading, setAuthLoading] = useState(true);
     
     // Cross-Component Routing State
     const [customEvaluationPrompt, setCustomEvaluationPrompt] = useState('');
 
     // Stylist Code & Prescriptions (B2B Integration)
-    const [stylistCode, setStylistCode] = useState(() => load('cc_stylist', ''));
+    const [stylistCode, setStylistCode] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const ref = params.get('ref') || params.get('stylist');
+            if (ref) {
+                save('cc_stylist', ref.toUpperCase());
+                return ref.toUpperCase();
+            }
+        }
+        return load('cc_stylist', '');
+    });
     useEffect(() => { save('cc_stylist', stylistCode); }, [stylistCode]);
 
     // Stylist Private Client Rolodex
@@ -147,9 +158,13 @@ export const AppProvider = ({ children }) => {
                 setUser(currentUser);
                 setAuthLoading(false);
 
-                // Ensure the user document exists
+                // Ensure the user document exists and permanently attach any affiliate referrals
                 const userRef = doc(db, 'users', currentUser.uid);
-                setDoc(userRef, { lastSeen: new Date().toISOString() }, { merge: true });
+                const currentStylist = load('cc_stylist', null);
+                setDoc(userRef, { 
+                    lastSeen: new Date().toISOString(),
+                    referredBy_StylistId: currentStylist || null
+                }, { merge: true });
 
                 // STRIPE INTEGRATION: Listen for active apps subscriptions AND web bridge upgrades
                 let hasAppSubscription = false;
@@ -175,6 +190,17 @@ export const AppProvider = ({ children }) => {
 
                 const unsubscribeUser = onSnapshot(userRef, (docSnap) => {
                     const data = docSnap.data();
+                    
+                    if (data && !data.trialStartedAt) {
+                        // Natively stamp the exact ms they registered
+                        setDoc(userRef, { trialStartedAt: Date.now() }, { merge: true });
+                    }
+                    if (data && data.trialStartedAt) {
+                        // 168 Hours mathematically evaluated
+                        const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+                        setIsTrialExpired(Date.now() - data.trialStartedAt > SEVEN_DAYS_MS);
+                    }
+
                     hasWebSubscription = data?.hasActiveWebSubscription === true;
                     evaluatePremium();
                 });
@@ -525,7 +551,7 @@ export const AppProvider = ({ children }) => {
 
     return (
         <AppContext.Provider value={{
-            user, isPremium, isVIP, redeemVipCode, authLoading,
+            user, isPremium, isVIP, isTrialExpired, redeemVipCode, authLoading,
             theme, toggleTheme,
             onboarding, completeOnboarding,
             photos, addPhoto, deletePhoto,

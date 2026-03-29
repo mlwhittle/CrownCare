@@ -1,0 +1,78 @@
+﻿build-and-deploy	Upload to App Store Connect	∩╗┐2026-03-25T22:38:18.8253810Z ##[group]Run set -x
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8254170Z [36;1mset -x[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8254410Z [36;1mexport IPA_PATH="$RUNNER_TEMP/export/App.ipa"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8254700Z [36;1mcat << 'EOF' > jwt_upload.cjs[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8254980Z [36;1mconst { execSync } = require('child_process');[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8255280Z [36;1mconst crypto = require('crypto');[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8255860Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8256180Z [36;1mconst keyId = process.env.APP_STORE_CONNECT_API_KEY_KEY_ID.replace(/[^A-Za-z0-9]/g, '');[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8256780Z [36;1mconst issuerId = process.env.APP_STORE_CONNECT_API_KEY_ISSUER_ID.replace(/[^A-Za-z0-9\-]/g, '');[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8257390Z [36;1mconst base64Key = process.env.APP_STORE_CONNECT_API_KEY_BASE64.replace(/[^A-Za-z0-9+\/=]/g, '');[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8258040Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8258360Z [36;1mconst privateKeyPem = Buffer.from(base64Key, 'base64').toString('utf8');[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8258710Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8260390Z [36;1mconst header = { alg: 'ES256', kid: keyId, typ: 'JWT' };[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8261200Z [36;1mconst payload = {[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8261740Z [36;1m  iss: issuerId,[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8262770Z [36;1m  exp: Math.floor(Date.now() / 1000) + 10 * 60,[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8263670Z [36;1m  aud: 'appstoreconnect-v1'[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8264280Z [36;1m};[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8264730Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8265530Z [36;1mconst encodedHeader = Buffer.from(JSON.stringify(header)).toString('base64url');[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8266100Z [36;1mconst encodedPayload = Buffer.from(JSON.stringify(payload)).toString('base64url');[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8266580Z [36;1mconst tokenData = `${encodedHeader}.${encodedPayload}`;[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8266900Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8267110Z [36;1mconst sign = crypto.createSign('SHA256');[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8267410Z [36;1msign.update(tokenData);[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8267630Z [36;1msign.end();[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8267830Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8268050Z [36;1mconst signature = sign.sign(privateKeyPem);[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8268910Z [36;1mlet offset = 2;[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8270190Z [36;1mif (signature[1] > 0x80) offset += signature[1] - 0x80;[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8270650Z [36;1mif (signature[offset] !== 0x02) throw new Error("Expected Integer");[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8271030Z [36;1mlet rLen = signature[offset + 1];[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8271360Z [36;1mlet rBytes = signature.subarray(offset + 2, offset + 2 + rLen);[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8271790Z [36;1mif (rBytes.length === 33 && rBytes[0] === 0x00) rBytes = rBytes.subarray(1);[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8272160Z [36;1moffset += 2 + rLen;[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8272470Z [36;1mif (signature[offset] !== 0x02) throw new Error("Expected Integer");[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8272830Z [36;1mlet sLen = signature[offset + 1];[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8273170Z [36;1mlet sBytes = signature.subarray(offset + 2, offset + 2 + sLen);[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8273600Z [36;1mif (sBytes.length === 33 && sBytes[0] === 0x00) sBytes = sBytes.subarray(1);[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8273950Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8274150Z [36;1mconst pad = (buf) => {[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8274390Z [36;1m  if (buf.length >= 32) return buf;[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8274680Z [36;1m  const target = Buffer.alloc(32);[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8274980Z [36;1m  buf.copy(target, 32 - buf.length);[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8275220Z [36;1m  return target;[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8275420Z [36;1m};[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8275570Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8275860Z [36;1mconst rsSignature = Buffer.concat([pad(rBytes), pad(sBytes)]);[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8276290Z [36;1mconst jwt = `${tokenData}.${rsSignature.toString('base64url')}`;[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8276590Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8276880Z [36;1mconsole.log('JWT successfully generated! Invoking iTMSTransporter...');[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8277230Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8278080Z [36;1mtry {[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8278300Z [36;1m  const ipaPath = process.env.IPA_PATH;[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8278750Z [36;1m  execSync(`xcrun iTMSTransporter -m upload -jwt "${jwt}" -f "${ipaPath}"`, { stdio: 'inherit' });[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8279150Z [36;1m} catch (e) {[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8279390Z [36;1m  console.error('Upload failed!', e.message);[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8281950Z [36;1m  process.exit(1);[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8282680Z [36;1m}[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8283280Z [36;1mEOF[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8283720Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8284160Z [36;1mnode jwt_upload.cjs[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8327240Z shell: /bin/bash -e {0}
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8327490Z env:
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8328140Z   APP_STORE_CONNECT_API_KEY_ISSUER_ID: ***
+build-and-deploy	Upload to App Store Connect	
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8328530Z   APP_STORE_CONNECT_API_KEY_KEY_ID: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8332310Z   APP_STORE_CONNECT_API_KEY_BASE64: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.8333210Z ##[endgroup]
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.9124740Z + export IPA_PATH=/Users/runner/work/_temp/export/App.ipa
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.9126120Z + IPA_PATH=/Users/runner/work/_temp/export/App.ipa
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.9127360Z + cat
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:18.9408790Z + node jwt_upload.cjs
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:19.2071260Z JWT successfully generated! Invoking iTMSTransporter...
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:19.9810370Z An error (-10814) occurred. The operation couldnΓÇÖt be completed. (OSStatus error -10814.) (null)
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:19.9916220Z Upload failed! Command failed: xcrun iTMSTransporter -m upload -jwt "***" -f "/Users/runner/work/_temp/export/App.ipa"
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:38:20.0000880Z ##[error]Process completed with exit code 1.

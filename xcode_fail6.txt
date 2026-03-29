@@ -1,0 +1,23 @@
+﻿build-and-deploy	Build iOS Xcode App	∩╗┐2026-03-25T20:21:34.2414810Z ##[group]Run cd ios/App
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:34.2415400Z [36;1mcd ios/App[0m
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:34.2415730Z [36;1m# Auto-increment the build number so Apple accepts new uploads[0m
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:34.2416110Z [36;1mxcrun agvtool next-version -all || true[0m
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:34.2416680Z [36;1mxcodebuild -workspace App.xcworkspace -scheme App -configuration Release clean archive -archivePath $RUNNER_TEMP/App.xcarchive[0m
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:34.2448030Z shell: /bin/bash -e {0}
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:34.2448250Z ##[endgroup]
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:36.2153100Z Setting version of project App to: 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:36.2154090Z     2.
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:36.2154370Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:36.2263000Z Also setting CFBundleVersion key (assuming it exists)
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:36.2263740Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:36.2477780Z Updating CFBundleVersion in Info.plist(s)...
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:36.2478140Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:36.2699830Z Updated CFBundleVersion in "App.xcodeproj/../App/Info.plist" to 2
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:36.2700700Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:36.2700710Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:37.1626800Z Command line invocation:
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:37.1629780Z     /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/xcodebuild -workspace App.xcworkspace -scheme App -configuration Release clean archive -archivePath /Users/runner/work/_temp/App.xcarchive
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:37.1631520Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:37.9205010Z 2026-03-25 20:21:37.915 xcodebuild[1574:7499] Writing error result bundle to /var/folders/t5/f77_gwnj6p95qxy9py3fckx00000gn/T/ResultBundle_2026-25-03_20-21-0037.xcresult
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:38.9978040Z xcodebuild: error: 'App.xcworkspace' does not exist.
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:21:39.0155590Z ##[error]Process completed with exit code 66.

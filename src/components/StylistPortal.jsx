@@ -9,7 +9,7 @@ import InviteClientModal from './InviteClientModal';
 
 export default function StylistPortal() {
     const { stylistDashboardData, updateStylistDashboard, linkedClients, isStylistAccount, addAppointment, appointments, stylistContact, setStylistContact, clientContacts, updateClientContact, sharedAudits } = useApp();
-    const [tab, setTab] = useState('hub'); // hub, roster, pad, profile
+    const [tab, setTab] = useState('hub'); // hub, roster, pad, calendar
     const [profileTab, setProfileTab] = useState('activity'); // activity, reports, narrative
     const [selectedClient, setSelectedClient] = useState('');
     const [rxProduct, setRxProduct] = useState('');

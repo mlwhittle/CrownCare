@@ -1,0 +1,29 @@
+﻿build-and-deploy	Upload to App Store Connect	∩╗┐2026-03-25T20:32:11.5505580Z ##[group]Run set -x
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5505960Z [36;1mset -x[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5506270Z [36;1m# Sanitize inputs to remove corrupted clipboard line breaks[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5506990Z [36;1mCLEAN_ISSUER_ID=$(printenv RAW_ISSUER_ID | tr -d '\n\r ')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5507420Z [36;1mCLEAN_KEY_ID=$(printenv RAW_KEY_ID | tr -d '\n\r ')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5507680Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5507990Z [36;1mauthKeyPath="$RUNNER_TEMP/AuthKey_${CLEAN_KEY_ID}.p8"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5508450Z [36;1mprintenv APP_STORE_CONNECT_API_KEY_BASE64 | tr -d '\n\r ' | base64 --decode -o "$authKeyPath"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5519190Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5519640Z [36;1mxcrun altool --upload-app -f $RUNNER_TEMP/export/App.ipa -t ios --apiKey "$CLEAN_KEY_ID" --apiIssuer "$CLEAN_ISSUER_ID"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5564290Z shell: /bin/bash -e {0}
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5564500Z env:
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5565000Z   RAW_ISSUER_ID: ***
+build-and-deploy	Upload to App Store Connect	
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5565240Z   RAW_KEY_ID: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5565590Z   APP_STORE_CONNECT_API_KEY_BASE64: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5565850Z ##[endgroup]
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5926870Z ++ printenv RAW_ISSUER_ID
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5927660Z ++ tr -d '\n\r '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5962860Z + CLEAN_ISSUER_ID=***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5972100Z ++ printenv RAW_KEY_ID
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5994970Z ++ tr -d '\n\r '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5996500Z + CLEAN_KEY_ID=***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.5999130Z + authKeyPath=/Users/runner/work/_temp/AuthKey_***.p8
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.6002760Z + printenv APP_STORE_CONNECT_API_KEY_BASE64
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.6008780Z + tr -d '\n\r '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.6009700Z + base64 --decode -o /Users/runner/work/_temp/AuthKey_***.p8
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.6052570Z base64: stdin: (null): error decoding base64 input stream
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:32:11.6079150Z ##[error]Process completed with exit code 1.

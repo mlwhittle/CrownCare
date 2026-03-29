@@ -85,7 +85,7 @@ RULES:
 export async function askGemini(question, apiKey, userData = null) {
    const { GoogleGenerativeAI } = await import('@google/generative-ai');
    const genAI = new GoogleGenerativeAI(apiKey);
-   const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+   const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
    let contextPrompt = SYSTEM_PROMPT;
    
@@ -109,7 +109,7 @@ Please personalize your response based on the following user data if relevant to
 export async function generateMonthlyNarrative(apiKey, userData) {
    const { GoogleGenerativeAI } = await import('@google/generative-ai');
    const genAI = new GoogleGenerativeAI(apiKey);
-   const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+   const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
    const narrativePrompt = `
 You are CrownCare's Lead Dermatologist and Trichologist AI.
@@ -145,8 +145,8 @@ export async function scanIngredientsWithGemini(apiKey, base64Image, mimeType = 
     const { GoogleGenerativeAI } = await import('@google/generative-ai');
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // gemini-2.0-flash is natively multimodal
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    // gemini-2.5-flash is natively multimodal
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const prompt = `
     Analyze this image of a hair product's ingredient label. 
@@ -174,7 +174,7 @@ export async function scanIngredientsWithGemini(apiKey, base64Image, mimeType = 
 export async function matchProductLabelWithGemini(apiKey, base64Image, userProfileMap, mimeType = 'image/jpeg') {
     const { GoogleGenerativeAI } = await import('@google/generative-ai');
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const pStr = userProfileMap && (userProfileMap.hairType || userProfileMap.porosity) 
         ? `Hair Type: ${userProfileMap.hairType}, Porosity: ${userProfileMap.porosity}` 
@@ -224,8 +224,8 @@ export async function analyzeScalpPhotoWithGemini(apiKey, base64Image, mimeType 
     const { GoogleGenerativeAI } = await import('@google/generative-ai');
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // gemini-2.0-flash is natively multimodal
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    // gemini-2.5-flash is natively multimodal
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const prompt = `
     You are a world-class Trichologist AI inside the CrownCare app.
@@ -262,7 +262,7 @@ export async function analyzeScalpPhotoWithGemini(apiKey, base64Image, mimeType 
 export async function scanMealWithGemini(apiKey, base64Image, mimeType = 'image/jpeg') {
     const { GoogleGenerativeAI } = await import('@google/generative-ai');
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const prompt = `
     You are a clinical nutritionist AI inside the CrownCare hair regrowth app.
@@ -314,7 +314,7 @@ export async function scanMealWithGemini(apiKey, base64Image, mimeType = 'image/
 export async function generateEmpatheticResponse(apiKey, text) {
     const { GoogleGenerativeAI } = await import('@google/generative-ai');
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const prompt = `
     You are the "CrownCare AI Therapy Companion".
@@ -332,5 +332,73 @@ export async function generateEmpatheticResponse(apiKey, text) {
     } catch (e) {
         console.error("AI Therapy Failed:", e);
         return "I'm here for you. Take a deep breath, and remember that your journey is a marathon, not a sprint.";
+    }
+}
+
+// --- NEW B2B CONTENT STUDIO AGENTS ---
+
+export async function generateTikTokScripts(apiKey, rawIdea) {
+    const { GoogleGenerativeAI } = await import('@google/generative-ai');
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+    const prompt = `
+    You are a viral TikTok & Instagram Reels Scriptwriter for CrownCare (a premium women's hair care app) and FuelFlow (a Christian fitness app).
+    The founder just brain-dumped this raw audio transcript idea into the studio: "${rawIdea}"
+    
+    1. Write a highly-engaging, 60-second viral video script.
+    2. Include the exact Hook (first 3 seconds).
+    3. Include the Caption and 5 specific trending hashtags to post underneath the video.
+    `;
+
+    try {
+        const result = await model.generateContent([prompt]);
+        return result.response.text().trim();
+    } catch (e) {
+        return "Error generating TikTok Script.";
+    }
+}
+
+export async function generateSEOBlog(apiKey, rawIdea) {
+    const { GoogleGenerativeAI } = await import('@google/generative-ai');
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+    const prompt = `
+    You are an elite SEO Blog Writer.
+    The founder brain-dumped this exact idea into the studio: "${rawIdea}"
+    
+    1. Transform this exact idea into an authoritative, beautifully structured 800-word SEO-optimized blog post.
+    2. Include an SEO-optimized H1 Title.
+    3. Use H2 headers, bullet points, and high-value insights.
+    `;
+
+    try {
+        const result = await model.generateContent([prompt]);
+        return result.response.text().trim();
+    } catch (e) {
+        return "Error generating Blog Post.";
+    }
+}
+
+export async function generateNewsletter(apiKey, rawIdea) {
+    const { GoogleGenerativeAI } = await import('@google/generative-ai');
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+    const prompt = `
+    You are an elite Email Marketer specializing in retaining high-ticket subscribers.
+    The founder brain-dumped this raw audio transcript: "${rawIdea}"
+    
+    1. Write a highly-engaging HTML Email Newsletter based specifically on this idea.
+    2. Include a compelling Subject Line.
+    3. Write the email so it sounds like it comes directly from Pastor Mel (the founder)—warm, encouraging, practical, and slightly pastoral.
+    `;
+
+    try {
+        const result = await model.generateContent([prompt]);
+        return result.response.text().trim();
+    } catch (e) {
+        return "Error generating Newsletter.";
     }
 }

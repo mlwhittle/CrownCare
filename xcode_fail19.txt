@@ -1,0 +1,85 @@
+﻿build-and-deploy	Upload to App Store Connect	∩╗┐2026-03-25T22:34:52.9185240Z ##[group]Run set -x
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9185500Z [36;1mset -x[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9185900Z [36;1mmkdir -p fastlane[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9186110Z [36;1mcat << 'EOF' > fastlane/Fastfile[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9186350Z [36;1mlane :deploy do[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9186720Z [36;1m  clean_key = ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"].to_s.gsub(/[^A-Za-z0-9]/, '')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9187230Z [36;1m  clean_issuer = ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"].to_s.gsub(/[^A-Za-z0-9\-]/, '')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9187750Z [36;1m  clean_base64 = ENV["APP_STORE_CONNECT_API_KEY_BASE64"].to_s.gsub(/[^A-Za-z0-9+\/=]/, '')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9188110Z [36;1m  [0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9188280Z [36;1m  app_store_connect_api_key([0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9188500Z [36;1m    key_id: clean_key,[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9188730Z [36;1m    issuer_id: clean_issuer,[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9188970Z [36;1m    key_content: clean_base64,[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9189200Z [36;1m    is_key_content_base64: true,[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9189490Z [36;1m    in_house: false[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9189680Z [36;1m  )[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9189880Z [36;1m  upload_to_app_store([0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9190130Z [36;1m    ipa: ENV["IPA_PATH"],[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9190400Z [36;1m    app_identifier: "com.crowncare.app",[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9190670Z [36;1m    skip_screenshots: true,[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9190910Z [36;1m    skip_metadata: true[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9191100Z [36;1m  )[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9191260Z [36;1mend[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9191400Z [36;1mEOF[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9191560Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9191770Z [36;1mexport IPA_PATH="$RUNNER_TEMP/export/App.ipa"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9192030Z [36;1mfastlane deploy[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9226910Z shell: /bin/bash -e {0}
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9227140Z env:
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9227710Z   APP_STORE_CONNECT_API_KEY_ISSUER_ID: ***
+build-and-deploy	Upload to App Store Connect	
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9228060Z   APP_STORE_CONNECT_API_KEY_KEY_ID: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9230010Z   APP_STORE_CONNECT_API_KEY_BASE64: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9230290Z ##[endgroup]
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9498680Z + mkdir -p fastlane
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9553970Z + cat
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9589880Z + export IPA_PATH=/Users/runner/work/_temp/export/App.ipa
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9590710Z + IPA_PATH=/Users/runner/work/_temp/export/App.ipa
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:52.9591360Z + fastlane deploy
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:54.2205260Z [22:34:54]: [33mGet started using a Gemfile for fastlane https://docs.fastlane.tools/getting-started/ios/setup/#use-a-gemfile[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:55.0775370Z [22:34:55]: Sending anonymous analytics information
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:55.0775900Z [22:34:55]: Learn more at https://docs.fastlane.tools/#metrics
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:55.0776360Z [22:34:55]: No personal or sensitive data is sent.
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:55.0776950Z [22:34:55]: You can disable this by adding `opt_out_usage` at the top of your Fastfile
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:55.0952600Z [22:34:55]: [32mDriving the lane 'deploy' ≡ƒÜÇ[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:55.0953120Z [22:34:55]: [32m---------------------------------------[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:55.0953730Z [22:34:55]: [32m--- Step: app_store_connect_api_key ---[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:55.0954170Z [22:34:55]: [32m---------------------------------------[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:55.1350870Z [22:34:55]: [32m---------------------------------[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:55.1353980Z [22:34:55]: [32m--- Step: upload_to_app_store ---[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:55.1354580Z [22:34:55]: [32m---------------------------------[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:55.1357160Z [22:34:55]: Creating authorization token for App Store Connect API
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.1943660Z +------------------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.1944180Z |      [33mLane Context[0m      |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.1944440Z +---------------+--------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.1944680Z | PLATFORM_NAME |        |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.1944900Z | LANE_NAME     | deploy |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.1945120Z +---------------+--------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.1945510Z [22:34:56]: [31mCalled from Fastfile at line 13[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.1946550Z [22:34:56]: [31m```[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.1947310Z [22:34:56]: [31m    11:	    in_house: false[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.1947640Z [22:34:56]: [31m    12:	  )[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.1947980Z [22:34:56]: [31m => 13:	  upload_to_app_store([0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.1948470Z [22:34:56]: [31m    14:	    ipa: ENV["IPA_PATH"],[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.1948960Z [22:34:56]: [31m    15:	    app_identifier: "com.crowncare.app",[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.1949290Z [22:34:56]: [31m```[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.1950630Z [22:34:56]: [31mAuthentication credentials are missing or invalid. - Provide a properly configured and signed bearer token, and make sure that it has not expired. Learn more about Generating Tokens for API Requests https://developer.apple.com/go/?id=api-generating-tokens[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.2006770Z 
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.2009620Z +------------------------------------------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.2010390Z |                [32mfastlane summary[0m                |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.2011780Z +------+---------------------------+-------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.2012830Z | Step | Action                    | Time (in s) |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.2013710Z +------+---------------------------+-------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.2014620Z | 1    | app_store_connect_api_key | 0           |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.2015890Z | ≡ƒÆÑ   | [31mupload_to_app_store[0m       | 1           |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.2016820Z +------+---------------------------+-------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.2017440Z 
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.2018560Z [22:34:56]: [31mfastlane finished with errors[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.2095860Z 
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.2096430Z Looking for related GitHub issues on fastlane/fastlane...
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.2096680Z 
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.4809460Z [31m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.4859270Z [!] The request could not be completed because:
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.4861720Z 	Authentication credentials are missing or invalid. - Provide a properly configured and signed bearer token, and make sure that it has not expired. Learn more about Generating Tokens for API Requests https://developer.apple.com/go/?id=api-generating-tokens[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:34:56.4898770Z ##[error]Process completed with exit code 1.

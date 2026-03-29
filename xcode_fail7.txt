@@ -1,0 +1,497 @@
+﻿build-and-deploy	Build iOS Xcode App	∩╗┐2026-03-25T20:24:14.9275130Z ##[group]Run cd ios/App
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:14.9275390Z [36;1mcd ios/App[0m
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:14.9275670Z [36;1m# Auto-increment the build number so Apple accepts new uploads[0m
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:14.9276030Z [36;1mxcrun agvtool next-version -all || true[0m
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:14.9276770Z [36;1mxcodebuild -project App.xcodeproj -scheme App -configuration Release clean archive -archivePath $RUNNER_TEMP/App.xcarchive[0m
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:14.9310760Z shell: /bin/bash -e {0}
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:14.9310970Z ##[endgroup]
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:16.4865140Z Setting version of project App to: 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:16.4865540Z     2.
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:16.4865650Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:16.4935070Z Also setting CFBundleVersion key (assuming it exists)
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:16.4935420Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:16.5072580Z Updating CFBundleVersion in Info.plist(s)...
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:16.5072900Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:16.5299200Z Updated CFBundleVersion in "App.xcodeproj/../App/Info.plist" to 2
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:16.5301980Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:16.5303200Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:17.5070340Z Command line invocation:
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:17.5173210Z     /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/xcodebuild -project App.xcodeproj -scheme App -configuration Release clean archive -archivePath /Users/runner/work/_temp/App.xcarchive
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:17.5275110Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:19.3243200Z Resolve Package Graph
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:34.7765560Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:34.7868380Z Fetching from https://github.com/ionic-team/capacitor-swift-pm.git
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:35.6642750Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:36.0847570Z Creating working copy of package ΓÇÿcapacitor-swift-pmΓÇÖ
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:36.1198410Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:36.1275130Z Checking out 8.3.0 of package ΓÇÿcapacitor-swift-pmΓÇÖ
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:36.1326120Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.4464650Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.4465880Z Resolved source packages:
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.4466630Z   CapacitorCamera: /Users/runner/work/CrownCare/CrownCare/node_modules/@capacitor/camera @ local
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.4467340Z   CapApp-SPM: /Users/runner/work/CrownCare/CrownCare/ios/App/CapApp-SPM @ local
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.4469810Z   capacitor-swift-pm: https://github.com/ionic-team/capacitor-swift-pm.git @ 8.3.0
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.4518550Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5273240Z --- xcodebuild: WARNING: Using the first of multiple matching destinations:
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5307940Z { platform:macOS, arch:arm64, variant:Designed for [iPad,iPhone], id:319845240024004e454599ef2e5f6828fc693a60, name:My Mac }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5309120Z { platform:iOS, id:dvtdevice-DVTiPhonePlaceholder-iphoneos:placeholder, name:Any iOS Device }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5310200Z { platform:iOS Simulator, id:dvtdevice-DVTiOSDeviceSimulatorPlaceholder-iphonesimulator:placeholder, name:Any iOS Simulator Device }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5311400Z { platform:visionOS Simulator, arch:arm64, variant:Designed for [iPad,iPhone], id:EA819166-4014-4B86-ADC6-8FF0A6B7BD4F, OS:2.3, name:Apple Vision Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5312600Z { platform:visionOS Simulator, arch:arm64, variant:Designed for [iPad,iPhone], id:F287A241-2B8E-40D7-9F83-83B390A7FD0E, OS:2.4, name:Apple Vision Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5313810Z { platform:visionOS Simulator, arch:arm64, variant:Designed for [iPad,iPhone], id:CF27E369-6850-4F5A-BB53-A5F9C0D9910F, OS:2.5, name:Apple Vision Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5315080Z { platform:visionOS Simulator, arch:arm64, variant:Designed for [iPad,iPhone], id:CF6CB8A2-E8C9-43BE-9B6C-6BD38998EABB, OS:26.1, name:Apple Vision Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5316280Z { platform:visionOS Simulator, arch:arm64, variant:Designed for [iPad,iPhone], id:F39A5931-2951-49D8-B51D-9D639EA488C1, OS:26.2, name:Apple Vision Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5318300Z { platform:iOS Simulator, arch:arm64, id:1ECDFEDA-97EE-4DCC-B7E7-EC00E32C989D, OS:18.5, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5319410Z { platform:iOS Simulator, arch:x86_64, id:1ECDFEDA-97EE-4DCC-B7E7-EC00E32C989D, OS:18.5, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5320330Z { platform:iOS Simulator, arch:arm64, id:280E92A4-63FD-4444-93FF-709A5A05EA3A, OS:18.6, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5321910Z { platform:iOS Simulator, arch:x86_64, id:280E92A4-63FD-4444-93FF-709A5A05EA3A, OS:18.6, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5324140Z { platform:iOS Simulator, arch:arm64, id:9BC85DE6-A0C6-4E3E-BE8C-10CF0B2B40CE, OS:26.0.1, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5343550Z { platform:iOS Simulator, arch:x86_64, id:9BC85DE6-A0C6-4E3E-BE8C-10CF0B2B40CE, OS:26.0.1, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5344560Z { platform:iOS Simulator, arch:arm64, id:C610E264-0BA8-484F-934C-D7B070609DC5, OS:26.1, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5345770Z { platform:iOS Simulator, arch:x86_64, id:C610E264-0BA8-484F-934C-D7B070609DC5, OS:26.1, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5347410Z { platform:iOS Simulator, arch:arm64, id:7D5D551E-8839-48F8-92E0-91F86CF81618, OS:26.2, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5349910Z { platform:iOS Simulator, arch:x86_64, id:7D5D551E-8839-48F8-92E0-91F86CF81618, OS:26.2, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5530680Z { platform:iOS Simulator, arch:arm64, id:35A3B047-64DA-408E-A052-9C9D4E1379C9, OS:18.5, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5531900Z { platform:iOS Simulator, arch:x86_64, id:35A3B047-64DA-408E-A052-9C9D4E1379C9, OS:18.5, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5532680Z { platform:iOS Simulator, arch:arm64, id:658435D0-B8F6-4BDD-8DA4-641B1BACB948, OS:18.6, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5533430Z { platform:iOS Simulator, arch:x86_64, id:658435D0-B8F6-4BDD-8DA4-641B1BACB948, OS:18.6, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5534190Z { platform:iOS Simulator, arch:arm64, id:4E7A09A6-96A6-4FFC-9108-B0ED87CDA5C3, OS:26.0.1, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5535060Z { platform:iOS Simulator, arch:x86_64, id:4E7A09A6-96A6-4FFC-9108-B0ED87CDA5C3, OS:26.0.1, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5536130Z { platform:iOS Simulator, arch:arm64, id:7AF1DE24-0AA0-40EF-B979-D4F88808C65C, OS:26.1, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5541450Z { platform:iOS Simulator, arch:x86_64, id:7AF1DE24-0AA0-40EF-B979-D4F88808C65C, OS:26.1, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5542430Z { platform:iOS Simulator, arch:arm64, id:A1FF2408-45BA-4093-BD1E-1102685DED0C, OS:26.2, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5543300Z { platform:iOS Simulator, arch:x86_64, id:A1FF2408-45BA-4093-BD1E-1102685DED0C, OS:26.2, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5544110Z { platform:iOS Simulator, arch:arm64, id:5AB7E097-44FF-4C41-AC82-CBFC746A876A, OS:18.5, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5550940Z { platform:iOS Simulator, arch:x86_64, id:5AB7E097-44FF-4C41-AC82-CBFC746A876A, OS:18.5, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5553290Z { platform:iOS Simulator, arch:arm64, id:4DC8057D-2832-4BF4-82BC-EBB5ADDCDAE0, OS:18.6, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5555790Z { platform:iOS Simulator, arch:x86_64, id:4DC8057D-2832-4BF4-82BC-EBB5ADDCDAE0, OS:18.6, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5558290Z { platform:iOS Simulator, arch:arm64, id:A7BAEC98-0634-4AC6-BF3E-523817F76C83, OS:26.0.1, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5560860Z { platform:iOS Simulator, arch:x86_64, id:A7BAEC98-0634-4AC6-BF3E-523817F76C83, OS:26.0.1, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5563950Z { platform:iOS Simulator, arch:arm64, id:6AA2E222-39C2-45AD-A1E5-1B117BD5D88B, OS:26.1, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5566870Z { platform:iOS Simulator, arch:x86_64, id:6AA2E222-39C2-45AD-A1E5-1B117BD5D88B, OS:26.1, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5568970Z { platform:iOS Simulator, arch:arm64, id:ACF2EBA3-9D4A-46E8-A655-B48694AF9267, OS:26.2, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5571210Z { platform:iOS Simulator, arch:x86_64, id:ACF2EBA3-9D4A-46E8-A655-B48694AF9267, OS:26.2, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5573440Z { platform:iOS Simulator, arch:arm64, id:0D92B28F-F22A-4AE4-A53A-C88F25E7122C, OS:18.5, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5575740Z { platform:iOS Simulator, arch:x86_64, id:0D92B28F-F22A-4AE4-A53A-C88F25E7122C, OS:18.5, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5579190Z { platform:iOS Simulator, arch:arm64, id:3FA4D7AA-B3E3-44EE-A08B-645F3F048428, OS:18.6, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5582110Z { platform:iOS Simulator, arch:x86_64, id:3FA4D7AA-B3E3-44EE-A08B-645F3F048428, OS:18.6, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5589190Z { platform:iOS Simulator, arch:arm64, id:DE4E45EB-A773-4098-AD1B-7FB9446738ED, OS:26.0.1, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5590290Z { platform:iOS Simulator, arch:x86_64, id:DE4E45EB-A773-4098-AD1B-7FB9446738ED, OS:26.0.1, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5591230Z { platform:iOS Simulator, arch:arm64, id:10BD33C2-8177-4400-84F3-E3B1E64D5581, OS:26.1, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5592170Z { platform:iOS Simulator, arch:x86_64, id:10BD33C2-8177-4400-84F3-E3B1E64D5581, OS:26.1, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5593020Z { platform:iOS Simulator, arch:arm64, id:9948A7F7-53F5-4EBC-9DCE-538477411FEE, OS:26.2, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5593900Z { platform:iOS Simulator, arch:x86_64, id:9948A7F7-53F5-4EBC-9DCE-538477411FEE, OS:26.2, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5594830Z { platform:iOS Simulator, arch:arm64, id:BEB31241-6C82-4D30-BAE1-B85B03585A1F, OS:18.5, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5595690Z { platform:iOS Simulator, arch:x86_64, id:BEB31241-6C82-4D30-BAE1-B85B03585A1F, OS:18.5, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5596610Z { platform:iOS Simulator, arch:arm64, id:64265629-1917-44D5-8C1B-F532D0965D3F, OS:18.6, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5597460Z { platform:iOS Simulator, arch:x86_64, id:64265629-1917-44D5-8C1B-F532D0965D3F, OS:18.6, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5598390Z { platform:iOS Simulator, arch:arm64, id:81FF43F8-61ED-44E3-80E2-0A63B0C25A2F, OS:26.0.1, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5599250Z { platform:iOS Simulator, arch:x86_64, id:81FF43F8-61ED-44E3-80E2-0A63B0C25A2F, OS:26.0.1, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5600180Z { platform:iOS Simulator, arch:arm64, id:F94F87EA-02DD-41C6-BAA1-78E253134CCE, OS:26.1, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5601830Z { platform:iOS Simulator, arch:x86_64, id:F94F87EA-02DD-41C6-BAA1-78E253134CCE, OS:26.1, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5602720Z { platform:iOS Simulator, arch:arm64, id:C28D1EB8-A185-43F8-A73D-92D847698990, OS:26.2, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5603600Z { platform:iOS Simulator, arch:x86_64, id:C28D1EB8-A185-43F8-A73D-92D847698990, OS:26.2, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5604500Z { platform:iOS Simulator, arch:arm64, id:17872F8E-9436-4A21-BBBE-83B4C167CEBD, OS:18.5, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5605350Z { platform:iOS Simulator, arch:x86_64, id:17872F8E-9436-4A21-BBBE-83B4C167CEBD, OS:18.5, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5606200Z { platform:iOS Simulator, arch:arm64, id:C766E9D0-D2B1-40FE-ADD0-5D5B64B1832C, OS:18.6, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5607120Z { platform:iOS Simulator, arch:x86_64, id:C766E9D0-D2B1-40FE-ADD0-5D5B64B1832C, OS:18.6, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5608180Z { platform:iOS Simulator, arch:arm64, id:71D75086-3172-469C-9AAE-FCC569A6474E, OS:26.0.1, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5609040Z { platform:iOS Simulator, arch:x86_64, id:71D75086-3172-469C-9AAE-FCC569A6474E, OS:26.0.1, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5609980Z { platform:iOS Simulator, arch:arm64, id:7AA748EC-33EE-4AC3-A10D-B535E882510E, OS:26.1, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5611050Z { platform:iOS Simulator, arch:x86_64, id:7AA748EC-33EE-4AC3-A10D-B535E882510E, OS:26.1, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5612250Z { platform:iOS Simulator, arch:arm64, id:065D65AF-D8BA-4402-87EB-0C45E684E338, OS:26.2, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5613090Z { platform:iOS Simulator, arch:x86_64, id:065D65AF-D8BA-4402-87EB-0C45E684E338, OS:26.2, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5614320Z { platform:iOS Simulator, arch:arm64, id:2DE98077-6EFD-4036-A2BE-59CBFCFC302F, OS:18.5, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5615360Z { platform:iOS Simulator, arch:x86_64, id:2DE98077-6EFD-4036-A2BE-59CBFCFC302F, OS:18.5, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5616160Z { platform:iOS Simulator, arch:arm64, id:17E0009B-5F81-4525-A1AF-2347DE0BF3CB, OS:18.6, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5616990Z { platform:iOS Simulator, arch:x86_64, id:17E0009B-5F81-4525-A1AF-2347DE0BF3CB, OS:18.6, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5617860Z { platform:iOS Simulator, arch:arm64, id:77907C6E-A099-42F9-9E94-4E5F6BD243FA, OS:26.0.1, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5618700Z { platform:iOS Simulator, arch:x86_64, id:77907C6E-A099-42F9-9E94-4E5F6BD243FA, OS:26.0.1, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5619460Z { platform:iOS Simulator, arch:arm64, id:7E535352-800A-4799-817D-956EA888BA42, OS:26.1, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5620260Z { platform:iOS Simulator, arch:x86_64, id:7E535352-800A-4799-817D-956EA888BA42, OS:26.1, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5621130Z { platform:iOS Simulator, arch:arm64, id:97558966-DB54-43B8-8B56-7A2B9E6A4A32, OS:26.2, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5621970Z { platform:iOS Simulator, arch:x86_64, id:97558966-DB54-43B8-8B56-7A2B9E6A4A32, OS:26.2, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5622810Z { platform:iOS Simulator, arch:arm64, id:818D45E5-1C16-4E0A-868D-2764FAEED64A, OS:26.0.1, name:iPad Pro 11-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5623730Z { platform:iOS Simulator, arch:x86_64, id:818D45E5-1C16-4E0A-868D-2764FAEED64A, OS:26.0.1, name:iPad Pro 11-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5624730Z { platform:iOS Simulator, arch:arm64, id:1E77C428-BE4A-4010-BD28-A1D16B002487, OS:26.1, name:iPad Pro 11-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5625570Z { platform:iOS Simulator, arch:x86_64, id:1E77C428-BE4A-4010-BD28-A1D16B002487, OS:26.1, name:iPad Pro 11-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5626500Z { platform:iOS Simulator, arch:arm64, id:73F48B3D-9F3E-44C2-B88C-1148E922CF41, OS:26.2, name:iPad Pro 11-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5627410Z { platform:iOS Simulator, arch:x86_64, id:73F48B3D-9F3E-44C2-B88C-1148E922CF41, OS:26.2, name:iPad Pro 11-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5628330Z { platform:iOS Simulator, arch:arm64, id:8A39AC27-E4D0-46E6-A657-3173710C1AE4, OS:18.5, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5629310Z { platform:iOS Simulator, arch:x86_64, id:8A39AC27-E4D0-46E6-A657-3173710C1AE4, OS:18.5, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5630150Z { platform:iOS Simulator, arch:arm64, id:AEE02C72-3CD0-4B5C-BFE0-9BDCFCCF9480, OS:18.6, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5631080Z { platform:iOS Simulator, arch:x86_64, id:AEE02C72-3CD0-4B5C-BFE0-9BDCFCCF9480, OS:18.6, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5631940Z { platform:iOS Simulator, arch:arm64, id:F8F40939-6187-475C-81A9-9370D2E0221D, OS:26.0.1, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5632770Z { platform:iOS Simulator, arch:x86_64, id:F8F40939-6187-475C-81A9-9370D2E0221D, OS:26.0.1, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5633570Z { platform:iOS Simulator, arch:arm64, id:0FBC3EBD-01E0-4302-B7D1-073E4B3F44B8, OS:26.1, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5634480Z { platform:iOS Simulator, arch:x86_64, id:0FBC3EBD-01E0-4302-B7D1-073E4B3F44B8, OS:26.1, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5635330Z { platform:iOS Simulator, arch:arm64, id:FF84FA39-8E49-4EE1-96AD-FFB0B4116F5C, OS:26.2, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5636180Z { platform:iOS Simulator, arch:x86_64, id:FF84FA39-8E49-4EE1-96AD-FFB0B4116F5C, OS:26.2, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5637090Z { platform:iOS Simulator, arch:arm64, id:F4631B09-3461-45B2-91D7-C678D25B7A49, OS:26.0.1, name:iPad Pro 13-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5637970Z { platform:iOS Simulator, arch:x86_64, id:F4631B09-3461-45B2-91D7-C678D25B7A49, OS:26.0.1, name:iPad Pro 13-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5639210Z { platform:iOS Simulator, arch:arm64, id:0BB1F5CB-7E15-47CB-94EE-AA800C03B09E, OS:26.1, name:iPad Pro 13-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5640250Z { platform:iOS Simulator, arch:x86_64, id:0BB1F5CB-7E15-47CB-94EE-AA800C03B09E, OS:26.1, name:iPad Pro 13-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5641660Z { platform:iOS Simulator, arch:arm64, id:6DBFC129-BBF0-456B-B502-A05F8718D8F0, OS:26.2, name:iPad Pro 13-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5642610Z { platform:iOS Simulator, arch:x86_64, id:6DBFC129-BBF0-456B-B502-A05F8718D8F0, OS:26.2, name:iPad Pro 13-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5643460Z { platform:iOS Simulator, arch:arm64, id:8608A947-9954-40FD-81C8-8E62F8C2B4A1, OS:18.5, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5644370Z { platform:iOS Simulator, arch:x86_64, id:8608A947-9954-40FD-81C8-8E62F8C2B4A1, OS:18.5, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5645270Z { platform:iOS Simulator, arch:arm64, id:6B0D400F-A18F-464A-954A-F9A924A2EFB6, OS:18.6, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5646090Z { platform:iOS Simulator, arch:x86_64, id:6B0D400F-A18F-464A-954A-F9A924A2EFB6, OS:18.6, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5646930Z { platform:iOS Simulator, arch:arm64, id:682A7A45-B317-4EC6-BDF1-3D06D8E3A1A5, OS:26.0.1, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5647840Z { platform:iOS Simulator, arch:x86_64, id:682A7A45-B317-4EC6-BDF1-3D06D8E3A1A5, OS:26.0.1, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5648740Z { platform:iOS Simulator, arch:arm64, id:4F487288-D327-49CE-A9DA-A5E30F819285, OS:26.1, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5649590Z { platform:iOS Simulator, arch:x86_64, id:4F487288-D327-49CE-A9DA-A5E30F819285, OS:26.1, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5650450Z { platform:iOS Simulator, arch:arm64, id:DF94D16F-9173-4C77-9ACF-94A2B6F75DA8, OS:26.2, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5651270Z { platform:iOS Simulator, arch:x86_64, id:DF94D16F-9173-4C77-9ACF-94A2B6F75DA8, OS:26.2, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5652150Z { platform:iOS Simulator, arch:arm64, id:56F57FDF-B4A7-4D1C-8649-FE9C1F84781A, OS:18.5, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5652930Z { platform:iOS Simulator, arch:x86_64, id:56F57FDF-B4A7-4D1C-8649-FE9C1F84781A, OS:18.5, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5653750Z { platform:iOS Simulator, arch:arm64, id:B85B4FD0-AAC6-491A-9DF8-6F9A1ED8F60B, OS:18.6, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5654520Z { platform:iOS Simulator, arch:x86_64, id:B85B4FD0-AAC6-491A-9DF8-6F9A1ED8F60B, OS:18.6, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5655300Z { platform:iOS Simulator, arch:arm64, id:4F286A20-192C-4139-A616-23C418ADC441, OS:26.0.1, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5656160Z { platform:iOS Simulator, arch:x86_64, id:4F286A20-192C-4139-A616-23C418ADC441, OS:26.0.1, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5656930Z { platform:iOS Simulator, arch:arm64, id:2542750B-F992-42B6-8AC1-E9508ECFE072, OS:26.1, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5657730Z { platform:iOS Simulator, arch:x86_64, id:2542750B-F992-42B6-8AC1-E9508ECFE072, OS:26.1, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5658410Z { platform:iOS Simulator, arch:arm64, id:23328548-B8F9-4AE1-A769-1B69FA74081F, OS:26.2, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5659150Z { platform:iOS Simulator, arch:x86_64, id:23328548-B8F9-4AE1-A769-1B69FA74081F, OS:26.2, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5659980Z { platform:iOS Simulator, arch:arm64, id:6BAD7DFC-3C5D-43F8-98F8-3D83777560FD, OS:18.5, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5660730Z { platform:iOS Simulator, arch:x86_64, id:6BAD7DFC-3C5D-43F8-98F8-3D83777560FD, OS:18.5, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5661530Z { platform:iOS Simulator, arch:arm64, id:5C30ACCE-FEE0-494D-99A6-72A60F65B749, OS:18.6, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5662330Z { platform:iOS Simulator, arch:x86_64, id:5C30ACCE-FEE0-494D-99A6-72A60F65B749, OS:18.6, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5663140Z { platform:iOS Simulator, arch:arm64, id:76AD4ACA-C156-4A95-9F0A-4AA0AD7AC47E, OS:26.0.1, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5664250Z { platform:iOS Simulator, arch:x86_64, id:76AD4ACA-C156-4A95-9F0A-4AA0AD7AC47E, OS:26.0.1, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5665260Z { platform:iOS Simulator, arch:arm64, id:EF04FD89-FB96-4437-B7A6-744448F32CF6, OS:26.1, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5666130Z { platform:iOS Simulator, arch:x86_64, id:EF04FD89-FB96-4437-B7A6-744448F32CF6, OS:26.1, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5666850Z { platform:iOS Simulator, arch:arm64, id:A18BDD55-D3D1-4C43-A66D-77981CAC3D23, OS:26.2, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5667560Z { platform:iOS Simulator, arch:x86_64, id:A18BDD55-D3D1-4C43-A66D-77981CAC3D23, OS:26.2, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5668420Z { platform:iOS Simulator, arch:arm64, id:B82C36A4-EC52-466B-BEB1-D42321DE523D, OS:18.5, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5669310Z { platform:iOS Simulator, arch:x86_64, id:B82C36A4-EC52-466B-BEB1-D42321DE523D, OS:18.5, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5670180Z { platform:iOS Simulator, arch:arm64, id:FE64F297-BFA1-4D8B-BF2D-66448A693337, OS:18.6, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5671060Z { platform:iOS Simulator, arch:x86_64, id:FE64F297-BFA1-4D8B-BF2D-66448A693337, OS:18.6, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5671860Z { platform:iOS Simulator, arch:arm64, id:9BA451C3-8BE9-4965-A32B-C97E9CA1FAC0, OS:26.0.1, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5672690Z { platform:iOS Simulator, arch:x86_64, id:9BA451C3-8BE9-4965-A32B-C97E9CA1FAC0, OS:26.0.1, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5673510Z { platform:iOS Simulator, arch:arm64, id:14C32FC6-056E-4CC3-876A-E38EE7072B29, OS:26.1, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5674290Z { platform:iOS Simulator, arch:x86_64, id:14C32FC6-056E-4CC3-876A-E38EE7072B29, OS:26.1, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5675080Z { platform:iOS Simulator, arch:arm64, id:DB9D2865-3697-4746-884D-AF20FFC8E96A, OS:26.2, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5675940Z { platform:iOS Simulator, arch:x86_64, id:DB9D2865-3697-4746-884D-AF20FFC8E96A, OS:26.2, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5676680Z { platform:iOS Simulator, arch:arm64, id:7607CC72-B472-49A8-A456-693175AD50C4, OS:18.5, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5677570Z { platform:iOS Simulator, arch:x86_64, id:7607CC72-B472-49A8-A456-693175AD50C4, OS:18.5, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5678350Z { platform:iOS Simulator, arch:arm64, id:79BA5E66-1C0E-4E2E-A757-472A4671412A, OS:18.6, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5679080Z { platform:iOS Simulator, arch:x86_64, id:79BA5E66-1C0E-4E2E-A757-472A4671412A, OS:18.6, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5679880Z { platform:iOS Simulator, arch:arm64, id:7EB36486-EB4F-492D-AA25-F13F5AE2558B, OS:26.0.1, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5680640Z { platform:iOS Simulator, arch:x86_64, id:7EB36486-EB4F-492D-AA25-F13F5AE2558B, OS:26.0.1, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5681470Z { platform:iOS Simulator, arch:arm64, id:4D6EAE95-D9E5-4343-ACF6-54BBD1AC5FD5, OS:26.1, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5682340Z { platform:iOS Simulator, arch:x86_64, id:4D6EAE95-D9E5-4343-ACF6-54BBD1AC5FD5, OS:26.1, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5683240Z { platform:iOS Simulator, arch:arm64, id:BC1E9105-DFA8-418E-B3EF-EF2E90489817, OS:26.2, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5684070Z { platform:iOS Simulator, arch:x86_64, id:BC1E9105-DFA8-418E-B3EF-EF2E90489817, OS:26.2, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5684930Z { platform:iOS Simulator, arch:arm64, id:679DB585-C72C-4FC5-804D-153944DF0A6F, OS:18.5, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5685700Z { platform:iOS Simulator, arch:x86_64, id:679DB585-C72C-4FC5-804D-153944DF0A6F, OS:18.5, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5686450Z { platform:iOS Simulator, arch:arm64, id:F248267C-6C7E-4752-B627-8E1407A0AB92, OS:18.6, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5687300Z { platform:iOS Simulator, arch:x86_64, id:F248267C-6C7E-4752-B627-8E1407A0AB92, OS:18.6, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5688260Z { platform:iOS Simulator, arch:arm64, id:34C14E96-8A6F-4818-853A-54E010E1391A, OS:26.0.1, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5689190Z { platform:iOS Simulator, arch:x86_64, id:34C14E96-8A6F-4818-853A-54E010E1391A, OS:26.0.1, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5689950Z { platform:iOS Simulator, arch:arm64, id:355A147A-2459-4D16-9350-90191C41ECCE, OS:26.1, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5690760Z { platform:iOS Simulator, arch:x86_64, id:355A147A-2459-4D16-9350-90191C41ECCE, OS:26.1, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5691630Z { platform:iOS Simulator, arch:arm64, id:868A30DC-E573-40BC-90E5-3B530A530B23, OS:26.2, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5692400Z { platform:iOS Simulator, arch:x86_64, id:868A30DC-E573-40BC-90E5-3B530A530B23, OS:26.2, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5693080Z { platform:iOS Simulator, arch:arm64, id:E9565FE2-ACE0-4805-8655-C0AE78642343, OS:26.0.1, name:iPhone 17 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5693900Z { platform:iOS Simulator, arch:x86_64, id:E9565FE2-ACE0-4805-8655-C0AE78642343, OS:26.0.1, name:iPhone 17 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5694710Z { platform:iOS Simulator, arch:arm64, id:66664B93-4059-4F6B-873F-CE952FDFC72B, OS:26.1, name:iPhone 17 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5695480Z { platform:iOS Simulator, arch:x86_64, id:66664B93-4059-4F6B-873F-CE952FDFC72B, OS:26.1, name:iPhone 17 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5696290Z { platform:iOS Simulator, arch:arm64, id:A8C09C37-302A-40CA-A1BA-AF68F46EF058, OS:26.2, name:iPhone 17 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5697010Z { platform:iOS Simulator, arch:x86_64, id:A8C09C37-302A-40CA-A1BA-AF68F46EF058, OS:26.2, name:iPhone 17 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5697710Z { platform:iOS Simulator, arch:arm64, id:6A907836-EAD6-46B6-A859-0FF2986BFDCB, OS:26.0.1, name:iPhone 17 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5698490Z { platform:iOS Simulator, arch:x86_64, id:6A907836-EAD6-46B6-A859-0FF2986BFDCB, OS:26.0.1, name:iPhone 17 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5699200Z { platform:iOS Simulator, arch:arm64, id:3C8FC54B-47D7-4289-95E1-693973B7FFB7, OS:26.1, name:iPhone 17 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5699910Z { platform:iOS Simulator, arch:x86_64, id:3C8FC54B-47D7-4289-95E1-693973B7FFB7, OS:26.1, name:iPhone 17 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5700640Z { platform:iOS Simulator, arch:arm64, id:CB3DAAF1-A853-4818-BFF6-1CE5393DBEE7, OS:26.2, name:iPhone 17 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5701370Z { platform:iOS Simulator, arch:x86_64, id:CB3DAAF1-A853-4818-BFF6-1CE5393DBEE7, OS:26.2, name:iPhone 17 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5702130Z { platform:iOS Simulator, arch:arm64, id:95B471A1-3115-4194-B549-6EFF9EB3B557, OS:26.0.1, name:iPhone 17 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5703060Z { platform:iOS Simulator, arch:x86_64, id:95B471A1-3115-4194-B549-6EFF9EB3B557, OS:26.0.1, name:iPhone 17 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5703980Z { platform:iOS Simulator, arch:arm64, id:2EF0AE8D-625D-4B2D-B617-35039E74ED01, OS:26.1, name:iPhone 17 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5704820Z { platform:iOS Simulator, arch:x86_64, id:2EF0AE8D-625D-4B2D-B617-35039E74ED01, OS:26.1, name:iPhone 17 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5705620Z { platform:iOS Simulator, arch:arm64, id:B48F159B-2ECB-42EA-902B-C41DB05D731F, OS:26.2, name:iPhone 17 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5706440Z { platform:iOS Simulator, arch:x86_64, id:B48F159B-2ECB-42EA-902B-C41DB05D731F, OS:26.2, name:iPhone 17 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5707160Z { platform:iOS Simulator, arch:arm64, id:781D4B09-5D58-4920-9E8A-5076D89E281C, OS:26.0.1, name:iPhone Air }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5707870Z { platform:iOS Simulator, arch:x86_64, id:781D4B09-5D58-4920-9E8A-5076D89E281C, OS:26.0.1, name:iPhone Air }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5708580Z { platform:iOS Simulator, arch:arm64, id:DED46669-C389-48AC-8E0B-E0C78019B93B, OS:26.1, name:iPhone Air }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5709390Z { platform:iOS Simulator, arch:x86_64, id:DED46669-C389-48AC-8E0B-E0C78019B93B, OS:26.1, name:iPhone Air }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5710110Z { platform:iOS Simulator, arch:arm64, id:124B4EE1-EDC0-497A-AB8A-4B452F4E9DBA, OS:26.2, name:iPhone Air }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5712200Z { platform:iOS Simulator, arch:x86_64, id:124B4EE1-EDC0-497A-AB8A-4B452F4E9DBA, OS:26.2, name:iPhone Air }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5713170Z { platform:iOS Simulator, arch:arm64, id:831B8B67-222F-4C3B-B9EB-3D9FFE23DE9B, OS:18.5, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5714320Z { platform:iOS Simulator, arch:x86_64, id:831B8B67-222F-4C3B-B9EB-3D9FFE23DE9B, OS:18.5, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5715320Z { platform:iOS Simulator, arch:arm64, id:2A0E5B43-5D4A-4FCB-9128-7767BA060033, OS:18.6, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5716200Z { platform:iOS Simulator, arch:x86_64, id:2A0E5B43-5D4A-4FCB-9128-7767BA060033, OS:18.6, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5717120Z { platform:iOS Simulator, arch:arm64, id:6675F575-B9E8-4298-875C-15404FC794EE, OS:26.0.1, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5717970Z { platform:iOS Simulator, arch:x86_64, id:6675F575-B9E8-4298-875C-15404FC794EE, OS:26.0.1, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5718780Z { platform:iOS Simulator, arch:arm64, id:2D581108-1564-4A1A-8E4B-64883ED2EA48, OS:26.1, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5719620Z { platform:iOS Simulator, arch:x86_64, id:2D581108-1564-4A1A-8E4B-64883ED2EA48, OS:26.1, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5720500Z { platform:iOS Simulator, arch:arm64, id:CF720595-B9AD-4665-A13E-178BEF3198C3, OS:26.2, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:37.5721350Z { platform:iOS Simulator, arch:x86_64, id:CF720595-B9AD-4665-A13E-178BEF3198C3, OS:26.2, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.0650830Z ComputePackagePrebuildTargetDependencyGraph
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.2167690Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.2268290Z CreateBuildRequest
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.2368390Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.2469550Z SendProjectDescription
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.2569450Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.2670200Z CreateBuildOperation
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.2770290Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.2971520Z ** CLEAN SUCCEEDED **
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3017290Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3114530Z --- xcodebuild: WARNING: Using the first of multiple matching destinations:
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3117550Z { platform:macOS, arch:arm64, variant:Designed for [iPad,iPhone], id:319845240024004e454599ef2e5f6828fc693a60, name:My Mac }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3138280Z { platform:iOS, id:dvtdevice-DVTiPhonePlaceholder-iphoneos:placeholder, name:Any iOS Device }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3190480Z { platform:iOS Simulator, id:dvtdevice-DVTiOSDeviceSimulatorPlaceholder-iphonesimulator:placeholder, name:Any iOS Simulator Device }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3292470Z { platform:visionOS Simulator, arch:arm64, variant:Designed for [iPad,iPhone], id:EA819166-4014-4B86-ADC6-8FF0A6B7BD4F, OS:2.3, name:Apple Vision Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3293280Z ComputePackagePrebuildTargetDependencyGraph
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3394550Z { platform:visionOS Simulator, arch:arm64, variant:Designed for [iPad,iPhone], id:F287A241-2B8E-40D7-9F83-83B390A7FD0E, OS:2.4, name:Apple Vision Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3492820Z { platform:visionOS Simulator, arch:arm64, variant:Designed for [iPad,iPhone], id:CF27E369-6850-4F5A-BB53-A5F9C0D9910F, OS:2.5, name:Apple Vision Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3525120Z { platform:visionOS Simulator, arch:arm64, variant:Designed for [iPad,iPhone], id:CF6CB8A2-E8C9-43BE-9B6C-6BD38998EABB, OS:26.1, name:Apple Vision Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3569810Z { platform:visionOS Simulator, arch:arm64, variant:Designed for [iPad,iPhone], id:F39A5931-2951-49D8-B51D-9D639EA488C1, OS:26.2, name:Apple Vision Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3575280Z { platform:iOS Simulator, arch:arm64, id:1ECDFEDA-97EE-4DCC-B7E7-EC00E32C989D, OS:18.5, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3580790Z { platform:iOS Simulator, arch:x86_64, id:1ECDFEDA-97EE-4DCC-B7E7-EC00E32C989D, OS:18.5, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3585100Z { platform:iOS Simulator, arch:arm64, id:280E92A4-63FD-4444-93FF-709A5A05EA3A, OS:18.6, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3700300Z { platform:iOS Simulator, arch:x86_64, id:280E92A4-63FD-4444-93FF-709A5A05EA3A, OS:18.6, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3819040Z { platform:iOS Simulator, arch:arm64, id:9BC85DE6-A0C6-4E3E-BE8C-10CF0B2B40CE, OS:26.0.1, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3971210Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.3976060Z { platform:iOS Simulator, arch:x86_64, id:9BC85DE6-A0C6-4E3E-BE8C-10CF0B2B40CE, OS:26.0.1, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4079240Z { platform:iOS Simulator, arch:arm64, id:C610E264-0BA8-484F-934C-D7B070609DC5, OS:26.1, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4079730Z Prepare packages
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4079870Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4180740Z { platform:iOS Simulator, arch:x86_64, id:C610E264-0BA8-484F-934C-D7B070609DC5, OS:26.1, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4181420Z CreateBuildRequest
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4283230Z { platform:iOS Simulator, arch:arm64, id:7D5D551E-8839-48F8-92E0-91F86CF81618, OS:26.2, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4283790Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4382700Z { platform:iOS Simulator, arch:x86_64, id:7D5D551E-8839-48F8-92E0-91F86CF81618, OS:26.2, name:iPad (10th generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4383190Z SendProjectDescription
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4484550Z { platform:iOS Simulator, arch:arm64, id:35A3B047-64DA-408E-A052-9C9D4E1379C9, OS:18.5, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4485010Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4586030Z { platform:iOS Simulator, arch:x86_64, id:35A3B047-64DA-408E-A052-9C9D4E1379C9, OS:18.5, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4586500Z CreateBuildOperation
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4678550Z { platform:iOS Simulator, arch:arm64, id:658435D0-B8F6-4BDD-8DA4-641B1BACB948, OS:18.6, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4678960Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4732170Z { platform:iOS Simulator, arch:x86_64, id:658435D0-B8F6-4BDD-8DA4-641B1BACB948, OS:18.6, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4732740Z ComputeTargetDependencyGraph
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4743750Z { platform:iOS Simulator, arch:arm64, id:4E7A09A6-96A6-4FFC-9108-B0ED87CDA5C3, OS:26.0.1, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4753020Z { platform:iOS Simulator, arch:x86_64, id:4E7A09A6-96A6-4FFC-9108-B0ED87CDA5C3, OS:26.0.1, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4854260Z { platform:iOS Simulator, arch:arm64, id:7AF1DE24-0AA0-40EF-B979-D4F88808C65C, OS:26.1, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.4953170Z { platform:iOS Simulator, arch:x86_64, id:7AF1DE24-0AA0-40EF-B979-D4F88808C65C, OS:26.1, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5030130Z { platform:iOS Simulator, arch:arm64, id:A1FF2408-45BA-4093-BD1E-1102685DED0C, OS:26.2, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5037790Z note: Building targets in dependency order
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5049350Z { platform:iOS Simulator, arch:x86_64, id:A1FF2408-45BA-4093-BD1E-1102685DED0C, OS:26.2, name:iPad (A16) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5050120Z note: Target dependency graph (7 targets)
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5050880Z { platform:iOS Simulator, arch:arm64, id:5AB7E097-44FF-4C41-AC82-CBFC746A876A, OS:18.5, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5051580Z     Target 'App' in project 'App'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5053850Z { platform:iOS Simulator, arch:x86_64, id:5AB7E097-44FF-4C41-AC82-CBFC746A876A, OS:18.5, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5054840Z         Γ₧£ Explicit dependency on target 'CapApp-SPM' in project 'CapApp-SPM'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5056120Z { platform:iOS Simulator, arch:arm64, id:4DC8057D-2832-4BF4-82BC-EBB5ADDCDAE0, OS:18.6, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5065180Z     Target 'CapApp-SPM' in project 'CapApp-SPM'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5072190Z { platform:iOS Simulator, arch:x86_64, id:4DC8057D-2832-4BF4-82BC-EBB5ADDCDAE0, OS:18.6, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5073130Z         Γ₧£ Explicit dependency on target 'CapApp-SPM' in project 'CapApp-SPM'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5074100Z { platform:iOS Simulator, arch:arm64, id:A7BAEC98-0634-4AC6-BF3E-523817F76C83, OS:26.0.1, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5082530Z         Γ₧£ Explicit dependency on target 'Capacitor' in project 'capacitor-swift-pm'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5083630Z { platform:iOS Simulator, arch:x86_64, id:A7BAEC98-0634-4AC6-BF3E-523817F76C83, OS:26.0.1, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5085230Z         Γ₧£ Explicit dependency on target 'Cordova' in project 'capacitor-swift-pm'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5086390Z { platform:iOS Simulator, arch:arm64, id:6AA2E222-39C2-45AD-A1E5-1B117BD5D88B, OS:26.1, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5087190Z         Γ₧£ Explicit dependency on target 'CapacitorCamera' in project 'CapacitorCamera'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5124700Z { platform:iOS Simulator, arch:x86_64, id:6AA2E222-39C2-45AD-A1E5-1B117BD5D88B, OS:26.1, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5131210Z     Target 'CapApp-SPM' in project 'CapApp-SPM'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5153390Z { platform:iOS Simulator, arch:arm64, id:ACF2EBA3-9D4A-46E8-A655-B48694AF9267, OS:26.2, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5162020Z         Γ₧£ Explicit dependency on target 'Capacitor' in project 'capacitor-swift-pm'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5162950Z { platform:iOS Simulator, arch:x86_64, id:ACF2EBA3-9D4A-46E8-A655-B48694AF9267, OS:26.2, name:iPad Air 11-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5163680Z         Γ₧£ Explicit dependency on target 'Cordova' in project 'capacitor-swift-pm'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5164600Z { platform:iOS Simulator, arch:arm64, id:0D92B28F-F22A-4AE4-A53A-C88F25E7122C, OS:18.5, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5166080Z         Γ₧£ Explicit dependency on target 'CapacitorCamera' in project 'CapacitorCamera'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5168550Z { platform:iOS Simulator, arch:x86_64, id:0D92B28F-F22A-4AE4-A53A-C88F25E7122C, OS:18.5, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5169180Z     Target 'CapacitorCamera' in project 'CapacitorCamera'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5170050Z { platform:iOS Simulator, arch:arm64, id:3FA4D7AA-B3E3-44EE-A08B-645F3F048428, OS:18.6, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5171760Z         Γ₧£ Explicit dependency on target 'CameraPlugin' in project 'CapacitorCamera'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5172590Z { platform:iOS Simulator, arch:x86_64, id:3FA4D7AA-B3E3-44EE-A08B-645F3F048428, OS:18.6, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5173280Z         Γ₧£ Explicit dependency on target 'Capacitor' in project 'capacitor-swift-pm'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5174180Z { platform:iOS Simulator, arch:arm64, id:DE4E45EB-A773-4098-AD1B-7FB9446738ED, OS:26.0.1, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5175390Z         Γ₧£ Explicit dependency on target 'Cordova' in project 'capacitor-swift-pm'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5176570Z { platform:iOS Simulator, arch:x86_64, id:DE4E45EB-A773-4098-AD1B-7FB9446738ED, OS:26.0.1, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5179770Z     Target 'CameraPlugin' in project 'CapacitorCamera'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5180740Z { platform:iOS Simulator, arch:arm64, id:10BD33C2-8177-4400-84F3-E3B1E64D5581, OS:26.1, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5181520Z         Γ₧£ Explicit dependency on target 'Capacitor' in project 'capacitor-swift-pm'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5182430Z { platform:iOS Simulator, arch:x86_64, id:10BD33C2-8177-4400-84F3-E3B1E64D5581, OS:26.1, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5183510Z         Γ₧£ Explicit dependency on target 'Cordova' in project 'capacitor-swift-pm'
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5184640Z { platform:iOS Simulator, arch:arm64, id:9948A7F7-53F5-4EBC-9DCE-538477411FEE, OS:26.2, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5188400Z     Target 'Cordova' in project 'capacitor-swift-pm' (no dependencies)
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5192770Z { platform:iOS Simulator, arch:x86_64, id:9948A7F7-53F5-4EBC-9DCE-538477411FEE, OS:26.2, name:iPad Air 11-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5193390Z     Target 'Capacitor' in project 'capacitor-swift-pm' (no dependencies)
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5195610Z { platform:iOS Simulator, arch:arm64, id:BEB31241-6C82-4D30-BAE1-B85B03585A1F, OS:18.5, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5196010Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5196710Z { platform:iOS Simulator, arch:x86_64, id:BEB31241-6C82-4D30-BAE1-B85B03585A1F, OS:18.5, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5203360Z GatherProvisioningInputs
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5207090Z { platform:iOS Simulator, arch:arm64, id:64265629-1917-44D5-8C1B-F532D0965D3F, OS:18.6, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5208130Z { platform:iOS Simulator, arch:x86_64, id:64265629-1917-44D5-8C1B-F532D0965D3F, OS:18.6, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5209420Z { platform:iOS Simulator, arch:arm64, id:81FF43F8-61ED-44E3-80E2-0A63B0C25A2F, OS:26.0.1, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5210390Z { platform:iOS Simulator, arch:x86_64, id:81FF43F8-61ED-44E3-80E2-0A63B0C25A2F, OS:26.0.1, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5211700Z { platform:iOS Simulator, arch:arm64, id:F94F87EA-02DD-41C6-BAA1-78E253134CCE, OS:26.1, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5212620Z { platform:iOS Simulator, arch:x86_64, id:F94F87EA-02DD-41C6-BAA1-78E253134CCE, OS:26.1, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5213530Z { platform:iOS Simulator, arch:arm64, id:C28D1EB8-A185-43F8-A73D-92D847698990, OS:26.2, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5214440Z { platform:iOS Simulator, arch:x86_64, id:C28D1EB8-A185-43F8-A73D-92D847698990, OS:26.2, name:iPad Air 13-inch (M2) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5215360Z { platform:iOS Simulator, arch:arm64, id:17872F8E-9436-4A21-BBBE-83B4C167CEBD, OS:18.5, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5216330Z { platform:iOS Simulator, arch:x86_64, id:17872F8E-9436-4A21-BBBE-83B4C167CEBD, OS:18.5, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5217250Z { platform:iOS Simulator, arch:arm64, id:C766E9D0-D2B1-40FE-ADD0-5D5B64B1832C, OS:18.6, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5218990Z { platform:iOS Simulator, arch:x86_64, id:C766E9D0-D2B1-40FE-ADD0-5D5B64B1832C, OS:18.6, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5223500Z { platform:iOS Simulator, arch:arm64, id:71D75086-3172-469C-9AAE-FCC569A6474E, OS:26.0.1, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5247870Z { platform:iOS Simulator, arch:x86_64, id:71D75086-3172-469C-9AAE-FCC569A6474E, OS:26.0.1, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5264560Z { platform:iOS Simulator, arch:arm64, id:7AA748EC-33EE-4AC3-A10D-B535E882510E, OS:26.1, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5268760Z { platform:iOS Simulator, arch:x86_64, id:7AA748EC-33EE-4AC3-A10D-B535E882510E, OS:26.1, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5276540Z { platform:iOS Simulator, arch:arm64, id:065D65AF-D8BA-4402-87EB-0C45E684E338, OS:26.2, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5279980Z { platform:iOS Simulator, arch:x86_64, id:065D65AF-D8BA-4402-87EB-0C45E684E338, OS:26.2, name:iPad Air 13-inch (M3) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5283930Z { platform:iOS Simulator, arch:arm64, id:2DE98077-6EFD-4036-A2BE-59CBFCFC302F, OS:18.5, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5385320Z { platform:iOS Simulator, arch:x86_64, id:2DE98077-6EFD-4036-A2BE-59CBFCFC302F, OS:18.5, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5463060Z { platform:iOS Simulator, arch:arm64, id:17E0009B-5F81-4525-A1AF-2347DE0BF3CB, OS:18.6, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5464120Z { platform:iOS Simulator, arch:x86_64, id:17E0009B-5F81-4525-A1AF-2347DE0BF3CB, OS:18.6, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5465030Z { platform:iOS Simulator, arch:arm64, id:77907C6E-A099-42F9-9E94-4E5F6BD243FA, OS:26.0.1, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5473330Z { platform:iOS Simulator, arch:x86_64, id:77907C6E-A099-42F9-9E94-4E5F6BD243FA, OS:26.0.1, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5474310Z { platform:iOS Simulator, arch:arm64, id:7E535352-800A-4799-817D-956EA888BA42, OS:26.1, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5475240Z { platform:iOS Simulator, arch:x86_64, id:7E535352-800A-4799-817D-956EA888BA42, OS:26.1, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5476130Z { platform:iOS Simulator, arch:arm64, id:97558966-DB54-43B8-8B56-7A2B9E6A4A32, OS:26.2, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5477020Z { platform:iOS Simulator, arch:x86_64, id:97558966-DB54-43B8-8B56-7A2B9E6A4A32, OS:26.2, name:iPad Pro 11-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5478380Z { platform:iOS Simulator, arch:arm64, id:818D45E5-1C16-4E0A-868D-2764FAEED64A, OS:26.0.1, name:iPad Pro 11-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5479550Z { platform:iOS Simulator, arch:x86_64, id:818D45E5-1C16-4E0A-868D-2764FAEED64A, OS:26.0.1, name:iPad Pro 11-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5480460Z { platform:iOS Simulator, arch:arm64, id:1E77C428-BE4A-4010-BD28-A1D16B002487, OS:26.1, name:iPad Pro 11-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5481380Z { platform:iOS Simulator, arch:x86_64, id:1E77C428-BE4A-4010-BD28-A1D16B002487, OS:26.1, name:iPad Pro 11-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5482260Z { platform:iOS Simulator, arch:arm64, id:73F48B3D-9F3E-44C2-B88C-1148E922CF41, OS:26.2, name:iPad Pro 11-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5483150Z { platform:iOS Simulator, arch:x86_64, id:73F48B3D-9F3E-44C2-B88C-1148E922CF41, OS:26.2, name:iPad Pro 11-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5484030Z { platform:iOS Simulator, arch:arm64, id:8A39AC27-E4D0-46E6-A657-3173710C1AE4, OS:18.5, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5484910Z { platform:iOS Simulator, arch:x86_64, id:8A39AC27-E4D0-46E6-A657-3173710C1AE4, OS:18.5, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5485790Z { platform:iOS Simulator, arch:arm64, id:AEE02C72-3CD0-4B5C-BFE0-9BDCFCCF9480, OS:18.6, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5486680Z { platform:iOS Simulator, arch:x86_64, id:AEE02C72-3CD0-4B5C-BFE0-9BDCFCCF9480, OS:18.6, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5487570Z { platform:iOS Simulator, arch:arm64, id:F8F40939-6187-475C-81A9-9370D2E0221D, OS:26.0.1, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5488480Z { platform:iOS Simulator, arch:x86_64, id:F8F40939-6187-475C-81A9-9370D2E0221D, OS:26.0.1, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5489400Z { platform:iOS Simulator, arch:arm64, id:0FBC3EBD-01E0-4302-B7D1-073E4B3F44B8, OS:26.1, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5490340Z { platform:iOS Simulator, arch:x86_64, id:0FBC3EBD-01E0-4302-B7D1-073E4B3F44B8, OS:26.1, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5491240Z { platform:iOS Simulator, arch:arm64, id:FF84FA39-8E49-4EE1-96AD-FFB0B4116F5C, OS:26.2, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5492220Z { platform:iOS Simulator, arch:x86_64, id:FF84FA39-8E49-4EE1-96AD-FFB0B4116F5C, OS:26.2, name:iPad Pro 13-inch (M4) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5493150Z { platform:iOS Simulator, arch:arm64, id:F4631B09-3461-45B2-91D7-C678D25B7A49, OS:26.0.1, name:iPad Pro 13-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5494060Z { platform:iOS Simulator, arch:x86_64, id:F4631B09-3461-45B2-91D7-C678D25B7A49, OS:26.0.1, name:iPad Pro 13-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5495030Z { platform:iOS Simulator, arch:arm64, id:0BB1F5CB-7E15-47CB-94EE-AA800C03B09E, OS:26.1, name:iPad Pro 13-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5495840Z { platform:iOS Simulator, arch:x86_64, id:0BB1F5CB-7E15-47CB-94EE-AA800C03B09E, OS:26.1, name:iPad Pro 13-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5496610Z { platform:iOS Simulator, arch:arm64, id:6DBFC129-BBF0-456B-B502-A05F8718D8F0, OS:26.2, name:iPad Pro 13-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5497560Z { platform:iOS Simulator, arch:x86_64, id:6DBFC129-BBF0-456B-B502-A05F8718D8F0, OS:26.2, name:iPad Pro 13-inch (M5) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5498370Z { platform:iOS Simulator, arch:arm64, id:8608A947-9954-40FD-81C8-8E62F8C2B4A1, OS:18.5, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5499120Z { platform:iOS Simulator, arch:x86_64, id:8608A947-9954-40FD-81C8-8E62F8C2B4A1, OS:18.5, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5499870Z { platform:iOS Simulator, arch:arm64, id:6B0D400F-A18F-464A-954A-F9A924A2EFB6, OS:18.6, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5500640Z { platform:iOS Simulator, arch:x86_64, id:6B0D400F-A18F-464A-954A-F9A924A2EFB6, OS:18.6, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5501390Z { platform:iOS Simulator, arch:arm64, id:682A7A45-B317-4EC6-BDF1-3D06D8E3A1A5, OS:26.0.1, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5502140Z { platform:iOS Simulator, arch:x86_64, id:682A7A45-B317-4EC6-BDF1-3D06D8E3A1A5, OS:26.0.1, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5503140Z { platform:iOS Simulator, arch:arm64, id:4F487288-D327-49CE-A9DA-A5E30F819285, OS:26.1, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5503960Z { platform:iOS Simulator, arch:x86_64, id:4F487288-D327-49CE-A9DA-A5E30F819285, OS:26.1, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5504700Z { platform:iOS Simulator, arch:arm64, id:DF94D16F-9173-4C77-9ACF-94A2B6F75DA8, OS:26.2, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5505440Z { platform:iOS Simulator, arch:x86_64, id:DF94D16F-9173-4C77-9ACF-94A2B6F75DA8, OS:26.2, name:iPad mini (A17 Pro) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5506140Z { platform:iOS Simulator, arch:arm64, id:56F57FDF-B4A7-4D1C-8649-FE9C1F84781A, OS:18.5, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5506830Z { platform:iOS Simulator, arch:x86_64, id:56F57FDF-B4A7-4D1C-8649-FE9C1F84781A, OS:18.5, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5507500Z { platform:iOS Simulator, arch:arm64, id:B85B4FD0-AAC6-491A-9DF8-6F9A1ED8F60B, OS:18.6, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5508190Z { platform:iOS Simulator, arch:x86_64, id:B85B4FD0-AAC6-491A-9DF8-6F9A1ED8F60B, OS:18.6, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5508870Z { platform:iOS Simulator, arch:arm64, id:4F286A20-192C-4139-A616-23C418ADC441, OS:26.0.1, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5509550Z { platform:iOS Simulator, arch:x86_64, id:4F286A20-192C-4139-A616-23C418ADC441, OS:26.0.1, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5510230Z { platform:iOS Simulator, arch:arm64, id:2542750B-F992-42B6-8AC1-E9508ECFE072, OS:26.1, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5510910Z { platform:iOS Simulator, arch:x86_64, id:2542750B-F992-42B6-8AC1-E9508ECFE072, OS:26.1, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5511590Z { platform:iOS Simulator, arch:arm64, id:23328548-B8F9-4AE1-A769-1B69FA74081F, OS:26.2, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5512270Z { platform:iOS Simulator, arch:x86_64, id:23328548-B8F9-4AE1-A769-1B69FA74081F, OS:26.2, name:iPhone 16 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5512970Z { platform:iOS Simulator, arch:arm64, id:6BAD7DFC-3C5D-43F8-98F8-3D83777560FD, OS:18.5, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5513710Z { platform:iOS Simulator, arch:x86_64, id:6BAD7DFC-3C5D-43F8-98F8-3D83777560FD, OS:18.5, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5514440Z { platform:iOS Simulator, arch:arm64, id:5C30ACCE-FEE0-494D-99A6-72A60F65B749, OS:18.6, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5515240Z { platform:iOS Simulator, arch:x86_64, id:5C30ACCE-FEE0-494D-99A6-72A60F65B749, OS:18.6, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5515980Z { platform:iOS Simulator, arch:arm64, id:76AD4ACA-C156-4A95-9F0A-4AA0AD7AC47E, OS:26.0.1, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5516730Z { platform:iOS Simulator, arch:x86_64, id:76AD4ACA-C156-4A95-9F0A-4AA0AD7AC47E, OS:26.0.1, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5517450Z { platform:iOS Simulator, arch:arm64, id:EF04FD89-FB96-4437-B7A6-744448F32CF6, OS:26.1, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5518160Z { platform:iOS Simulator, arch:x86_64, id:EF04FD89-FB96-4437-B7A6-744448F32CF6, OS:26.1, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5518860Z { platform:iOS Simulator, arch:arm64, id:A18BDD55-D3D1-4C43-A66D-77981CAC3D23, OS:26.2, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5519580Z { platform:iOS Simulator, arch:x86_64, id:A18BDD55-D3D1-4C43-A66D-77981CAC3D23, OS:26.2, name:iPhone 16 Plus }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5520300Z { platform:iOS Simulator, arch:arm64, id:B82C36A4-EC52-466B-BEB1-D42321DE523D, OS:18.5, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5521030Z { platform:iOS Simulator, arch:x86_64, id:B82C36A4-EC52-466B-BEB1-D42321DE523D, OS:18.5, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5521840Z { platform:iOS Simulator, arch:arm64, id:FE64F297-BFA1-4D8B-BF2D-66448A693337, OS:18.6, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5522550Z { platform:iOS Simulator, arch:x86_64, id:FE64F297-BFA1-4D8B-BF2D-66448A693337, OS:18.6, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5523250Z { platform:iOS Simulator, arch:arm64, id:9BA451C3-8BE9-4965-A32B-C97E9CA1FAC0, OS:26.0.1, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5524200Z { platform:iOS Simulator, arch:x86_64, id:9BA451C3-8BE9-4965-A32B-C97E9CA1FAC0, OS:26.0.1, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5525290Z { platform:iOS Simulator, arch:arm64, id:14C32FC6-056E-4CC3-876A-E38EE7072B29, OS:26.1, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5526220Z { platform:iOS Simulator, arch:x86_64, id:14C32FC6-056E-4CC3-876A-E38EE7072B29, OS:26.1, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5527610Z { platform:iOS Simulator, arch:arm64, id:DB9D2865-3697-4746-884D-AF20FFC8E96A, OS:26.2, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5528350Z { platform:iOS Simulator, arch:x86_64, id:DB9D2865-3697-4746-884D-AF20FFC8E96A, OS:26.2, name:iPhone 16 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5529080Z { platform:iOS Simulator, arch:arm64, id:7607CC72-B472-49A8-A456-693175AD50C4, OS:18.5, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5529830Z { platform:iOS Simulator, arch:x86_64, id:7607CC72-B472-49A8-A456-693175AD50C4, OS:18.5, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5530550Z { platform:iOS Simulator, arch:arm64, id:79BA5E66-1C0E-4E2E-A757-472A4671412A, OS:18.6, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5531310Z { platform:iOS Simulator, arch:x86_64, id:79BA5E66-1C0E-4E2E-A757-472A4671412A, OS:18.6, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5532080Z { platform:iOS Simulator, arch:arm64, id:7EB36486-EB4F-492D-AA25-F13F5AE2558B, OS:26.0.1, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5532890Z { platform:iOS Simulator, arch:x86_64, id:7EB36486-EB4F-492D-AA25-F13F5AE2558B, OS:26.0.1, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5533900Z { platform:iOS Simulator, arch:arm64, id:4D6EAE95-D9E5-4343-ACF6-54BBD1AC5FD5, OS:26.1, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5534670Z { platform:iOS Simulator, arch:x86_64, id:4D6EAE95-D9E5-4343-ACF6-54BBD1AC5FD5, OS:26.1, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5535420Z { platform:iOS Simulator, arch:arm64, id:BC1E9105-DFA8-418E-B3EF-EF2E90489817, OS:26.2, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5536170Z { platform:iOS Simulator, arch:x86_64, id:BC1E9105-DFA8-418E-B3EF-EF2E90489817, OS:26.2, name:iPhone 16 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5536900Z { platform:iOS Simulator, arch:arm64, id:679DB585-C72C-4FC5-804D-153944DF0A6F, OS:18.5, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5537610Z { platform:iOS Simulator, arch:x86_64, id:679DB585-C72C-4FC5-804D-153944DF0A6F, OS:18.5, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5538310Z { platform:iOS Simulator, arch:arm64, id:F248267C-6C7E-4752-B627-8E1407A0AB92, OS:18.6, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5539000Z { platform:iOS Simulator, arch:x86_64, id:F248267C-6C7E-4752-B627-8E1407A0AB92, OS:18.6, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5539680Z { platform:iOS Simulator, arch:arm64, id:34C14E96-8A6F-4818-853A-54E010E1391A, OS:26.0.1, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5540370Z { platform:iOS Simulator, arch:x86_64, id:34C14E96-8A6F-4818-853A-54E010E1391A, OS:26.0.1, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5541050Z { platform:iOS Simulator, arch:arm64, id:355A147A-2459-4D16-9350-90191C41ECCE, OS:26.1, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5541740Z { platform:iOS Simulator, arch:x86_64, id:355A147A-2459-4D16-9350-90191C41ECCE, OS:26.1, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5542440Z { platform:iOS Simulator, arch:arm64, id:868A30DC-E573-40BC-90E5-3B530A530B23, OS:26.2, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5543130Z { platform:iOS Simulator, arch:x86_64, id:868A30DC-E573-40BC-90E5-3B530A530B23, OS:26.2, name:iPhone 16e }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5543830Z { platform:iOS Simulator, arch:arm64, id:E9565FE2-ACE0-4805-8655-C0AE78642343, OS:26.0.1, name:iPhone 17 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5544530Z { platform:iOS Simulator, arch:x86_64, id:E9565FE2-ACE0-4805-8655-C0AE78642343, OS:26.0.1, name:iPhone 17 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5545220Z { platform:iOS Simulator, arch:arm64, id:66664B93-4059-4F6B-873F-CE952FDFC72B, OS:26.1, name:iPhone 17 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5545910Z { platform:iOS Simulator, arch:x86_64, id:66664B93-4059-4F6B-873F-CE952FDFC72B, OS:26.1, name:iPhone 17 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5546600Z { platform:iOS Simulator, arch:arm64, id:A8C09C37-302A-40CA-A1BA-AF68F46EF058, OS:26.2, name:iPhone 17 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5547650Z { platform:iOS Simulator, arch:x86_64, id:A8C09C37-302A-40CA-A1BA-AF68F46EF058, OS:26.2, name:iPhone 17 }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5548380Z { platform:iOS Simulator, arch:arm64, id:6A907836-EAD6-46B6-A859-0FF2986BFDCB, OS:26.0.1, name:iPhone 17 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5549200Z { platform:iOS Simulator, arch:x86_64, id:6A907836-EAD6-46B6-A859-0FF2986BFDCB, OS:26.0.1, name:iPhone 17 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5549920Z { platform:iOS Simulator, arch:arm64, id:3C8FC54B-47D7-4289-95E1-693973B7FFB7, OS:26.1, name:iPhone 17 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5550620Z { platform:iOS Simulator, arch:x86_64, id:3C8FC54B-47D7-4289-95E1-693973B7FFB7, OS:26.1, name:iPhone 17 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5551330Z { platform:iOS Simulator, arch:arm64, id:CB3DAAF1-A853-4818-BFF6-1CE5393DBEE7, OS:26.2, name:iPhone 17 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5552040Z { platform:iOS Simulator, arch:x86_64, id:CB3DAAF1-A853-4818-BFF6-1CE5393DBEE7, OS:26.2, name:iPhone 17 Pro }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5552780Z { platform:iOS Simulator, arch:arm64, id:95B471A1-3115-4194-B549-6EFF9EB3B557, OS:26.0.1, name:iPhone 17 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5553540Z { platform:iOS Simulator, arch:x86_64, id:95B471A1-3115-4194-B549-6EFF9EB3B557, OS:26.0.1, name:iPhone 17 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5554310Z { platform:iOS Simulator, arch:arm64, id:2EF0AE8D-625D-4B2D-B617-35039E74ED01, OS:26.1, name:iPhone 17 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5555070Z { platform:iOS Simulator, arch:x86_64, id:2EF0AE8D-625D-4B2D-B617-35039E74ED01, OS:26.1, name:iPhone 17 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5555820Z { platform:iOS Simulator, arch:arm64, id:B48F159B-2ECB-42EA-902B-C41DB05D731F, OS:26.2, name:iPhone 17 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5556550Z { platform:iOS Simulator, arch:x86_64, id:B48F159B-2ECB-42EA-902B-C41DB05D731F, OS:26.2, name:iPhone 17 Pro Max }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5557270Z { platform:iOS Simulator, arch:arm64, id:781D4B09-5D58-4920-9E8A-5076D89E281C, OS:26.0.1, name:iPhone Air }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5557960Z { platform:iOS Simulator, arch:x86_64, id:781D4B09-5D58-4920-9E8A-5076D89E281C, OS:26.0.1, name:iPhone Air }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5558640Z { platform:iOS Simulator, arch:arm64, id:DED46669-C389-48AC-8E0B-E0C78019B93B, OS:26.1, name:iPhone Air }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5559340Z { platform:iOS Simulator, arch:x86_64, id:DED46669-C389-48AC-8E0B-E0C78019B93B, OS:26.1, name:iPhone Air }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5560020Z { platform:iOS Simulator, arch:arm64, id:124B4EE1-EDC0-497A-AB8A-4B452F4E9DBA, OS:26.2, name:iPhone Air }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5560710Z { platform:iOS Simulator, arch:x86_64, id:124B4EE1-EDC0-497A-AB8A-4B452F4E9DBA, OS:26.2, name:iPhone Air }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5561460Z { platform:iOS Simulator, arch:arm64, id:831B8B67-222F-4C3B-B9EB-3D9FFE23DE9B, OS:18.5, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5562260Z { platform:iOS Simulator, arch:x86_64, id:831B8B67-222F-4C3B-B9EB-3D9FFE23DE9B, OS:18.5, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5563060Z { platform:iOS Simulator, arch:arm64, id:2A0E5B43-5D4A-4FCB-9128-7767BA060033, OS:18.6, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5564130Z { platform:iOS Simulator, arch:x86_64, id:2A0E5B43-5D4A-4FCB-9128-7767BA060033, OS:18.6, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5564940Z { platform:iOS Simulator, arch:arm64, id:6675F575-B9E8-4298-875C-15404FC794EE, OS:26.0.1, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5565820Z { platform:iOS Simulator, arch:x86_64, id:6675F575-B9E8-4298-875C-15404FC794EE, OS:26.0.1, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5566620Z { platform:iOS Simulator, arch:arm64, id:2D581108-1564-4A1A-8E4B-64883ED2EA48, OS:26.1, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5567470Z { platform:iOS Simulator, arch:x86_64, id:2D581108-1564-4A1A-8E4B-64883ED2EA48, OS:26.1, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5568250Z { platform:iOS Simulator, arch:arm64, id:CF720595-B9AD-4665-A13E-178BEF3198C3, OS:26.2, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5569050Z { platform:iOS Simulator, arch:x86_64, id:CF720595-B9AD-4665-A13E-178BEF3198C3, OS:26.2, name:iPhone SE (3rd generation) }
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5694370Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.5898980Z CreateBuildDescription
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.7100850Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:38.7101830Z ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:39.2506700Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:39.2608990Z ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/runner/work/CrownCare/CrownCare/ios/App/App/Assets.xcassets
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.5927480Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.6028870Z ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/ibtool --version --output-format xml1
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.6131020Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.6233230Z ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk -x c -c /dev/null
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.6334660Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.6437330Z ** ARCHIVE FAILED **
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.6438270Z ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.6541800Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.6541870Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.6643140Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.6645300Z ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.6747250Z The following build commands failed:
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.6747550Z 
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.6848370Z 	Archiving project App with scheme App
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.6848950Z Build description signature: 88cb07b73957657edcc279c22700ffee
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.6949090Z (1 failure)
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.6950310Z Build description path: /Users/runner/Library/Developer/Xcode/DerivedData/App-csrdukdwonocfifgrqecfjshrcoq/Build/Intermediates.noindex/ArchiveIntermediates/App/IntermediateBuildFilesPath/XCBuildData/88cb07b73957657edcc279c22700ffee.xcbuilddata
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.7038950Z note: Disabling previews because SWIFT_VERSION is set and SWIFT_OPTIMIZATION_LEVEL=-Owholemodule, expected -Onone (in target 'CameraPlugin' from project 'CapacitorCamera')
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.7141610Z /Users/runner/work/CrownCare/CrownCare/ios/App/App.xcodeproj: error: Signing for "App" requires a development team. Select a development team in the Signing & Capabilities editor. (in target 'App' from project 'App')
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.7243940Z note: Disabling previews because SWIFT_VERSION is set and SWIFT_OPTIMIZATION_LEVEL=-O, expected -Onone (in target 'App' from project 'App')
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.7385030Z note: Disabling previews because SWIFT_VERSION is set and SWIFT_OPTIMIZATION_LEVEL=-Owholemodule, expected -Onone (in target 'CapApp-SPM' from project 'CapApp-SPM')
+build-and-deploy	Build iOS Xcode App	2026-03-25T20:24:41.7449820Z ##[error]Process completed with exit code 65.

@@ -1,0 +1,101 @@
+﻿build-and-deploy	Upload to App Store Connect	∩╗┐2026-03-25T20:52:05.7065600Z ##[group]Run set -x
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7065850Z [36;1mset -x[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7066130Z [36;1mKEY_ID=$(echo "$APP_STORE_CONNECT_API_KEY_KEY_ID" | tr -d '[:space:]')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7066560Z [36;1mISSUER_ID=$(echo "$APP_STORE_CONNECT_API_KEY_ISSUER_ID" | tr -d '[:space:]')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7066900Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7067070Z [36;1mmkdir -p ~/private_keys[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7067330Z [36;1mexport FILE_PATH=~/private_keys/AuthKey_${KEY_ID}.p8[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7067610Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7067800Z [36;1mpython3 -c "[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7067970Z [36;1mimport os, base64[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7068260Z [36;1msecret = os.environ.get('APP_STORE_CONNECT_API_KEY_BASE64', '')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7068600Z [36;1mprint(f'Secret length: {len(secret)}')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7068850Z [36;1mif 'BEGIN PRIVATE KEY' in secret:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7069140Z [36;1m    print('Detected raw PEM')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7069440Z [36;1m    with open(os.environ.get('FILE_PATH'), 'w') as f:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7069810Z [36;1m        f.write(secret)[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7070010Z [36;1melse:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7070220Z [36;1m    print('Attempting base64 decode...')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7070570Z [36;1m    secret_clean = secret.replace('\n', '').replace('\r', '').replace(' ', '')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7070950Z [36;1m    print(f'Clean length: {len(secret_clean)}')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7071200Z [36;1m    try:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7071430Z [36;1m        decoded = base64.b64decode(secret_clean).decode('utf-8')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7071960Z [36;1m        print('Successfully decoded base64')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7072260Z [36;1m        print(f'Decoded length: {len(decoded)}')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7072540Z [36;1m        if 'BEGIN PRIVATE KEY' in decoded:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7072840Z [36;1m            print('Found PEM headers in decoded string')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7073120Z [36;1m        else:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7073400Z [36;1m            print('WARNING: Decoded string does not look like a PEM file!')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7073760Z [36;1m        with open(os.environ.get('FILE_PATH'), 'w') as f:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7074030Z [36;1m            f.write(decoded)[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7074240Z [36;1m    except Exception as e:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7074450Z [36;1m        print(f'Decode failed: {e}')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7074730Z [36;1m        print('Writing raw secret just in case')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7075040Z [36;1m        with open(os.environ.get('FILE_PATH'), 'w') as f:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7075320Z [36;1m            f.write(secret)[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7075510Z [36;1m"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7075660Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7076030Z [36;1mxcrun altool --upload-app -f $RUNNER_TEMP/export/App.ipa -t ios --apiKey "$KEY_ID" --apiIssuer "$ISSUER_ID"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7108570Z shell: /bin/bash -e {0}
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7108760Z env:
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7109330Z   APP_STORE_CONNECT_API_KEY_ISSUER_ID: ***
+build-and-deploy	Upload to App Store Connect	
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7109700Z   APP_STORE_CONNECT_API_KEY_KEY_ID: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7110100Z   APP_STORE_CONNECT_API_KEY_BASE64: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7110320Z ##[endgroup]
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7386730Z ++ echo '***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7387310Z ***'
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7387730Z ++ tr -d '[:space:]'
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7417330Z + KEY_ID=***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7423780Z ++ echo '***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7424220Z ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7424490Z '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7424760Z ++ tr -d '[:space:]'
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7444680Z + ISSUER_ID=***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7445230Z + mkdir -p /Users/runner/private_keys
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7473820Z + export FILE_PATH=/Users/runner/private_keys/AuthKey_***.p8
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7474580Z + FILE_PATH=/Users/runner/private_keys/AuthKey_***.p8
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7474990Z + python3 -c '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7475370Z import os, base64
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7475860Z secret = os.environ.get('\''APP_STORE_CONNECT_API_KEY_BASE64'\'', '\'''\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7476850Z print(f'\''Secret length: {len(secret)}'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7477280Z if '\''BEGIN PRIVATE KEY'\'' in secret:
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7477610Z     print('\''Detected raw PEM'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7478100Z     with open(os.environ.get('\''FILE_PATH'\''), '\''w'\'') as f:
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7478520Z         f.write(secret)
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7478870Z else:
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7479250Z     print('\''Attempting base64 decode...'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7479860Z     secret_clean = secret.replace('\''\n'\'', '\'''\'').replace('\''\r'\'', '\'''\'').replace('\'' '\'', '\'''\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7480350Z     print(f'\''Clean length: {len(secret_clean)}'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7480620Z     try:
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7480900Z         decoded = base64.b64decode(secret_clean).decode('\''utf-8'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7481280Z         print('\''Successfully decoded base64'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7481600Z         print(f'\''Decoded length: {len(decoded)}'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7481910Z         if '\''BEGIN PRIVATE KEY'\'' in decoded:
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7482280Z             print('\''Found PEM headers in decoded string'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7482530Z         else:
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7482850Z             print('\''WARNING: Decoded string does not look like a PEM file!'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7483300Z         with open(os.environ.get('\''FILE_PATH'\''), '\''w'\'') as f:
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7483580Z             f.write(decoded)
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7483790Z     except Exception as e:
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7484030Z         print(f'\''Decode failed: {e}'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7484620Z         print('\''Writing raw secret just in case'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7485030Z         with open(os.environ.get('\''FILE_PATH'\''), '\''w'\'') as f:
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7485370Z             f.write(secret)
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.7485650Z '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.8249160Z Secret length: 42
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.8249630Z Attempting base64 decode...
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.8249980Z Clean length: 40
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.8250350Z Decode failed: Incorrect padding
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.8251080Z Writing raw secret just in case
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:05.8276500Z + xcrun altool --upload-app -f /Users/runner/work/_temp/export/App.ipa -t ios --apiKey *** --apiIssuer ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:06.4801940Z Running altool at path '/Applications/Xcode_16.4.app/Contents/SharedFrameworks/ContentDeliveryServices.framework/Frameworks/AppStoreService.framework/Support/altool'...
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:06.5151370Z 2026-03-25 20:52:06.514 ERROR: [altool.6000006E01C0] Error uploading '/Users/runner/work/_temp/export/App.ipa'.
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:06.5152270Z 2026-03-25 20:52:06.515 ERROR: [altool.6000006E01C0] Unable to upload archive. Failed to authenticate with errors: (
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:06.5158870Z     "Error Domain=ITunesConnectionAuthenticationErrorDomain Code=-26000 \"Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-43 \"Failed to load AuthKey file.\" UserInfo={NSLocalizedFailureReason=The file '/Users/runner/private_keys/AuthKey_***.p8' does not contain a valid authentication key., NSLocalizedDescription=Failed to load AuthKey file.}\" UserInfo={NSLocalizedRecoverySuggestion=Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-43 \"Failed to load AuthKey file.\" UserInfo={NSLocalizedFailureReason=The file '/Users/runner/private_keys/AuthKey_***.p8' does not contain a valid authentication key., NSLocalizedDescription=Failed to load AuthKey file.}, NSLocalizedDescription=Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-43 \"Failed to load AuthKey file.\" UserInfo={NSLocalizedFailureReason=The file '/Users/runner/private_keys/AuthKey_***.p8' does not contain a valid authentication key., NSLocalizedDescription=Failed to load AuthKey file.}, NSLocalizedFailureReason=App Store operation failed.}"
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:06.5162350Z ) (-1011)
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:06.5162510Z  {
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:06.5162780Z     NSLocalizedDescription = "Unable to upload archive.";
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:06.5167180Z     NSLocalizedFailureReason = "Failed to authenticate with errors: (\n    \"Error Domain=ITunesConnectionAuthenticationErrorDomain Code=-26000 \\\"Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-43 \\\"Failed to load AuthKey file.\\\" UserInfo={NSLocalizedFailureReason=The file '/Users/runner/private_keys/AuthKey_***.p8' does not contain a valid authentication key., NSLocalizedDescription=Failed to load AuthKey file.}\\\" UserInfo={NSLocalizedRecoverySuggestion=Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-43 \\\"Failed to load AuthKey file.\\\" UserInfo={NSLocalizedFailureReason=The file '/Users/runner/private_keys/AuthKey_***.p8' does not contain a valid authentication key., NSLocalizedDescription=Failed to load AuthKey file.}, NSLocalizedDescription=Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-43 \\\"Failed to load AuthKey file.\\\" UserInfo={NSLocalizedFailureReason=The file '/Users/runner/private_keys/AuthKey_***.p8' does not contain a valid authentication key., NSLocalizedDescription=Failed to load AuthKey file.}, NSLocalizedFailureReason=App Store operation failed.}\"\n)";
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:06.5170870Z }
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:52:06.5179090Z ##[error]Process completed with exit code 1.

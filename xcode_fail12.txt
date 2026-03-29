@@ -1,0 +1,82 @@
+﻿build-and-deploy	Upload to App Store Connect	∩╗┐2026-03-25T20:44:30.6575980Z ##[group]Run set -x
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6576260Z [36;1mset -x[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6576530Z [36;1m# Sanitize inputs to remove corrupted clipboard line breaks[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6576970Z [36;1mCLEAN_ISSUER_ID=$(printenv RAW_ISSUER_ID | tr -d '\n\r ')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6577340Z [36;1mCLEAN_KEY_ID=$(printenv RAW_KEY_ID | tr -d '\n\r ')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6577620Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6577840Z [36;1mmkdir -p $HOME/private_keys[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6578160Z [36;1mexport authKeyPath="$HOME/private_keys/AuthKey_${CLEAN_KEY_ID}.p8"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6578480Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6578660Z [36;1mnode -e "[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6578850Z [36;1m  const fs = require('fs');[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6579170Z [36;1m  let secret = process.env.APP_STORE_CONNECT_API_KEY_BASE64 || '';[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6579710Z [36;1m  let isBase64 = !secret.includes('PRIVATE KEY');[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6579960Z [36;1m  [0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6580210Z [36;1m  // 1. Extract the raw text from either base64 or plaintext[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6580770Z [36;1m  let rawContent = isBase64 ? Buffer.from(secret.replace(/[\r\n\s]+/g, ''), 'base64').toString('utf8') : secret;[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6581210Z [36;1m  [0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6581550Z [36;1m  // 2. Strip headers, footers, and all whitespace/newlines to isolate the naked encryption string[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6582160Z [36;1m  let nakedKey = rawContent.replace(/-----BEGIN PRIVATE KEY-----/g, '')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6582570Z [36;1m                           .replace(/-----END PRIVATE KEY-----/g, '')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6582880Z [36;1m                           .replace(/[\r\n\s]+/g, '');[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6583160Z [36;1m                           [0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6583560Z [36;1m  // 3. Reconstruct a 100% perfect Apple-compliant PEM format (Unix newlines, 64-char chunks)[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6584010Z [36;1m  let formattedPem = '-----BEGIN PRIVATE KEY-----\n';[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6584380Z [36;1m  for (let i = 0; i < nakedKey.length; i += 64) {[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6584920Z [36;1m     formattedPem += nakedKey.substring(i, i + 64) + '\n';[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6587160Z [36;1m  }[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6587420Z [36;1m  formattedPem += '-----END PRIVATE KEY-----\n';[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6588010Z [36;1m  [0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6588300Z [36;1m  fs.writeFileSync(process.env.authKeyPath, formattedPem);[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6588610Z [36;1m"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6588770Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6589180Z [36;1mxcrun altool --upload-app -f $RUNNER_TEMP/export/App.ipa -t ios --apiKey "$CLEAN_KEY_ID" --apiIssuer "$CLEAN_ISSUER_ID"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6630530Z shell: /bin/bash -e {0}
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6630900Z env:
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6631750Z   RAW_ISSUER_ID: ***
+build-and-deploy	Upload to App Store Connect	
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6632100Z   RAW_KEY_ID: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6632440Z   APP_STORE_CONNECT_API_KEY_BASE64: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6632670Z ##[endgroup]
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6907970Z ++ printenv RAW_ISSUER_ID
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6915530Z ++ tr -d '\n\r '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6971900Z + CLEAN_ISSUER_ID=***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6984130Z ++ tr -d '\n\r '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.6987320Z ++ printenv RAW_KEY_ID
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7024760Z + CLEAN_KEY_ID=***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7070290Z + mkdir -p /Users/runner/private_keys
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7108920Z + export authKeyPath=/Users/runner/private_keys/AuthKey_***.p8
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7109610Z + authKeyPath=/Users/runner/private_keys/AuthKey_***.p8
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7110510Z + node -e '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7110740Z   const fs = require('\''fs'\'');
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7111190Z   let secret = process.env.APP_STORE_CONNECT_API_KEY_BASE64 || '\'''\'';
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7111610Z   let isBase64 = !secret.includes('\''PRIVATE KEY'\'');
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7111870Z   
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7112140Z   // 1. Extract the raw text from either base64 or plaintext
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7112770Z   let rawContent = isBase64 ? Buffer.from(secret.replace(/[\r\n\s]+/g, '\'''\''), '\''base64'\'').toString('\''utf8'\'') : secret;
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7113770Z   
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7114180Z   // 2. Strip headers, footers, and all whitespace/newlines to isolate the naked encryption string
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7114800Z   let nakedKey = rawContent.replace(/-----BEGIN PRIVATE KEY-----/g, '\'''\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7115320Z                            .replace(/-----END PRIVATE KEY-----/g, '\'''\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7115720Z                            .replace(/[\r\n\s]+/g, '\'''\'');
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7116010Z                            
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7116520Z   // 3. Reconstruct a 100% perfect Apple-compliant PEM format (Unix newlines, 64-char chunks)
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7117020Z   let formattedPem = '\''-----BEGIN PRIVATE KEY-----\n'\'';
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7117390Z   for (let i = 0; i < nakedKey.length; i += 64) {
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7117780Z      formattedPem += nakedKey.substring(i, i + 64) + '\''\n'\'';
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7118080Z   }
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7118310Z   formattedPem += '\''-----END PRIVATE KEY-----\n'\'';
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7118560Z   
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7118810Z   fs.writeFileSync(process.env.authKeyPath, formattedPem);
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.7119110Z '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:30.9703560Z + xcrun altool --upload-app -f /Users/runner/work/_temp/export/App.ipa -t ios --apiKey *** --apiIssuer ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:32.2226660Z Running altool at path '/Applications/Xcode_16.4.app/Contents/SharedFrameworks/ContentDeliveryServices.framework/Frameworks/AppStoreService.framework/Support/altool'...
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:33.5841840Z 2026-03-25 20:44:33.582 ERROR: [altool.6000007F81C0] Error uploading '/Users/runner/work/_temp/export/App.ipa'.
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:33.5843170Z 2026-03-25 20:44:33.584 ERROR: [altool.6000007F81C0] Unable to upload archive. Failed to authenticate with errors: (
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:33.5849450Z     "Error Domain=ITunesConnectionAuthenticationErrorDomain Code=-26000 \"Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-50 \"Invalid authentication string.\" UserInfo={NSLocalizedFailureReason=Unable to base64 decode the private key in '/Users/runner/private_keys/AuthKey_***.p8'., NSLocalizedDescription=Invalid authentication string.}\" UserInfo={NSLocalizedRecoverySuggestion=Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-50 \"Invalid authentication string.\" UserInfo={NSLocalizedFailureReason=Unable to base64 decode the private key in '/Users/runner/private_keys/AuthKey_***.p8'., NSLocalizedDescription=Invalid authentication string.}, NSLocalizedDescription=Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-50 \"Invalid authentication string.\" UserInfo={NSLocalizedFailureReason=Unable to base64 decode the private key in '/Users/runner/private_keys/AuthKey_***.p8'., NSLocalizedDescription=Invalid authentication string.}, NSLocalizedFailureReason=App Store operation failed.}"
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:33.5874740Z ) (-1011)
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:33.5875190Z  {
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:33.5875760Z     NSLocalizedDescription = "Unable to upload archive.";
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:33.5881850Z     NSLocalizedFailureReason = "Failed to authenticate with errors: (\n    \"Error Domain=ITunesConnectionAuthenticationErrorDomain Code=-26000 \\\"Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-50 \\\"Invalid authentication string.\\\" UserInfo={NSLocalizedFailureReason=Unable to base64 decode the private key in '/Users/runner/private_keys/AuthKey_***.p8'., NSLocalizedDescription=Invalid authentication string.}\\\" UserInfo={NSLocalizedRecoverySuggestion=Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-50 \\\"Invalid authentication string.\\\" UserInfo={NSLocalizedFailureReason=Unable to base64 decode the private key in '/Users/runner/private_keys/AuthKey_***.p8'., NSLocalizedDescription=Invalid authentication string.}, NSLocalizedDescription=Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-50 \\\"Invalid authentication string.\\\" UserInfo={NSLocalizedFailureReason=Unable to base64 decode the private key in '/Users/runner/private_keys/AuthKey_***.p8'., NSLocalizedDescription=Invalid authentication string.}, NSLocalizedFailureReason=App Store operation failed.}\"\n)";
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:33.5902730Z }
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:44:33.5918150Z ##[error]Process completed with exit code 1.

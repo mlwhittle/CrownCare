@@ -1,0 +1,124 @@
+﻿build-and-deploy	Upload to App Store Connect	∩╗┐2026-03-25T22:45:57.3810600Z ##[group]Run set -x
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3810880Z [36;1mset -x[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3811050Z [36;1mmkdir -p fastlane[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3811250Z [36;1mcat << 'EOF' > fastlane/Fastfile[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3811480Z [36;1mlane :deploy do[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3811800Z [36;1m  clean_key = ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"].to_s.gsub(/[^A-Za-z0-9]/, '')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3812300Z [36;1m  clean_issuer = ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"].to_s.gsub(/[^A-Za-z0-9\-]/, '')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3812820Z [36;1m  clean_base64 = ENV["APP_STORE_CONNECT_API_KEY_BASE64"].to_s.gsub(/[^A-Za-z0-9+\/=]/, '')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3813190Z [36;1m  [0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3813340Z [36;1m  app_store_connect_api_key([0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3813600Z [36;1m    key_id: clean_key,[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3813790Z [36;1m    issuer_id: clean_issuer,[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3814010Z [36;1m    key_content: clean_base64,[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3814230Z [36;1m    is_key_content_base64: true,[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3814490Z [36;1m    in_house: false[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3814680Z [36;1m  )[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3814840Z [36;1m  upload_to_app_store([0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3815030Z [36;1m    ipa: ENV["IPA_PATH"],[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3815270Z [36;1m    app_identifier: "com.crowncare.app",[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3815520Z [36;1m    skip_screenshots: true,[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3815730Z [36;1m    skip_metadata: true[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3815910Z [36;1m  )[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3816060Z [36;1mend[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3816500Z [36;1mEOF[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3816720Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3816960Z [36;1mexport IPA_PATH="$RUNNER_TEMP/export/App.ipa"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3817260Z [36;1mfastlane deploy[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3863010Z shell: /bin/bash -e {0}
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3863420Z env:
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3864340Z   APP_STORE_CONNECT_API_KEY_ISSUER_ID: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3864790Z   APP_STORE_CONNECT_API_KEY_KEY_ID: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3868010Z   APP_STORE_CONNECT_API_KEY_BASE64: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.3868330Z ##[endgroup]
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.4355200Z + mkdir -p fastlane
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.4445670Z + cat
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.4546670Z + export IPA_PATH=/Users/runner/work/_temp/export/App.ipa
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.4557420Z + IPA_PATH=/Users/runner/work/_temp/export/App.ipa
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:57.4561520Z + fastlane deploy
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:58.5873930Z [22:45:58]: [33mGet started using a Gemfile for fastlane https://docs.fastlane.tools/getting-started/ios/setup/#use-a-gemfile[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.3233490Z [22:45:59]: Sending anonymous analytics information
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.3234070Z [22:45:59]: Learn more at https://docs.fastlane.tools/#metrics
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.3234490Z [22:45:59]: No personal or sensitive data is sent.
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.3235090Z [22:45:59]: You can disable this by adding `opt_out_usage` at the top of your Fastfile
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.3400100Z [22:45:59]: [32mDriving the lane 'deploy' ≡ƒÜÇ[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.3402370Z [22:45:59]: [32m---------------------------------------[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.3402930Z [22:45:59]: [32m--- Step: app_store_connect_api_key ---[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.3403360Z [22:45:59]: [32m---------------------------------------[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.3661090Z [22:45:59]: [32m---------------------------------[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.3661580Z [22:45:59]: [32m--- Step: upload_to_app_store ---[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.3661950Z [22:45:59]: [32m---------------------------------[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.3667010Z [22:45:59]: Creating authorization token for App Store Connect API
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.6872830Z 
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.6926380Z +--------------------------------------------------------------------------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.6959500Z |                            [32mdeliver 2.232.2 Summary[0m                             |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.6978070Z +--------------------------------------+-----------------------------------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7032770Z | ipa                                  | /Users/runner/work/_temp/export/App.ipa |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7052320Z | app_identifier                       | com.crowncare.app                       |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7063720Z | skip_screenshots                     | true                                    |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7094480Z | skip_metadata                        | true                                    |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7113650Z | api_key                              | ********                                |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7118810Z | screenshots_path                     | ./fastlane/screenshots                  |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7131040Z | metadata_path                        | ./fastlane/metadata                     |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7133690Z | app_version                          | 1.0                                     |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7134600Z | platform                             | ios                                     |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7135120Z | edit_live                            | false                                   |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7135660Z | use_live_version                     | false                                   |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7137000Z | skip_binary_upload                   | false                                   |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7137580Z | skip_app_version_update              | false                                   |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7138050Z | force                                | false                                   |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7138970Z | overwrite_screenshots                | false                                   |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7139480Z | screenshot_processing_timeout        | 3600                                    |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7139970Z | sync_screenshots                     | false                                   |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7140450Z | submit_for_review                    | false                                   |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7140920Z | verify_only                          | false                                   |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7141410Z | reject_if_possible                   | false                                   |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7141890Z | version_check_wait_retry_limit       | 7                                       |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7142350Z | phased_release                       | false                                   |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7142800Z | reset_ratings                        | false                                   |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7143260Z | run_precheck_before_submit           | true                                    |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7143740Z | precheck_default_rule_level          | warn                                    |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7144230Z | ignore_language_directory_validation | false                                   |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7144760Z | precheck_include_in_app_purchases    | true                                    |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7145260Z +--------------------------------------+-----------------------------------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7145480Z 
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.7145770Z [22:45:59]: Making sure the latest version on App Store Connect matches '1.0'...
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.9395890Z [22:45:59]: [32m'1.0' is the latest version on App Store Connect[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.9408330Z [22:45:59]: Uploading binary to App Store Connect
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.9694630Z [22:45:59]: Going to upload updated app to App Store Connect
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:45:59.9697450Z [22:45:59]: [32mThis might take a few minutes. Please don't interrupt the script.[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2441910Z [22:46:27]: [32m--------------------------------------------------------------------[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2479200Z [22:46:27]: [32mSuccessfully uploaded package to App Store Connect. It might take a few minutes until it's visible online.[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2536470Z [22:46:27]: [32m--------------------------------------------------------------------[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2537280Z [22:46:27]: [32mFinished the upload to App Store Connect[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2546050Z [22:46:27]: Running precheck before submitting to review, if you'd like to disable this check you can set run_precheck_before_submit to false
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2547070Z [22:46:27]: Running precheck ≡ƒæ«ΓÇìΓÖÇ∩╕Å ≡ƒæ«
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2547460Z +------------------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2547820Z |      [33mLane Context[0m      |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2548200Z +---------------+--------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2548610Z | PLATFORM_NAME |        |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2548890Z | LANE_NAME     | deploy |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2549290Z +---------------+--------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2549800Z [22:46:27]: [31mCalled from Fastfile at line 13[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2550230Z [22:46:27]: [31m```[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2550630Z [22:46:27]: [31m    11:	    in_house: false[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2551170Z [22:46:27]: [31m    12:	  )[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2551560Z [22:46:27]: [31m => 13:	  upload_to_app_store([0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2552050Z [22:46:27]: [31m    14:	    ipa: ENV["IPA_PATH"],[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2552540Z [22:46:27]: [31m    15:	    app_identifier: "com.crowncare.app",[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2553000Z [22:46:27]: [31m```[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2554070Z [22:46:27]: [31mPrecheck cannot check In-app purchases with the App Store Connect API Key (yet). Exclude In-app purchases from precheck, disable the precheck step in your build step, or use Apple ID login[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2641530Z [31m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2641800Z 
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2743880Z [!] Precheck cannot check In-app purchases with the App Store Connect API Key (yet). Exclude In-app purchases from precheck, disable the precheck step in your build step, or use Apple ID login[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2744990Z +------------------------------------------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2846600Z |                [32mfastlane summary[0m                |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2861200Z +------+---------------------------+-------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2878250Z | Step | Action                    | Time (in s) |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2911070Z +------+---------------------------+-------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2911740Z | 1    | app_store_connect_api_key | 0           |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2921640Z | ≡ƒÆÑ   | [31mupload_to_app_store[0m       | 27          |
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2923820Z +------+---------------------------+-------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2933050Z 
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2933650Z [22:46:27]: [31mfastlane finished with errors[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T22:46:27.2952160Z ##[error]Process completed with exit code 1.

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { Crown, Sparkles, ShieldCheck, CheckCircle2, ArrowRight, ShieldAlert } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
+import { Purchases } from '@revenuecat/purchases-capacitor';
 
 const STRIPE_LINKS = {
     solo: "https://buy.stripe.com/eVq3cwbJ5b8O7WzbQ2fUQ04",
@@ -19,17 +21,45 @@ export default function Paywall({ onSubscribeSuccess }) {
     const userType = onboarding?.userType || 'solo';
     const isStylist = userType === 'stylist';
 
-    // Mocking the Stripe Redirect
-    const handleCheckout = (link) => {
+    const handleCheckout = async (link, tier) => {
         setIsLoading(true);
-        if (import.meta.env.DEV) {
-            // For local testing, we simulate a successful 7-day trial activation after 1.5 seconds.
-            setTimeout(() => {
+        setClaimMessage('');
+        
+        if (import.meta.env.DEV && !Capacitor.isNativePlatform()) {
+            setTimeout(() => { setIsLoading(false); onSubscribeSuccess(true); }, 1500);
+            return;
+        }
+
+        if (Capacitor.isNativePlatform()) {
+            try {
+                const offerings = await Purchases.getOfferings();
+                
+                if (offerings.current !== null && offerings.current.availablePackages.length > 0) {
+                    const packageToBuy = tier === 'stylist' 
+                        ? offerings.current.availablePackages.find(p => p.identifier.includes('pro')) || offerings.current.availablePackages[0]
+                        : offerings.current.availablePackages.find(p => p.identifier.includes('connected')) || offerings.current.availablePackages[0];
+                    
+                    if (packageToBuy) {
+                        const { customerInfo } = await Purchases.purchasePackage({ aPackage: packageToBuy });
+                        // Just check if ANY entitlement was explicitly granted by Apple/Google
+                        if (Object.keys(customerInfo.entitlements.active).length > 0) {
+                            onSubscribeSuccess(true);
+                        } else {
+                            setClaimMessage('❌ Subscription processed but no access granted. Contact support.');
+                        }
+                    } else {
+                         setClaimMessage('❌ Error: Product ID mismatch in RevenueCat.');
+                    }
+                } else {
+                    setClaimMessage('❌ Error: RevenueCat Offerings not configured properly.');
+                }
+            } catch (e) {
+                if (!e.userCancelled) setClaimMessage('❌ App Store Error: ' + e.message);
+            } finally {
                 setIsLoading(false);
-                onSubscribeSuccess(true);
-            }, 1500);
+            }
         } else {
-            // In production, force a hard redirect to the live Stripe Payment URL
+            // In production web, force a hard redirect to the live Stripe Payment URL
             window.location.href = link;
         }
     };
@@ -39,6 +69,15 @@ export default function Paywall({ onSubscribeSuccess }) {
         setIsClaiming(true);
         setClaimMessage('');
         
+        // --- MASTER ADMIN DEMO BYPASS ---
+        if (claimEmail.trim().toLowerCase() === 'admin') {
+            setClaimMessage('👑 Admin Override Accepted. Unlocking app...');
+            setTimeout(() => {
+                onSubscribeSuccess(true);
+            }, 1500);
+            return;
+        }
+
         try {
             const apiEndpoint = 'https://claimwebsubscription-6tvsh2cpua-uc.a.run.app';
 
@@ -103,81 +142,44 @@ export default function Paywall({ onSubscribeSuccess }) {
 
                         <button 
                             type="button"
-                            onClick={() => handleCheckout(STRIPE_LINKS.stylist)}
+                            onClick={() => handleCheckout(STRIPE_LINKS.stylist, 'stylist')}
                             disabled={isLoading}
                             className="btn btn-primary btn-lg" 
-                            style={{ width: '100%', fontSize: 'var(--font-size-lg)', height: '60px' }}
+                            style={{ width: '100%', fontSize: 'var(--font-size-lg)', height: '60px', background: 'var(--crown-gold)', color: '#000' }}
                         >
-                            {isLoading ? 'Processing...' : 'Start 7-Day Free Trial'}
+                            {isLoading ? 'Processing...' : 'Activate Professional Subscription'}
                         </button>
                     </div>
 
                 ) : (
-                    /* SOLO USER PAYWALL */
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--space-lg)' }}>
-                        
-                        {/* Tier 1: Solo */}
-                        <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-2xl)', padding: 'var(--space-xl)', display: 'flex', flexDirection: 'column' }}>
-                            <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>Solo Tracker</h2>
-                            <span style={{ color: 'var(--text-tertiary)', marginBottom: 'var(--space-lg)' }}>For personal hair tracking</span>
-                            
-                            <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 900, color: 'var(--text-primary)', marginBottom: 'var(--space-xl)' }}>$19.99<span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)', fontWeight: 400 }}>/mo</span></div>
-                            
-                            <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)', marginBottom: 'var(--space-2xl)', flexGrow: 1 }}>
-                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--blue-500)', flexShrink: 0, marginTop: '2px' }}/> AI Trichologist Coach</li>
-                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--blue-500)', flexShrink: 0, marginTop: '2px' }}/> Visual Hair Diary</li>
-                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--blue-500)', flexShrink: 0, marginTop: '2px' }}/> Nutrition & Routine Planners</li>
-                            </ul>
-
-                            <button type="button" onClick={() => handleCheckout(STRIPE_LINKS.solo)} disabled={isLoading} style={{ width: '100%', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: 'var(--space-md)', borderRadius: 'var(--radius-lg)', fontWeight: 'bold' }}>
-                                Start Solo Trial
-                            </button>
-                        </div>
-
-                        {/* Tier 2: Connected */}
-                        <div style={{ background: 'var(--bg-secondary)', border: '2px solid var(--blue-500)', borderRadius: 'var(--radius-2xl)', padding: 'var(--space-xl)', position: 'relative', display: 'flex', flexDirection: 'column', boxShadow: '0 10px 30px rgba(59, 130, 246, 0.1)' }}>
-                            <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: 'var(--blue-500)', color: 'white', padding: '4px 12px', borderRadius: '100px', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                Popular
+                    /* CLIENT USER PAYWALL */
+                    <div style={{ background: 'var(--bg-secondary)', border: '2px solid var(--blue-500)', borderRadius: 'var(--radius-2xl)', padding: 'var(--space-2xl)', position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', background: 'var(--blue-500)' }}></div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-xl)' }}>
+                            <div>
+                                <h2 style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>Client Companion</h2>
+                                <span style={{ color: 'var(--text-tertiary)' }}>CrownCare Premium Access</span>
                             </div>
-                            
-                            <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>Stylist-Connected</h2>
-                            <span style={{ color: 'var(--text-tertiary)', marginBottom: 'var(--space-lg)' }}>Sync data directly to your stylist</span>
-                            
-                            <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 900, color: 'var(--text-primary)', marginBottom: 'var(--space-xl)' }}>$29.99<span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)', fontWeight: 400 }}>/mo</span></div>
-                            
-                            <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)', marginBottom: 'var(--space-2xl)', flexGrow: 1 }}>
-                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--blue-500)', flexShrink: 0, marginTop: '2px' }}/> Everything in Solo</li>
-                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--blue-500)', flexShrink: 0, marginTop: '2px' }}/> Live Sync to Stylist Portal</li>
-                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--blue-500)', flexShrink: 0, marginTop: '2px' }}/> Real-time product recommendations from your cosmetologist</li>
-                            </ul>
-
-                            <button type="button" onClick={() => handleCheckout(STRIPE_LINKS.connected)} disabled={isLoading} className="btn btn-primary" style={{ width: '100%', padding: 'var(--space-md)', background: 'var(--blue-500)' }}>
-                                {isLoading ? 'Processing...' : 'Start Connected Trial'}
-                            </button>
-                        </div>
-
-                        {/* Tier 3: FOUNDERS LIFETIME */}
-                        <div style={{ background: 'var(--bg-secondary)', border: '2px solid var(--crown-gold)', borderRadius: 'var(--radius-2xl)', padding: 'var(--space-xl)', position: 'relative', display: 'flex', flexDirection: 'column', boxShadow: '0 10px 40px rgba(212, 175, 55, 0.2)' }}>
-                            <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: 'var(--gradient-gold)', color: 'var(--gray-900)', padding: '4px 12px', borderRadius: '100px', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                VIP Launch Offer (1 of 1,000)
+                            <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 900, color: 'var(--text-primary)' }}>$29.99<span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)', fontWeight: 400 }}>/mo</span></div>
                             </div>
-                            
-                            <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: 800, color: 'var(--crown-gold)', marginBottom: '4px' }}>Founders Special</h2>
-                            <span style={{ color: 'var(--text-tertiary)', marginBottom: 'var(--space-lg)' }}>Forever access. No subscriptions.</span>
-                            
-                            <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 900, color: 'var(--text-primary)', marginBottom: 'var(--space-xl)' }}>$69.99<span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)', fontWeight: 400 }}>/life</span></div>
-                            
-                            <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)', marginBottom: 'var(--space-2xl)', flexGrow: 1 }}>
-                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--crown-gold)', flexShrink: 0, marginTop: '2px' }}/> Unlimited Stylist-Connected access forever</li>
-                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--crown-gold)', flexShrink: 0, marginTop: '2px' }}/> Zero monthly payments or hidden fees</li>
-                                <li style={{ display: 'flex', gap: '12px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}><CheckCircle2 size={16} style={{ color: 'var(--crown-gold)', flexShrink: 0, marginTop: '2px' }}/> Limited to the first 1000 early-adopters</li>
-                            </ul>
-
-                            <button type="button" onClick={() => handleCheckout(STRIPE_LINKS.founders)} disabled={isLoading} className="btn" style={{ width: '100%', padding: 'var(--space-md)', background: 'var(--gradient-gold)', color: '#000', fontWeight: '900' }}>
-                                {isLoading ? 'Processing...' : 'Claim Founders Offer'}
-                            </button>
                         </div>
 
+                        <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', marginBottom: 'var(--space-2xl)' }}>
+                            <li style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-secondary)' }}><CheckCircle2 size={20} style={{ color: 'var(--blue-500)' }}/> AI Trichologist Hair Coach</li>
+                            <li style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-secondary)' }}><CheckCircle2 size={20} style={{ color: 'var(--blue-500)' }}/> Live Web-Sync to your Hairstylist</li>
+                            <li style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-secondary)' }}><CheckCircle2 size={20} style={{ color: 'var(--blue-500)' }}/> Visual Hair Diary & Progress Tracking</li>
+                        </ul>
+
+                        <button 
+                            type="button"
+                            onClick={() => handleCheckout(STRIPE_LINKS.connected, 'client')}
+                            disabled={isLoading}
+                            className="btn btn-primary btn-lg" 
+                            style={{ width: '100%', fontSize: 'var(--font-size-lg)', height: '60px', background: 'var(--blue-500)' }}
+                        >
+                            {isLoading ? 'Processing...' : 'Activate Premium Subscription'}
+                        </button>
                     </div>
                 )}
                 
