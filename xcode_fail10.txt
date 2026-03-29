@@ -1,0 +1,55 @@
+﻿build-and-deploy	Upload to App Store Connect	∩╗┐2026-03-25T20:36:11.8096500Z ##[group]Run set -x
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8097140Z [36;1mset -x[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8097530Z [36;1m# Sanitize inputs to remove corrupted clipboard line breaks[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8098000Z [36;1mCLEAN_ISSUER_ID=$(printenv RAW_ISSUER_ID | tr -d '\n\r ')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8098490Z [36;1mCLEAN_KEY_ID=$(printenv RAW_KEY_ID | tr -d '\n\r ')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8098990Z [36;1mexport authKeyPath="$RUNNER_TEMP/AuthKey_${CLEAN_KEY_ID}.p8"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8099350Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8099660Z [36;1mnode -e "[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8099980Z [36;1m  const fs = require('fs');[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8100380Z [36;1m  let secret = process.env.APP_STORE_CONNECT_API_KEY_BASE64 || '';[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8100900Z [36;1m  let isBase64 = !secret.includes('PRIVATE KEY');[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8101320Z [36;1m  if (isBase64) {[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8101800Z [36;1m    fs.writeFileSync(process.env.authKeyPath, Buffer.from(secret.replace(/[\r\n\s]+/g, ''), 'base64'));[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8102480Z [36;1m  } else {[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8102800Z [36;1m    fs.writeFileSync(process.env.authKeyPath, secret);[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8103210Z [36;1m  }[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8103500Z [36;1m"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8103710Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8104260Z [36;1mxcrun altool --upload-app -f $RUNNER_TEMP/export/App.ipa -t ios --apiKey "$CLEAN_KEY_ID" --apiIssuer "$CLEAN_ISSUER_ID"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8205830Z shell: /bin/bash -e {0}
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8206110Z env:
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8209880Z   RAW_ISSUER_ID: ***
+build-and-deploy	Upload to App Store Connect	
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8210440Z   RAW_KEY_ID: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8216050Z   APP_STORE_CONNECT_API_KEY_BASE64: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8217250Z ##[endgroup]
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8976310Z ++ printenv RAW_ISSUER_ID
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.8993570Z ++ tr -d '\n\r '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.9311140Z + CLEAN_ISSUER_ID=***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.9402870Z ++ printenv RAW_KEY_ID
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.9409770Z ++ tr -d '\n\r '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.9411140Z + CLEAN_KEY_ID=***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.9412330Z + export authKeyPath=/Users/runner/work/_temp/AuthKey_***.p8
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.9429010Z + authKeyPath=/Users/runner/work/_temp/AuthKey_***.p8
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.9431270Z + node -e '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.9534870Z   const fs = require('\''fs'\'');
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.9638040Z   let secret = process.env.APP_STORE_CONNECT_API_KEY_BASE64 || '\'''\'';
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.9740100Z   let isBase64 = !secret.includes('\''PRIVATE KEY'\'');
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.9844150Z   if (isBase64) {
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:11.9947700Z     fs.writeFileSync(process.env.authKeyPath, Buffer.from(secret.replace(/[\r\n\s]+/g, '\'''\''), '\''base64'\''));
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:12.0051800Z   } else {
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:12.0115000Z     fs.writeFileSync(process.env.authKeyPath, secret);
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:12.0177320Z   }
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:12.0287220Z '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:12.2420160Z + xcrun altool --upload-app -f /Users/runner/work/_temp/export/App.ipa -t ios --apiKey *** --apiIssuer ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:13.4705290Z Running altool at path '/Applications/Xcode_16.4.app/Contents/SharedFrameworks/ContentDeliveryServices.framework/Frameworks/AppStoreService.framework/Support/altool'...
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:13.5414160Z 2026-03-25 20:36:13.539 ERROR: [altool.600001AC01C0] Error uploading '/Users/runner/work/_temp/export/App.ipa'.
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:13.5423150Z 2026-03-25 20:36:13.541 ERROR: [altool.600001AC01C0] Unable to upload archive. Failed to authenticate with errors: (
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:13.5433120Z     "Error Domain=ITunesConnectionAuthenticationErrorDomain Code=-26000 \"Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-43 \"Failed to load AuthKey file.\" UserInfo={NSLocalizedFailureReason=The file AuthKey_***.p8 could not be found in any of these locations: '~/work/CrownCare/CrownCare/private_keys', '~/private_keys', '~/.private_keys', '~/.appstoreconnect/private_keys'., NSLocalizedDescription=Failed to load AuthKey file.}\" UserInfo={NSLocalizedRecoverySuggestion=Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-43 \"Failed to load AuthKey file.\" UserInfo={NSLocalizedFailureReason=The file AuthKey_***.p8 could not be found in any of these locations: '~/work/CrownCare/CrownCare/private_keys', '~/private_keys', '~/.private_keys', '~/.appstoreconnect/private_keys'., NSLocalizedDescription=Failed to load AuthKey file.}, NSLocalizedDescription=Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-43 \"Failed to load AuthKey file.\" UserInfo={NSLocalizedFailureReason=The file AuthKey_***.p8 could not be found in any of these locations: '~/work/CrownCare/CrownCare/private_keys', '~/private_keys', '~/.private_keys', '~/.appstoreconnect/private_keys'., NSLocalizedDescription=Failed to load AuthKey file.}, NSLocalizedFailureReason=App Store operation failed.}"
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:13.5438280Z ) (-1011)
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:13.5441580Z  {
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:13.5442110Z     NSLocalizedDescription = "Unable to upload archive.";
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:13.5448040Z     NSLocalizedFailureReason = "Failed to authenticate with errors: (\n    \"Error Domain=ITunesConnectionAuthenticationErrorDomain Code=-26000 \\\"Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-43 \\\"Failed to load AuthKey file.\\\" UserInfo={NSLocalizedFailureReason=The file AuthKey_***.p8 could not be found in any of these locations: '~/work/CrownCare/CrownCare/private_keys', '~/private_keys', '~/.private_keys', '~/.appstoreconnect/private_keys'., NSLocalizedDescription=Failed to load AuthKey file.}\\\" UserInfo={NSLocalizedRecoverySuggestion=Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-43 \\\"Failed to load AuthKey file.\\\" UserInfo={NSLocalizedFailureReason=The file AuthKey_***.p8 could not be found in any of these locations: '~/work/CrownCare/CrownCare/private_keys', '~/private_keys', '~/.private_keys', '~/.appstoreconnect/private_keys'., NSLocalizedDescription=Failed to load AuthKey file.}, NSLocalizedDescription=Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=-43 \\\"Failed to load AuthKey file.\\\" UserInfo={NSLocalizedFailureReason=The file AuthKey_***.p8 could not be found in any of these locations: '~/work/CrownCare/CrownCare/private_keys', '~/private_keys', '~/.private_keys', '~/.appstoreconnect/private_keys'., NSLocalizedDescription=Failed to load AuthKey file.}, NSLocalizedFailureReason=App Store operation failed.}\"\n)";
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:13.5452920Z }
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:36:13.5475020Z ##[error]Process completed with exit code 1.

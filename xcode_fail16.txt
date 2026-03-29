@@ -1,0 +1,158 @@
+﻿build-and-deploy	Upload to App Store Connect	∩╗┐2026-03-25T21:21:07.3456190Z ##[group]Run set -x
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3456520Z [36;1mset -x[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3456830Z [36;1mKEY_ID=$(echo "$APP_STORE_CONNECT_API_KEY_KEY_ID" | tr -d '[:space:]')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3457270Z [36;1mISSUER_ID=$(echo "$APP_STORE_CONNECT_API_KEY_ISSUER_ID" | tr -d '[:space:]')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3457600Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3457810Z [36;1mmkdir -p ~/private_keys[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3458080Z [36;1mexport FILE_PATH=~/private_keys/AuthKey_${KEY_ID}.p8[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3458350Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3458520Z [36;1mpython3 -c "[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3458700Z [36;1mimport os, base64[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3459010Z [36;1msecret = os.environ.get('APP_STORE_CONNECT_API_KEY_BASE64', '')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3459400Z [36;1mprint(f'Secret length: {len(secret)}')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3459660Z [36;1mif 'BEGIN PRIVATE KEY' in secret:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3459930Z [36;1m    print('Detected raw PEM')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3460240Z [36;1m    with open(os.environ.get('FILE_PATH'), 'w') as f:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3460570Z [36;1m        f.write(secret)[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3460790Z [36;1melse:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3460980Z [36;1m    print('Attempting base64 decode...')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3461370Z [36;1m    secret_clean = secret.replace('\n', '').replace('\r', '').replace(' ', '')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3461770Z [36;1m    print(f'Clean length: {len(secret_clean)}')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3462040Z [36;1m    try:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3462300Z [36;1m        decoded = base64.b64decode(secret_clean).decode('utf-8')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3462640Z [36;1m        print('Successfully decoded base64')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3462930Z [36;1m        print(f'Decoded length: {len(decoded)}')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3463510Z [36;1m        if 'BEGIN PRIVATE KEY' in decoded:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3463840Z [36;1m            print('Found PEM headers in decoded string')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3464120Z [36;1m        else:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3464430Z [36;1m            print('WARNING: Decoded string does not look like a PEM file!')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3464820Z [36;1m        with open(os.environ.get('FILE_PATH'), 'w') as f:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3465100Z [36;1m            f.write(decoded)[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3465420Z [36;1m    except Exception as e:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3465710Z [36;1m        print(f'Decode failed: {e}')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3466010Z [36;1m        print('Writing raw secret just in case')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3466400Z [36;1m        with open(os.environ.get('FILE_PATH'), 'w') as f:[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3466730Z [36;1m            f.write(secret)[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3466990Z [36;1m"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3467170Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3467370Z [36;1mmkdir -p fastlane[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3467590Z [36;1mcat << 'EOF' > fastlane/Fastfile[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3467810Z [36;1mlane :deploy do[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3468050Z [36;1m  app_store_connect_api_key([0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3468360Z [36;1m    key_id: ENV["KEY_ID"],[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3468610Z [36;1m    issuer_id: ENV["ISSUER_ID"],[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3468890Z [36;1m    key_filepath: ENV["FILE_PATH"],[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3469190Z [36;1m    in_house: false[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3469380Z [36;1m  )[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3469560Z [36;1m  upload_to_app_store([0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3469790Z [36;1m    ipa: ENV["IPA_PATH"][0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3469980Z [36;1m  )[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3470140Z [36;1mend[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3470300Z [36;1mEOF[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3470440Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3470650Z [36;1mexport IPA_PATH="$RUNNER_TEMP/export/App.ipa"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3470990Z [36;1mfastlane deploy[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3509040Z shell: /bin/bash -e {0}
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3509260Z env:
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3509750Z   APP_STORE_CONNECT_API_KEY_ISSUER_ID: ***
+build-and-deploy	Upload to App Store Connect	
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3510110Z   APP_STORE_CONNECT_API_KEY_KEY_ID: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3512080Z   APP_STORE_CONNECT_API_KEY_BASE64: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3512810Z ##[endgroup]
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3868220Z ++ echo '***
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3868760Z ***'
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3868970Z ++ tr -d '[:space:]'
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3906050Z + KEY_ID=***
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3910970Z ++ echo '***
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3911560Z ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3911780Z '
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3912020Z ++ tr -d '[:space:]'
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3935580Z + ISSUER_ID=***
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3936240Z + mkdir -p /Users/runner/private_keys
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3969740Z + export FILE_PATH=/Users/runner/private_keys/AuthKey_***.p8
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3970480Z + FILE_PATH=/Users/runner/private_keys/AuthKey_***.p8
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3971010Z + python3 -c '
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3971310Z import os, base64
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3988000Z secret = os.environ.get('\''APP_STORE_CONNECT_API_KEY_BASE64'\'', '\'''\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3988500Z print(f'\''Secret length: {len(secret)}'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3988860Z if '\''BEGIN PRIVATE KEY'\'' in secret:
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3989250Z     print('\''Detected raw PEM'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3989640Z     with open(os.environ.get('\''FILE_PATH'\''), '\''w'\'') as f:
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3989970Z         f.write(secret)
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3990150Z else:
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3990390Z     print('\''Attempting base64 decode...'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3990980Z     secret_clean = secret.replace('\''\n'\'', '\'''\'').replace('\''\r'\'', '\'''\'').replace('\'' '\'', '\'''\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3991600Z     print(f'\''Clean length: {len(secret_clean)}'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3991890Z     try:
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3992220Z         decoded = base64.b64decode(secret_clean).decode('\''utf-8'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3992660Z         print('\''Successfully decoded base64'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3993360Z         print(f'\''Decoded length: {len(decoded)}'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3993750Z         if '\''BEGIN PRIVATE KEY'\'' in decoded:
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3994160Z             print('\''Found PEM headers in decoded string'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3994440Z         else:
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3994760Z             print('\''WARNING: Decoded string does not look like a PEM file!'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3995490Z         with open(os.environ.get('\''FILE_PATH'\''), '\''w'\'') as f:
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3995820Z             f.write(decoded)
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3996030Z     except Exception as e:
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3996360Z         print(f'\''Decode failed: {e}'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3996710Z         print('\''Writing raw secret just in case'\'')
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3997160Z         with open(os.environ.get('\''FILE_PATH'\''), '\''w'\'') as f:
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3997440Z             f.write(secret)
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.3997630Z '
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.5716130Z + mkdir -p fastlane
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.5716500Z Secret length: 344
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.5817560Z + cat
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.5817950Z Attempting base64 decode...
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.5918070Z + export IPA_PATH=/Users/runner/work/_temp/export/App.ipa
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.5918450Z Clean length: 344
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.6018730Z + IPA_PATH=/Users/runner/work/_temp/export/App.ipa
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.6019160Z Successfully decoded base64
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.6119320Z + fastlane deploy
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.6119620Z Decoded length: 257
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:07.6220010Z Found PEM headers in decoded string
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:08.8583490Z [21:21:08]: [33mGet started using a Gemfile for fastlane https://docs.fastlane.tools/getting-started/ios/setup/#use-a-gemfile[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:09.9017930Z [21:21:09]: Sending anonymous analytics information
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:09.9079970Z [21:21:09]: Learn more at https://docs.fastlane.tools/#metrics
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:09.9086860Z [21:21:09]: No personal or sensitive data is sent.
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:09.9132980Z [21:21:09]: You can disable this by adding `opt_out_usage` at the top of your Fastfile
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:09.9184950Z [21:21:09]: [32mDriving the lane 'deploy' ≡ƒÜÇ[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:09.9201410Z [21:21:09]: [32m---------------------------------------[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:09.9202600Z [21:21:09]: [32m--- Step: app_store_connect_api_key ---[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:09.9205770Z [21:21:09]: [32m---------------------------------------[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:09.9576030Z [21:21:09]: [32m---------------------------------[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:09.9576610Z [21:21:09]: [32m--- Step: upload_to_app_store ---[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:09.9577000Z [21:21:09]: [32m---------------------------------[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:09.9582180Z [21:21:09]: Creating authorization token for App Store Connect API
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7667930Z +------------------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7668500Z |      [33mLane Context[0m      |
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7668740Z +---------------+--------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7668940Z | PLATFORM_NAME |        |
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7669230Z | LANE_NAME     | deploy |
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7669430Z +---------------+--------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7669810Z [21:21:10]: [31mCalled from Fastfile at line 8[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7670090Z [21:21:10]: [31m```[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7670420Z [21:21:10]: [31m     6:	    in_house: false[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7670770Z [21:21:10]: [31m     7:	  )[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7671120Z [21:21:10]: [31m =>  8:	  upload_to_app_store([0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7671530Z [21:21:10]: [31m     9:	    ipa: ENV["IPA_PATH"][0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7671860Z [21:21:10]: [31m    10:	  )[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7672120Z [21:21:10]: [31m```[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7673500Z [21:21:10]: [31mAuthentication credentials are missing or invalid. - Provide a properly configured and signed bearer token, and make sure that it has not expired. Learn more about Generating Tokens for API Requests https://developer.apple.com/go/?id=api-generating-tokens[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7798610Z 
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7806650Z +------------------------------------------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7807770Z |                [32mfastlane summary[0m                |
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7808160Z +------+---------------------------+-------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7808510Z | Step | Action                    | Time (in s) |
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7808880Z +------+---------------------------+-------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7809230Z | 1    | app_store_connect_api_key | 0           |
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7809630Z | ≡ƒÆÑ   | [31mupload_to_app_store[0m       | 0           |
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7809990Z +------+---------------------------+-------------+
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7810150Z 
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7810370Z [21:21:10]: [31mfastlane finished with errors[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7881710Z 
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7882960Z Looking for related GitHub issues on fastlane/fastlane...
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:10.7883580Z 
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:11.0499400Z [31m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:11.0512320Z [!] The request could not be completed because:
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:11.0520540Z 	Authentication credentials are missing or invalid. - Provide a properly configured and signed bearer token, and make sure that it has not expired. Learn more about Generating Tokens for API Requests https://developer.apple.com/go/?id=api-generating-tokens[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T21:21:11.0615030Z ##[error]Process completed with exit code 1.

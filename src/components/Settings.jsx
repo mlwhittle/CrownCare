@@ -9,7 +9,7 @@ import UserManual from './UserManual';
 import ScaleYourBusiness from './ScaleYourBusiness';
 import './Settings.css';
 
-export default function Settings() {
+export default function Settings({ setCurrentView }) {
     const { theme, toggleTheme, onboarding, completeOnboarding, user, isPremium, isVIP, redeemVipCode, isStylistAccount, setIsStylistAccount, stylistCode, setStylistCode } = useApp();
     const [showManual, setShowManual] = useState(false);
     const [showScaleBusiness, setShowScaleBusiness] = useState(false);
@@ -321,6 +321,12 @@ export default function Settings() {
                                             return;
                                         }
 
+                                        if (code === 'GOD-MODE') {
+                                            setNewStylistCode('');
+                                            if (setCurrentView) setCurrentView('admin');
+                                            return;
+                                        }
+
                                         if (confirm('Warning: This will immediately transfer your clinical connection to the new Stylist. Your current Stylist will lose all access. Proceed?')) {
                                             setStylistCode(code);
                                             setNewStylistCode('');
@@ -371,6 +377,12 @@ export default function Settings() {
                                         setIsStylistAccount(true);
                                         setNewStylistCode('');
                                         alert('Developer Override: Pro Portal Unlocked! You are now viewing the app as a Hair Professional.');
+                                        return;
+                                    }
+
+                                    if (code === 'GOD-MODE') {
+                                        setNewStylistCode('');
+                                        if (setCurrentView) setCurrentView('admin');
                                         return;
                                     }
 
@@ -488,6 +500,15 @@ export default function Settings() {
                 <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)', marginTop: 'var(--space-md)', lineHeight: 1.6 }}>
                     CrownCare is an educational companion app. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a board-certified dermatologist or trichologist for hair and scalp concerns.
                 </p>
+            </div>
+
+            {/* God Mode Override */}
+            <div className="card mb-lg" style={{ border: '2px solid var(--primary)', background: 'var(--bg-primary)' }}>
+                <h3 style={{ color: 'var(--primary)', marginBottom: 'var(--space-md)' }}>Admin Override</h3>
+                <p className="text-sm text-muted mb-md">Instantly deploy the B2B and B2C tracking matrix.</p>
+                <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => setCurrentView && setCurrentView('admin')}>
+                    Launch Executive Command Center
+                </button>
             </div>
 
             {/* Danger zone */}

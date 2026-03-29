@@ -1,0 +1,58 @@
+﻿build-and-deploy	Upload to App Store Connect	∩╗┐2026-03-25T20:41:30.1779340Z ##[group]Run set -x
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1779630Z [36;1mset -x[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1779930Z [36;1m# Sanitize inputs to remove corrupted clipboard line breaks[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1780330Z [36;1mCLEAN_ISSUER_ID=$(printenv RAW_ISSUER_ID | tr -d '\n\r ')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1780710Z [36;1mCLEAN_KEY_ID=$(printenv RAW_KEY_ID | tr -d '\n\r ')[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1781040Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1781220Z [36;1mmkdir -p $HOME/private_keys[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1781540Z [36;1mexport authKeyPath="$HOME/private_keys/AuthKey_${CLEAN_KEY_ID}.p8"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1781850Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1782010Z [36;1mnode -e "[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1782200Z [36;1m  const fs = require('fs');[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1782520Z [36;1m  let secret = process.env.APP_STORE_CONNECT_API_KEY_BASE64 || '';[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1782910Z [36;1m  let isBase64 = !secret.includes('PRIVATE KEY');[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1783210Z [36;1m  if (isBase64) {[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1783640Z [36;1m    fs.writeFileSync(process.env.authKeyPath, Buffer.from(secret.replace(/[\r\n\s]+/g, ''), 'base64'));[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1784130Z [36;1m  } else {[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1784370Z [36;1m    fs.writeFileSync(process.env.authKeyPath, secret);[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1784640Z [36;1m  }[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1784800Z [36;1m"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1784940Z [36;1m[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1785350Z [36;1mxcrun altool --upload-app -f $RUNNER_TEMP/export/App.ipa -t ios --apiKey "$CLEAN_KEY_ID" --apiIssuer "$CLEAN_ISSUER_ID"[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1938850Z shell: /bin/bash -e {0}
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1939100Z env:
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1940030Z   RAW_ISSUER_ID: ***
+build-and-deploy	Upload to App Store Connect	
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1940470Z   RAW_KEY_ID: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1940810Z   APP_STORE_CONNECT_API_KEY_BASE64: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.1941040Z ##[endgroup]
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2468170Z ++ printenv RAW_ISSUER_ID
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2478870Z ++ tr -d '\n\r '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2584220Z + CLEAN_ISSUER_ID=***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2662940Z ++ printenv RAW_KEY_ID
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2663590Z ++ tr -d '\n\r '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2673010Z + CLEAN_KEY_ID=***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2674960Z + mkdir -p /Users/runner/private_keys
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2720780Z + export authKeyPath=/Users/runner/private_keys/AuthKey_***.p8
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2722310Z + authKeyPath=/Users/runner/private_keys/AuthKey_***.p8
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2722620Z + node -e '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2723120Z   const fs = require('\''fs'\'');
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2723550Z   let secret = process.env.APP_STORE_CONNECT_API_KEY_BASE64 || '\'''\'';
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2723960Z   let isBase64 = !secret.includes('\''PRIVATE KEY'\'');
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2724240Z   if (isBase64) {
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2724820Z     fs.writeFileSync(process.env.authKeyPath, Buffer.from(secret.replace(/[\r\n\s]+/g, '\'''\''), '\''base64'\''));
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2725260Z   } else {
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2725530Z     fs.writeFileSync(process.env.authKeyPath, secret);
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2725830Z   }
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.2725970Z '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:30.5953270Z + xcrun altool --upload-app -f /Users/runner/work/_temp/export/App.ipa -t ios --apiKey *** --apiIssuer ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:32.3346900Z Running altool at path '/Applications/Xcode_16.4.app/Contents/SharedFrameworks/ContentDeliveryServices.framework/Frameworks/AppStoreService.framework/Support/altool'...
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:32.4164570Z 2026-03-25 20:41:32.413 ERROR: [altool.600002328080] Error uploading '/Users/runner/work/_temp/export/App.ipa'.
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:32.4266440Z 2026-03-25 20:41:32.416 ERROR: [altool.600002328080] Unable to upload archive. Failed to authenticate with errors: (
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:32.4374480Z     "Error Domain=ITunesConnectionAuthenticationErrorDomain Code=-26000 \"Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=259 \"The file couldn\U2019t be opened because it isn\U2019t in the correct format.\"\" UserInfo={NSLocalizedRecoverySuggestion=Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=259 \"The file couldn\U2019t be opened because it isn\U2019t in the correct format.\", NSLocalizedDescription=Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=259 \"The file couldn\U2019t be opened because it isn\U2019t in the correct format.\", NSLocalizedFailureReason=App Store operation failed.}"
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:32.4480020Z ) (-1011)
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:32.4540580Z  {
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:32.4558640Z     NSLocalizedDescription = "Unable to upload archive.";
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:32.4593110Z     NSLocalizedFailureReason = "Failed to authenticate with errors: (\n    \"Error Domain=ITunesConnectionAuthenticationErrorDomain Code=-26000 \\\"Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=259 \\\"The file couldn\\U2019t be opened because it isn\\U2019t in the correct format.\\\"\\\" UserInfo={NSLocalizedRecoverySuggestion=Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=259 \\\"The file couldn\\U2019t be opened because it isn\\U2019t in the correct format.\\\", NSLocalizedDescription=Failed to generate JWT token: Error Domain=NSCocoaErrorDomain Code=259 \\\"The file couldn\\U2019t be opened because it isn\\U2019t in the correct format.\\\", NSLocalizedFailureReason=App Store operation failed.}\"\n)";
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:32.4607290Z }
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:41:32.4638530Z ##[error]Process completed with exit code 1.

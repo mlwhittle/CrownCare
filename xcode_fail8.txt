@@ -1,0 +1,25 @@
+﻿build-and-deploy	Upload to App Store Connect	∩╗┐2026-03-25T20:28:37.3363930Z ##[group]Run set -x
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.3364240Z [36;1mset -x[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.3364540Z [36;1mauthKeyPath=$RUNNER_TEMP/AuthKey_${APP_STORE_CONNECT_API_KEY_KEY_ID}.p8[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.3365050Z [36;1mprintenv APP_STORE_CONNECT_API_KEY_BASE64 | tr -d '\n\r ' | base64 --decode -o $authKeyPath[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.3365770Z [36;1mxcrun altool --upload-app -f $RUNNER_TEMP/export/App.ipa -t ios --apiKey $APP_STORE_CONNECT_API_KEY_KEY_ID --apiIssuer $APP_STORE_CONNECT_API_KEY_ISSUER_ID[0m
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.3482870Z shell: /bin/bash -e {0}
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.3483500Z env:
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.3484990Z   APP_STORE_CONNECT_API_KEY_ISSUER_ID: ***
+build-and-deploy	Upload to App Store Connect	
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.3486110Z   APP_STORE_CONNECT_API_KEY_KEY_ID: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.3487200Z   APP_STORE_CONNECT_API_KEY_BASE64: ***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.3487840Z ##[endgroup]
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.4032810Z + authKeyPath='/Users/runner/work/_temp/AuthKey_***
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.4106920Z ***.p8'
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.4107900Z + printenv APP_STORE_CONNECT_API_KEY_BASE64
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.4108760Z + tr -d '\n\r '
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.4110510Z + base64 --decode -o /Users/runner/work/_temp/AuthKey_*** ***.p8
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.4111920Z base64: invalid argument ***.p8
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.4112380Z Usage:	base64 [-Ddh] [-b num] [-i in_file] [-o out_file]
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.4112820Z   -b, --break       break encoded output up into lines of length num
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.4113160Z   -D, -d, --decode  decode input
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.4113440Z   -h, --help        display this message
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.4113770Z   -i, --input       input file (default: "-" for stdin)
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.4114120Z   -o, --output      output file (default: "-" for stdout)
+build-and-deploy	Upload to App Store Connect	2026-03-25T20:28:37.4125120Z ##[error]Process completed with exit code 64.

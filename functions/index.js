@@ -159,3 +159,77 @@ exports.claimWebSubscription = onRequest((req, res) => {
     });
 });
 
+// ==========================================
+// INTERNAL AI MARKETING ENGINE (CrownCare & PastorWhittle)
+// ==========================================
+const aiMarketing = require('./aiMarketing');
+exports.dailyMarketingSync = aiMarketing.dailyMarketingSync;
+exports.triggerMarketingSync = aiMarketing.triggerMarketingSync;
+
+// ==========================================
+// AI COMMAND CENTER: LEAD GEN TRACKING
+// ==========================================
+
+// 1x1 Transparent GIF Buffer for the Tracking Pixel
+const transparentGif = Buffer.from(
+    'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+    'base64'
+);
+
+exports.trackEmailOpen = onRequest((req, res) => {
+    cors(req, res, async () => {
+        try {
+            const { uid, campaign } = req.query;
+            if (uid) {
+                const standardizedUid = uid.toLowerCase().trim();
+                const trackingRef = admin.firestore().collection('email_tracking').doc(standardizedUid);
+                
+                await trackingRef.set({
+                    openCount: admin.firestore.FieldValue.increment(1),
+                    lastOpenedAt: admin.firestore.FieldValue.serverTimestamp(),
+                    campaignsOpened: admin.firestore.FieldValue.arrayUnion(campaign || 'unknown')
+                }, { merge: true });
+                
+                logger.info(`Email Opened by: ${standardizedUid} for campaign ${campaign}`);
+            }
+        } catch (error) {
+            logger.error('Pixel Tracking Error:', error);
+        }
+
+        // Always return the invisible 1x1 image so the email client doesn't show a broken image box
+        res.set('Content-Type', 'image/gif');
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+        res.status(200).send(transparentGif);
+    });
+});
+
+exports.trackEmailClick = onRequest((req, res) => {
+    cors(req, res, async () => {
+        const { uid, url, campaign } = req.query;
+        const targetUrl = url ? decodeURIComponent(url) : 'https://crowncare-marketing-116e4.web.app';
+
+        try {
+            if (uid) {
+                const standardizedUid = uid.toLowerCase().trim();
+                const trackingRef = admin.firestore().collection('email_tracking').doc(standardizedUid);
+                
+                await trackingRef.set({
+                    clickCount: admin.firestore.FieldValue.increment(1),
+                    lastClickedAt: admin.firestore.FieldValue.serverTimestamp(),
+                    campaignLinksClicked: admin.firestore.FieldValue.arrayUnion({
+                        url: targetUrl,
+                        campaign: campaign || 'unknown',
+                        timestamp: new Date().toISOString()
+                    })
+                }, { merge: true });
+                
+                logger.info(`Link Clicked by: ${standardizedUid} to ${targetUrl}`);
+            }
+        } catch (error) {
+            logger.error('Click Tracking Error:', error);
+        }
+
+        // Redirect the user immediately to the destination they clicked
+        res.redirect(302, targetUrl);
+    });
+});

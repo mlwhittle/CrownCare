@@ -1,0 +1,40 @@
+﻿build-and-deploy	Install Apple Certificates on Cloud Mac	∩╗┐2026-03-25T20:18:15.4286250Z ##[group]Run set -x
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4286600Z [36;1mset -x[0m
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4286870Z [36;1mCERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12[0m
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4287390Z [36;1mPP_PATH=$RUNNER_TEMP/build_pp.mobileprovision[0m
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4288000Z [36;1mKEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db[0m
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4288430Z [36;1m[0m
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4288770Z [36;1mprintenv BUILD_CERTIFICATE_BASE64 | tr -d '\n\r ' | base64 --decode -o $CERTIFICATE_PATH[0m
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4289470Z [36;1mprintenv BUILD_PROVISION_PROFILE_BASE64 | tr -d '\n\r ' | base64 --decode -o $PP_PATH[0m
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4289920Z [36;1m[0m
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4290350Z [36;1msecurity create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH[0m
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4290860Z [36;1msecurity set-keychain-settings -lut 21600 $KEYCHAIN_PATH[0m
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4291390Z [36;1msecurity unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH[0m
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4291820Z [36;1m[0m
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4292630Z [36;1msecurity import $CERTIFICATE_PATH -P "***" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH[0m
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4293150Z [36;1msecurity list-keychain -d user -s $KEYCHAIN_PATH[0m
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4293430Z [36;1m[0m
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4294050Z [36;1mmkdir -p ~/Library/MobileDevice/Provisioning\ Profiles[0m
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4294500Z [36;1mcp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles[0m
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4343190Z shell: /bin/bash -e {0}
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4343420Z env:
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4364280Z   BUILD_CERTIFICATE_BASE64: ***
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.4364710Z   P12_PASSWORD: ***
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.5332270Z   BUILD_PROVISION_PROFILE_BASE64: ***
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.5332770Z   KEYCHAIN_PASSWORD: temporary-keychain-pass
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.5333160Z ##[endgroup]
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.6145750Z + CERTIFICATE_PATH=/Users/runner/work/_temp/build_certificate.p12
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.6263800Z + PP_PATH=/Users/runner/work/_temp/build_pp.mobileprovision
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.6330730Z + KEYCHAIN_PATH=/Users/runner/work/_temp/app-signing.keychain-db
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.6331460Z + printenv BUILD_CERTIFICATE_BASE64
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.6331870Z + tr -d '\n\r '
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.6332520Z + base64 --decode -o /Users/runner/work/_temp/build_certificate.p12
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.6333040Z + printenv BUILD_PROVISION_PROFILE_BASE64
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.6333350Z + tr -d '\n\r '
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.6333740Z + base64 --decode -o /Users/runner/work/_temp/build_pp.mobileprovision
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.6334420Z + security create-keychain -p temporary-keychain-pass /Users/runner/work/_temp/app-signing.keychain-db
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.6534520Z + security set-keychain-settings -lut 21600 /Users/runner/work/_temp/app-signing.keychain-db
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.6656600Z + security unlock-keychain -p temporary-keychain-pass /Users/runner/work/_temp/app-signing.keychain-db
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.6768120Z + security import /Users/runner/work/_temp/build_certificate.p12 -P *** -A -t cert -f pkcs12 -k /Users/runner/work/_temp/app-signing.keychain-db
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.6938070Z security: SecKeychainItemImport: Unable to decode the provided data.
+build-and-deploy	Install Apple Certificates on Cloud Mac	2026-03-25T20:18:15.6960160Z ##[error]Process completed with exit code 1.
