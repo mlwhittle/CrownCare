@@ -12,7 +12,7 @@ const puppeteer = require('puppeteer');
     await page.setViewport({ width: 428, height: 926, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
 
     console.log('Navigating to app...');
-    await page.goto('https://localhost:5173/', { waitUntil: 'domcontentloaded' });
+    await page.goto('https://localhost:5175/', { waitUntil: 'domcontentloaded' });
 
     // Inject onboarding state into localStorage so we bypass the quiz
     await page.evaluate(() => {
