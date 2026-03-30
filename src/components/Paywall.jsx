@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { Crown, Sparkles, ShieldCheck, CheckCircle2, ArrowRight, ShieldAlert } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
-import { Purchases } from '@revenuecat/purchases-capacitor';
 
 const STRIPE_LINKS = {
     solo: "https://buy.stripe.com/eVq3cwbJ5b8O7WzbQ2fUQ04",
@@ -31,33 +30,9 @@ export default function Paywall({ onSubscribeSuccess }) {
         }
 
         if (Capacitor.isNativePlatform()) {
-            try {
-                const offerings = await Purchases.getOfferings();
-                
-                if (offerings.current !== null && offerings.current.availablePackages.length > 0) {
-                    const packageToBuy = tier === 'stylist' 
-                        ? offerings.current.availablePackages.find(p => p.identifier.includes('pro')) || offerings.current.availablePackages[0]
-                        : offerings.current.availablePackages.find(p => p.identifier.includes('connected')) || offerings.current.availablePackages[0];
-                    
-                    if (packageToBuy) {
-                        const { customerInfo } = await Purchases.purchasePackage({ aPackage: packageToBuy });
-                        // Just check if ANY entitlement was explicitly granted by Apple/Google
-                        if (Object.keys(customerInfo.entitlements.active).length > 0) {
-                            onSubscribeSuccess(true);
-                        } else {
-                            setClaimMessage('❌ Subscription processed but no access granted. Contact support.');
-                        }
-                    } else {
-                         setClaimMessage('❌ Error: Product ID mismatch in RevenueCat.');
-                    }
-                } else {
-                    setClaimMessage('❌ Error: RevenueCat Offerings not configured properly.');
-                }
-            } catch (e) {
-                if (!e.userCancelled) setClaimMessage('❌ App Store Error: ' + e.message);
-            } finally {
-                setIsLoading(false);
-            }
+            setClaimMessage('❌ In-App Purchases are currently disabled in this version.');
+            setIsLoading(false);
+            return;
         } else {
             // In production web, force a hard redirect to the live Stripe Payment URL
             window.location.href = link;
