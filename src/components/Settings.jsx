@@ -4,6 +4,7 @@ import { db } from '../firebase';
 import { doc, updateDoc, collection, addDoc, onSnapshot } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { Settings as SettingsIcon, Sun, MoonStar, Crown, Trash2, User, Zap, Briefcase, Scissors, AlertTriangle, Activity, BookOpen } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 import settingsImg from '../assets/images/settings.png';
 import UserManual from './UserManual';
 import ScaleYourBusiness from './ScaleYourBusiness';
@@ -190,6 +191,7 @@ export default function Settings({ setCurrentView }) {
             </div>
 
             {/* Subscription Management */}
+            {!Capacitor.isNativePlatform() && (
             <div className="card mb-lg" style={{
                 border: isPremium ? '2px solid var(--gold-400)' : '2px solid var(--border-color)',
                 background: isPremium ? 'var(--bg-tertiary)' : 'var(--bg-secondary)',
@@ -280,6 +282,7 @@ export default function Settings({ setCurrentView }) {
                     )}
                 </div>
             </div>
+            )}
             {/* Stylist Connection */}
             <div className="card mb-lg" style={{ border: stylistCode ? '2px solid var(--success)' : '1px solid var(--border-color)' }}>
                 <h3 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
@@ -409,8 +412,9 @@ export default function Settings({ setCurrentView }) {
             </div>
 
             {/* Account Type */}
+            {!Capacitor.isNativePlatform() && (
             <div className="card mb-lg" style={{ 
-                border: isStylistAccount ? '2px solid var(--brand-400)' : '2px solid var(--border-color)', 
+                border: isStylistAccount ? '2px solid var(--brand-400)' : '2px solid var(--border-color)',
                 background: isStylistAccount ? 'var(--bg-tertiary)' : 'var(--bg-secondary)',
                 boxShadow: isStylistAccount ? '0 0 20px rgba(225, 137, 184, 0.15)' : 'none'
             }}>
@@ -482,6 +486,7 @@ export default function Settings({ setCurrentView }) {
                     </div>
                 )}
             </div>
+            )}
 
             {/* About */}
             <div className="card mb-lg">
