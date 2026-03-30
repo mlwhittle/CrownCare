@@ -3680,7 +3680,218 @@ html[data-theme="dark"] .retention-hook h3,
     .tl-grid {
         grid-template-columns: 1fr
     }
-}</style><style type="text/css" data-vite-dev-id="C:/Users/mlwhi/.gemini/antigravity/scratch/crowncare/src/index.css">/* ========================================
+}</style><style type="text/css" data-vite-dev-id="C:/Users/mlwhi/.gemini/antigravity/scratch/crowncare/src/components/AdminDashboard.css">.admin-dashboard {
+    padding: var(--space-xl) var(--space-md);
+    height: 100%;
+    overflow-y: auto;
+    background: #f8fafc;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-xl);
+}
+
+.admin-header h1 {
+    margin: 0 0 4px 0;
+    font-size: 24px;
+    color: var(--text-primary);
+}
+
+.admin-header p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.admin-tabs {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+    background: white;
+    padding: 6px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.admin-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-tab.active {
+    background: var(--primary);
+    color: white;
+}
+
+.admin-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.admin-stat-card {
+    background: white;
+    padding: var(--space-md);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-info h3 {
+    margin: 0;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-tertiary);
+}
+
+.stat-info h2 {
+    margin: 4px 0 0 0;
+    font-size: 22px;
+    color: var(--text-primary);
+}
+
+.admin-table-container {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) var(--space-lg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table-header h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.refresh-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.admin-table th, .admin-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.admin-table th {
+    background: #f8fafc;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.admin-table td strong {
+    display: block;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.sub-text {
+    color: var(--text-tertiary);
+    font-size: 11px;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-badge.sent {
+    background: #e0ffe0;
+    color: #059669;
+}
+
+.status-badge.waiting {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.table-footer {
+    text-align: center;
+    padding: 12px;
+    margin: 0;
+    color: var(--text-tertiary);
+    font-size: 11px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.empty-state h3 {
+    margin: 16px 0 8px 0;
+    color: var(--text-primary);
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    margin: 0;
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/mlwhi/.gemini/antigravity/scratch/crowncare/src/index.css">/* ========================================
    CROWNCARE — DESIGN SYSTEM
    Women's Hair Growth Companion
    Rose Gold · Mauve · Plum
@@ -4374,7 +4585,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 <body>
     <div id="root"><div class="app"><header class="desktop-header"><div class="header-brand"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-crown brand-icon"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"></path><path d="M5 21h14"></path></svg><span class="brand-name">CrownCare</span></div><nav class="header-nav"><button class="nav-link active"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-crown"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"></path><path d="M5 21h14"></path></svg> Home</button><button class="nav-link "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg> Visual Diary</button><button class="nav-ai-button desktop-ai" style="margin: 0px 16px;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg> <span style="font-size: 14px; font-weight: bold; margin-left: 6px; color: rgb(18, 16, 12);">AI Hub</span></button><button class="nav-link "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pill"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path><path d="m8.5 8.5 7 7"></path></svg> Treatments</button><button class="nav-link "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-grid"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg> Menu</button></nav><div class="header-actions"><span class="header-greeting">Hey, Sarah</span><button class="theme-toggle" title="Toggle theme"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon-star"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path></svg></button></div></header><nav class="mobile-tabs"><button class="mobile-tab active"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-crown"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"></path><path d="M5 21h14"></path></svg><span>Home</span></button><button class="mobile-tab "><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg><span>Diary</span></button><button class="nav-ai-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg></button><button class="mobile-tab "><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pill"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path><path d="m8.5 8.5 7 7"></path></svg><span>Treatments</span></button><button class="mobile-tab "><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-grid"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg><span>Menu</span></button></nav><main class="main-content" style="position: relative; overflow-x: hidden;"><div style="width: 100%; height: 100%; opacity: 1; transform: none;"><div class="home" style="background: var(--bg-primary); min-height: 100vh; padding: 1rem 1rem 100px; color: var(--text-primary);"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-top: 1rem;"><div><h1 style="font-size: 1.25rem; font-weight: 600; letter-spacing: 1px; color: var(--brand-primary); text-transform: uppercase; margin: 0px; font-family: var(--font-serif);">Overview</h1><span style="font-size: 0.875rem; color: var(--text-secondary);">Welcome back, Sarah</span></div></div><div class="card" style="margin-bottom: 1.5rem; padding: 0px; overflow: hidden; border: 1px solid var(--border-color); border-radius: 24px; background: var(--bg-secondary); box-shadow: var(--shadow-sm);"><img alt="Clinical Luxury CrownCare" src="/src/assets/images/crowncare_hero_v4.png" style="width: 100%; height: auto; display: block;"><div style="padding: 1.5rem;"><h2 style="font-size: 1.25rem; color: var(--brand-primary); margin-bottom: 12px; font-family: var(--font-serif); font-weight: 600;">The CrownCare Mission</h2><p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px;">Welcome to CrownCare. My name is Melvin Whittle, and alongside my wife Lucy Whittle, we created this platform to bridge the gap between premium clinical care and daily holistic maintenance. From our family to yours, we believe that your crown deserves reverence, transparency, and scientific tracking.</p><p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">This tool is built to empower you to take control of your retention journey without the guesswork. Whether it's analyzing a label or comparing your monthly visual progress, CrownCare is your dedicated digital companion.</p></div></div><div class="card" style="margin-bottom: 1.5rem; padding: 1.5rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-sm);"><h3 style="font-size: 1.1rem; color: var(--brand-primary); margin: 0px 0px 1rem; font-family: var(--font-serif); font-weight: 600;">Your Hair Profile</h3><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;"><div><span style="display: block; font-size: 0.75rem; color: var(--text-tertiary);">Texture</span><span style="font-weight: 600; color: var(--brand-primary); font-family: var(--font-sans);">curly</span></div><div><span style="display: block; font-size: 0.75rem; color: var(--text-tertiary);">Porosity</span><span style="font-weight: 600; color: var(--brand-primary); font-family: var(--font-sans);">Low Porosity</span></div><div style="grid-column: 1 / -1;"><span style="display: block; font-size: 0.75rem; color: var(--text-tertiary);">Primary Goal</span><span style="font-weight: 600; color: var(--brand-primary); font-family: var(--font-sans); display: inline-flex; padding: 4px 10px; background: var(--gold-light); border-radius: 20px;">Health &amp; Growth</span></div></div></div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;"><div class="card" style="padding: 1.25rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-sm);"><h2 style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin: 0px 0px 8px; display: flex; align-items: center; gap: 6px; font-family: var(--font-sans); font-weight: 700;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg> Daily Progress</h2><div style="display: flex; align-items: flex-end; gap: 8px;"><span style="font-size: 2.5rem; font-weight: 700; line-height: 1; color: var(--brand-primary); font-family: var(--font-sans); letter-spacing: -0.02em;">85%</span></div><p style="margin: 8px 0px 0px; font-size: 0.75rem; color: var(--text-tertiary); line-height: 1.2;">Sleep sync &amp; nutrition.</p></div><div class="card" style="padding: 1.25rem; background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.02)); border: 1px solid var(--gold-200); border-radius: 16px; box-shadow: var(--shadow-sm); cursor: pointer;"><h2 style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gold-600); margin: 0px 0px 8px; display: flex; align-items: center; gap: 6px; font-family: var(--font-sans); font-weight: 700;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold-500)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplets"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"></path><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"></path></svg> Microbiome Status</h2><div style="display: flex; align-items: flex-end; gap: 8px;"><span style="font-size: 1.65rem; font-weight: 700; line-height: 1; color: var(--gold-600); font-family: var(--font-sans); letter-spacing: -0.02em;">Unbalanced</span></div><p style="margin: 8px 0px 0px; font-size: 0.75rem; color: var(--gold-700); line-height: 1.2;">Based on Scalp Actives.</p></div></div><button style="width: 100%; margin-bottom: 1.5rem; padding: 2rem 1.5rem; background: var(--gradient-primary); color: white; border: none; border-radius: 16px; box-shadow: var(--shadow-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; gap: 16px; transition: transform 0.2s, box-shadow 0.2s;"><div style="background: rgba(255, 255, 255, 0.15); padding: 18px; border-radius: 50%; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;"><svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="var(--gold-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg></div><div style="text-align: center;"><h2 style="font-size: 1.4rem; font-weight: 600; margin: 0px 0px 6px; font-family: var(--font-serif); color: white; letter-spacing: 0.5px;">Visual Hair Diary</h2><p style="margin: 0px; font-size: 0.95rem; color: rgba(255, 255, 255, 0.85); letter-spacing: 0.2px;">Launch Ghost Overlay Scanner</p></div></button><div class="card" style="margin-bottom: 1.5rem; padding: 1.5rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-sm);"><h3 style="font-size: 1.2rem; color: var(--brand-primary); margin: 0px 0px 1.25rem; font-family: var(--font-serif); display: flex; align-items: center; gap: 8px; font-weight: 600;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg> Gemini Insights</h3><div style="display: flex; flex-direction: column; gap: 1rem;"><div style="padding: 16px; background: var(--success-light); border-radius: 12px; border-left: 4px solid var(--success);"><h4 style="margin: 0px 0px 6px; font-size: 0.95rem; color: var(--brand-primary); font-family: var(--font-sans); font-weight: 700;">Scalp Audit: Excellent</h4><p style="margin: 0px; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">Your latest visual scan shows a 12% reduction in inflammation along the crown.</p></div><div style="padding: 16px; background: var(--warning-light); border-radius: 12px; border-left: 4px solid var(--warning);"><h4 style="margin: 0px 0px 6px; font-size: 0.95rem; color: var(--brand-primary); font-family: var(--font-sans); font-weight: 700;">Ingredient Warning</h4><p style="margin: 0px; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">The 'Heavy Cream' you scanned yesterday contains Silicones currently incompatible with your Low Porosity profile.</p></div></div></div><div style="margin-bottom: 2rem;"><h3 style="font-size: 1.2rem; color: var(--brand-primary); margin: 0px 0px 1rem; font-family: var(--font-serif); display: flex; align-items: center; gap: 8px; font-weight: 600;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-grid"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg> Quick Tools Directory</h3><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;"><div class="card" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 1.25rem; cursor: pointer; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-sm);"><div style="margin-bottom: 0.75rem; background: var(--bg-primary); padding: 10px; border-radius: 14px; border: 1px solid var(--border-color);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div><h3 style="font-size: 0.9rem; font-weight: 700; margin: 0px 0px 4px; color: var(--text-primary); font-family: var(--font-sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Profile</h3><p style="margin: 0px; font-size: 0.7rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Account Details</p></div><div class="card" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 1.25rem; cursor: pointer; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-sm);"><div style="margin-bottom: 0.75rem; background: var(--bg-primary); padding: 10px; border-radius: 14px; border: 1px solid var(--border-color);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-salad"><path d="M7 21h10"></path><path d="M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z"></path><path d="M11.38 12a2.4 2.4 0 0 1-.4-4.77 2.4 2.4 0 0 1 3.2-2.77 2.4 2.4 0 0 1 3.47-.63 2.4 2.4 0 0 1 3.37 3.37 2.4 2.4 0 0 1-1.1 3.7 2.51 2.51 0 0 1 .03 1.1"></path><path d="m13 12 4-4"></path><path d="M10.9 7.25A3.99 3.99 0 0 0 4 10c0 .73.2 1.41.54 2"></path></svg></div><h3 style="font-size: 0.9rem; font-weight: 700; margin: 0px 0px 4px; color: var(--text-primary); font-family: var(--font-sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Nutrition</h3><p style="margin: 0px; font-size: 0.7rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">AI Plate Scanner</p></div><div class="card" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 1.25rem; cursor: pointer; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-sm);"><div style="margin-bottom: 0.75rem; background: var(--bg-primary); padding: 10px; border-radius: 14px; border: 1px solid var(--border-color);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg></div><h3 style="font-size: 0.9rem; font-weight: 700; margin: 0px 0px 4px; color: var(--text-primary); font-family: var(--font-sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Voice Journal</h3><p style="margin: 0px; font-size: 0.7rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">AI Therapist</p></div><div class="card" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 1.25rem; cursor: pointer; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-sm);"><div style="margin-bottom: 0.75rem; background: var(--bg-primary); padding: 10px; border-radius: 14px; border: 1px solid var(--border-color);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg></div><h3 style="font-size: 0.9rem; font-weight: 700; margin: 0px 0px 4px; color: var(--text-primary); font-family: var(--font-sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Routines</h3><p style="margin: 0px; font-size: 0.7rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Protect your hair</p></div><div class="card" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 1.25rem; cursor: pointer; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-sm);"><div style="margin-bottom: 0.75rem; background: var(--bg-primary); padding: 10px; border-radius: 14px; border: 1px solid var(--border-color);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pill"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path><path d="m8.5 8.5 7 7"></path></svg></div><h3 style="font-size: 0.9rem; font-weight: 700; margin: 0px 0px 4px; color: var(--text-primary); font-family: var(--font-sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Treatments</h3><p style="margin: 0px; font-size: 0.7rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Smart Protocols</p></div><div class="card" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 1.25rem; cursor: pointer; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-sm);"><div style="margin-bottom: 0.75rem; background: var(--bg-primary); padding: 10px; border-radius: 14px; border: 1px solid var(--border-color);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg></div><h3 style="font-size: 0.9rem; font-weight: 700; margin: 0px 0px 4px; color: var(--text-primary); font-family: var(--font-sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Narrative</h3><p style="margin: 0px; font-size: 0.7rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Monthly AI Report</p></div><div class="card" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 1.25rem; cursor: pointer; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-sm);"><div style="margin-bottom: 0.75rem; background: var(--bg-primary); padding: 10px; border-radius: 14px; border: 1px solid var(--border-color);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-secondary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg></div><h3 style="font-size: 0.9rem; font-weight: 700; margin: 0px 0px 4px; color: var(--text-primary); font-family: var(--font-sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Growth Report</h3><p style="margin: 0px; font-size: 0.7rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Length Tracking</p></div><div class="card" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 1.25rem; cursor: pointer; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-sm);"><div style="margin-bottom: 0.75rem; background: var(--bg-primary); padding: 10px; border-radius: 14px; border: 1px solid var(--border-color);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-column"><path d="M3 3v16a2 2 0 0 0 2 2h16"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg></div><h3 style="font-size: 0.9rem; font-weight: 700; margin: 0px 0px 4px; color: var(--text-primary); font-family: var(--font-sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">App Metrics</h3><p style="margin: 0px; font-size: 0.7rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Legacy Stats</p></div></div></div></div></div></main><footer class="footer" style="padding-top: ; padding-right: ; padding-bottom: 100px; padding-left: ; text-align: center; color: var(--text-tertiary); font-size: var(--font-size-xs);"><p style="font-weight: 600; color: var(--text-secondary); margin-bottom: 4px;">CrownCare v1.0.0 — Your holistic alopecia and edge regrowth tracker</p><p><strong>Medical Disclaimer:</strong> We are not giving medical advice. Users of this site must talk to their doctor or a hair care professional before starting any treatment.</p><div style="margin-top: 16px;"><button style="background: none; border: none; color: var(--primary); text-decoration: underline; cursor: pointer; font-size: var(--font-size-xs);">Privacy Policy</button></div></footer></div></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="/src/main.jsx?t=1774889811205"></script>
 
 
 </body></html>
