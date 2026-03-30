@@ -67,7 +67,7 @@ function AppInner() {
     }
 
     // 7-DAY FREE TRIAL LOGIC: Only strictly enforce the Paywall if their 168 hours have mathematically expired.
-    if (!isPremium && isTrialExpired) {
+    if (!isPremium && isTrialExpired && !Capacitor.isNativePlatform()) {
         return <Paywall onSubscribeSuccess={() => redeemVipCode('FAMILY-VIP')} />;
     }
 
