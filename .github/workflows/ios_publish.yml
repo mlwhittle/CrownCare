@@ -60,8 +60,8 @@ jobs:
       - name: Build iOS Xcode App
         run: |
           cd ios/App
-          # Auto-increment the build number so Apple accepts new uploads
-          xcrun agvtool next-version -all || true
+          # Automatically bind the Native iOS Build Number to the Git Action Runner ID to guarantee zero App Store Server collisions
+          xcrun agvtool new-version -all ${{ github.run_number }}
           xcodebuild -project App.xcodeproj -scheme App -configuration Release clean archive -archivePath $RUNNER_TEMP/App.xcarchive \
             CODE_SIGN_STYLE="Manual" \
             DEVELOPMENT_TEAM="6LW5TYA8KT" \
