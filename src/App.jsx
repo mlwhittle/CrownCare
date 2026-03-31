@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Capacitor } from '@capacitor/core';
+import { Purchases } from '@revenuecat/purchases-capacitor';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from './components/Header';
 import Home from './components/Home';
@@ -28,6 +29,20 @@ const MAIN_TABS = ['home', 'treatments', 'diary', 'nutrition', 'routines', 'styl
 
 function AppInner() {
     const { onboarding, completeOnboarding, isPremium, isTrialExpired, redeemVipCode } = useApp();
+
+    // Initialize RevenueCat for iOS Apple App Store native payments
+    useEffect(() => {
+        const initRC = async () => {
+            if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== 'ios') return;
+            try {
+                // Note: The owner must paste the Public App-Specific API Key in from their RevenueCat Dashboard
+                await Purchases.configure({ apiKey: 'appl_rmJkhAccGqKfBficXZljJwWggOD' });
+            } catch (error) {
+                console.error("Failed to initialize RevenueCat:", error);
+            }
+        };
+        initRC();
+    }, []);
 
     // Auto-Reset Legacy Saves: If the onboarding save doesn't have the new 'userType', wipe it so they see the new flow.
     if (onboarding && !onboarding.userType) {
