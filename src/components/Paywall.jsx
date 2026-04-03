@@ -182,9 +182,11 @@ export default function Paywall({ onSubscribeSuccess }) {
                     </div>
                 )}
                 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: 'var(--space-xl)', color: 'var(--text-tertiary)', fontSize: '12px' }}>
-                    <ShieldAlert size={14} /> Secure AES-256 Stripe Encrypted Checkout
-                </div>
+                {!Capacitor.isNativePlatform() && (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: 'var(--space-xl)', color: 'var(--text-tertiary)', fontSize: '12px' }}>
+                        <ShieldAlert size={14} /> Secure AES-256 Stripe Encrypted Checkout
+                    </div>
+                )}
 
                 <div style={{ marginTop: 'var(--space-2xl)', borderTop: '1px solid var(--border-color)', paddingTop: 'var(--space-xl)', textAlign: 'center' }}>
                     {Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios' ? (

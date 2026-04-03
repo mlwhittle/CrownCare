@@ -501,6 +501,14 @@ export default function Settings({ setCurrentView }) {
                 >
                     <BookOpen size={16} /> Read User Manual
                 </button>
+                
+                <button 
+                    className="btn btn-outline" 
+                    style={{ width: '100%', marginTop: 'var(--space-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }} 
+                    onClick={() => window.location.href = "mailto:support@crowncare.app"}
+                >
+                    Email Developer Support
+                </button>
 
                 <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)', marginTop: 'var(--space-md)', lineHeight: 1.6 }}>
                     CrownCare is an educational companion app. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a board-certified dermatologist or trichologist for hair and scalp concerns.

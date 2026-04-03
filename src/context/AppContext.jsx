@@ -196,9 +196,9 @@ export const AppProvider = ({ children }) => {
                         setDoc(userRef, { trialStartedAt: Date.now() }, { merge: true });
                     }
                     if (data && data.trialStartedAt) {
-                        // 168 Hours mathematically evaluated
-                        const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
-                        setIsTrialExpired(Date.now() - data.trialStartedAt > SEVEN_DAYS_MS);
+                        // 30 Days mathematically evaluated for Cardless Free Trial
+                        const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+                        setIsTrialExpired(Date.now() - data.trialStartedAt > THIRTY_DAYS_MS);
                     }
 
                     hasWebSubscription = data?.hasActiveWebSubscription === true;

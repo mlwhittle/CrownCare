@@ -22,7 +22,6 @@ import MonthlyNarrative from './components/MonthlyNarrative';
 import StylistPortal from './components/StylistPortal';
 import VisualDiary from './components/VisualDiary';
 import Menu from './components/Menu';
-import AdminDashboard from './components/AdminDashboard';
 import { Sparkles } from 'lucide-react';
 
 const MAIN_TABS = ['home', 'treatments', 'diary', 'nutrition', 'routines', 'stylist-portal', 'reports', 'settings'];
@@ -81,7 +80,7 @@ function AppInner() {
         return <OnboardingQuiz onComplete={completeOnboarding} />;
     }
 
-    // 7-DAY FREE TRIAL LOGIC: Only strictly enforce the Paywall if their 168 hours have mathematically expired.
+    // 30-DAY FREE TRIAL LOGIC: Only strictly enforce the Paywall if their 30 days have mathematically expired.
     if (!isPremium && isTrialExpired && !Capacitor.isNativePlatform()) {
         return <Paywall onSubscribeSuccess={() => redeemVipCode('FAMILY-VIP')} />;
     }
@@ -103,7 +102,6 @@ function AppInner() {
             case 'stylist-portal': return <StylistPortal />;
             case 'privacy': return <PrivacyPolicy setCurrentView={navigateTo} />;
             case 'delete-account': return <DeleteAccount setCurrentView={navigateTo} />;
-            case 'admin': return <AdminDashboard setCurrentView={navigateTo} />;
             default: return <Home setCurrentView={navigateTo} openAI={() => setShowAI(true)} />;
         }
     };
