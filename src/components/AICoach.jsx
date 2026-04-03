@@ -4,6 +4,7 @@ import { sendEscalationEmail } from '../services/EmailService';
 import { Sparkles, Send, X, Save, Trash2, MessageCircle, Key, ShieldCheck, Headset, Paperclip, Mic, User, Volume2, VolumeX } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import PremiumGate from './PremiumGate';
+import { Capacitor } from '@capacitor/core';
 import './AICoach.css';
 
 const QUICK_QUESTIONS = [
@@ -137,9 +138,14 @@ export default function AICoach({ isOverlay, onClose }) {
         // --- 2. TIER 2 INTENT ROUTING (Business / Billing) ---
         const billingRegex = /\b(billing|password|cancel|credit card|charge|subscription|refund|account)\b/;
         if (billingRegex.test(lowerQ)) {
+             const isIOS = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
+             const portalMessage = isIOS 
+                 ? "To resolve issues regarding your subscription, please navigate to your Apple ID Settings on this device to manage or cancel subscriptions."
+                 : "To resolve issue regarding your account, password, or billing, please visit your secure portal: [Customer Portal](https://billing.stripe.com/p/login/test_portal).";
+
              setChat(prev => [...prev, { 
                 role: 'ai', 
-                text: "To resolve issue regarding your account, password, or billing, please visit your secure portal: [Stripe Customer Portal](https://billing.stripe.com/p/login/test_portal). If you need a password reset, say 'reset password' and I will trigger a Firebase email.", 
+                text: `${portalMessage} If you need a password reset, say 'reset password' and I will trigger a Firebase email.`, 
                 timestamp: new Date().toISOString() 
              }]);
              return;
