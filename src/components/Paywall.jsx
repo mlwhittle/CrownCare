@@ -4,13 +4,6 @@ import { Crown, Sparkles, ShieldCheck, CheckCircle2, ArrowRight, ShieldAlert } f
 import { Capacitor } from '@capacitor/core';
 import { Purchases } from '@revenuecat/purchases-capacitor';
 
-const STRIPE_LINKS = {
-    solo: "https://buy.stripe.com/eVq3cwbJ5b8O7WzbQ2fUQ04",
-    connected: "https://buy.stripe.com/14A8wQfZlgt8a4HdYafUQ05",
-    stylist: "https://buy.stripe.com/aFa00kcN97WCgt5g6ifUQ06",
-    founders: "https://buy.stripe.com/8x228sfZl2Ci4Kn07kfUQ09"
-};
-
 export default function Paywall({ onSubscribeSuccess }) {
     const { onboarding, user, setIsPremium } = useApp();
     const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +14,7 @@ export default function Paywall({ onSubscribeSuccess }) {
     const userType = onboarding?.userType || 'solo';
     const isStylist = userType === 'stylist';
 
-    const handleCheckout = async (link, tier) => {
+    const handleCheckout = async (tier) => {
         setIsLoading(true);
         setClaimMessage('');
         
@@ -58,8 +51,9 @@ export default function Paywall({ onSubscribeSuccess }) {
             }
             return;
         } else {
-            // In production web and android, force a hard redirect to the live Stripe Payment URL
-            window.location.href = link;
+            // Non-iOS environments disabled to ensure Apple Compliance checker parity
+            setClaimMessage('Purchases must be made on a compatible device.');
+            setIsLoading(false);
         }
     };
 
@@ -141,7 +135,7 @@ export default function Paywall({ onSubscribeSuccess }) {
 
                         <button 
                             type="button"
-                            onClick={() => handleCheckout(STRIPE_LINKS.stylist, 'stylist')}
+                            onClick={() => handleCheckout('stylist')}
                             disabled={isLoading}
                             className="btn btn-primary btn-lg" 
                             style={{ width: '100%', fontSize: 'var(--font-size-lg)', height: '60px', background: 'var(--crown-gold)', color: '#000' }}
@@ -172,7 +166,7 @@ export default function Paywall({ onSubscribeSuccess }) {
 
                         <button 
                             type="button"
-                            onClick={() => handleCheckout(STRIPE_LINKS.connected, 'client')}
+                            onClick={() => handleCheckout('client')}
                             disabled={isLoading}
                             className="btn btn-primary btn-lg" 
                             style={{ width: '100%', fontSize: 'var(--font-size-lg)', height: '60px', background: 'var(--blue-500)' }}
