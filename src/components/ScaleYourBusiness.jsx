@@ -1,4 +1,4 @@
-import { X, Briefcase, Users, FileText, Zap, DollarSign } from 'lucide-react';
+import { X, Briefcase, Users, FileText, Zap, DollarSign, Sparkles } from 'lucide-react';
 import './Settings.css';
 
 export default function ScaleYourBusiness({ onClose }) {
@@ -11,6 +11,53 @@ export default function ScaleYourBusiness({ onClose }) {
                 <button className="btn btn-outline" style={{ padding: '8px', border: 'none' }} onClick={onClose}>
                     <X size={24} />
                 </button>
+            </div>
+
+            {/* TikTok & Instagram Content Kit CTA */}
+            <div className="card mb-lg" style={{
+                background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+                border: '2px solid #d4af37',
+                borderRadius: 'var(--radius-2xl)',
+                padding: 'var(--space-xl)',
+                position: 'relative',
+                overflow: 'hidden',
+                marginBottom: 'var(--space-xl)'
+            }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '3px', background: 'linear-gradient(90deg, #d4af37, #f5e6a3, #d4af37)' }}></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: 'var(--space-md)' }}>
+                    <Sparkles size={22} color="#d4af37" />
+                    <h3 style={{ margin: 0, color: '#f5e6a3', fontSize: 'var(--font-size-lg)', fontWeight: 800 }}>
+                        TikTok & Instagram Content Kit
+                    </h3>
+                </div>
+                <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: 'var(--font-size-sm)', lineHeight: 1.6, marginBottom: 'var(--space-md)' }}>
+                    Done-for-you social media templates, captions, hashtags, and viral content strategies designed specifically for hair stylists. Start posting like a pro today.
+                </p>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--space-sm)' }}>
+                    <div>
+                        <span style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 900, color: '#d4af37' }}>$69.99</span>
+                        <span style={{ fontSize: 'var(--font-size-xs)', color: 'rgba(255,255,255,0.5)', marginLeft: '6px' }}>one-time</span>
+                    </div>
+                    <button
+                        onClick={() => window.open('https://buy.stripe.com/8x228sfZl2Ci4Kn07kfUQ09', '_blank')}
+                        style={{
+                            background: 'linear-gradient(135deg, #d4af37, #f5e6a3)',
+                            color: '#1a1a2e',
+                            border: 'none',
+                            borderRadius: '12px',
+                            padding: '12px 24px',
+                            fontSize: 'var(--font-size-sm)',
+                            fontWeight: 800,
+                            cursor: 'pointer',
+                            letterSpacing: '0.5px',
+                            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                        }}
+                        onMouseEnter={(e) => { e.target.style.transform = 'scale(1.05)'; e.target.style.boxShadow = '0 4px 20px rgba(212,175,55,0.4)'; }}
+                        onMouseLeave={(e) => { e.target.style.transform = 'scale(1)'; e.target.style.boxShadow = 'none'; }}
+                    >
+                        Get the Kit →
+                    </button>
+                </div>
             </div>
 
             <div className="card mb-lg" style={{ border: '2px solid var(--brand-400)', background: 'var(--bg-tertiary)' }}>

@@ -1,13 +1,56 @@
 import React, { useState } from 'react';
 import { Sparkles, Check, ArrowRight, ShieldCheck, X, Crown, Users, Stethoscope, Calendar, Database } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { Capacitor } from '@capacitor/core';
 import './Upgrade.css';
 
 export default function Upgrade({ onClose }) {
     const { user, isVIP } = useApp();
+    const [purchaseStatus, setPurchaseStatus] = useState('');
 
-    const handleSelectTier = (tierName, price) => {
-        alert(`Stripe Checkout Integration: \n\nYou have selected the ${tierName} tier for ${price}/month. \n\nIn the production environment, this button will immediately route the user to the Stripe Checkout portal for this specific pricing tier.`);
+    const STRIPE_LINKS = {
+        'Solo Client': 'https://buy.stripe.com/eVq3cwbJ5b8O7WzbQ2fUQ04',
+        'Connected Client': 'https://buy.stripe.com/14A8wQfZlgt8a4HdYafUQ05',
+        'Stylist Pro': 'https://buy.stripe.com/aFa00kcN97WCgt5g6ifUQ06',
+    };
+
+    const REVENUECAT_PRODUCTS = {
+        'Solo Client': 'crowncare_solo_monthly',
+        'Connected Client': 'crowncare_connected_monthly',
+        'Stylist Pro': 'crowncare_pro_monthly',
+    };
+
+    const handleSelectTier = async (tierName, price) => {
+        // iOS Native: use RevenueCat In-App Purchase
+        if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
+            try {
+                setPurchaseStatus('Connecting to Apple App Store...');
+                const { Purchases } = await import('@revenuecat/purchases-capacitor');
+                const productId = REVENUECAT_PRODUCTS[tierName];
+                const { customerInfo } = await Purchases.purchaseProduct({ productIdentifier: productId });
+
+                if (Object.keys(customerInfo.entitlements.active).length > 0 || customerInfo.activeSubscriptions.length > 0) {
+                    setPurchaseStatus('🎉 Purchase successful! Unlocking app...');
+                    setTimeout(() => onClose(), 1500);
+                } else {
+                    setPurchaseStatus('✅ Access granted.');
+                    setTimeout(() => onClose(), 1500);
+                }
+            } catch (e) {
+                if (!e.userCancelled) {
+                    setPurchaseStatus('❌ Purchase failed: ' + e.message);
+                } else {
+                    setPurchaseStatus('');
+                }
+            }
+            return;
+        }
+
+        // Web / Android: open Stripe payment link
+        const stripeUrl = STRIPE_LINKS[tierName];
+        if (stripeUrl) {
+            window.open(stripeUrl, '_blank');
+        }
         onClose();
     };
 

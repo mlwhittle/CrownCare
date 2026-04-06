@@ -73,20 +73,17 @@ jobs:
           cd ios/App
           xcodebuild -exportArchive -archivePath $RUNNER_TEMP/App.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath $RUNNER_TEMP/export
 
-      - name: Upload to App Store Connect
-        env:
-          RAW_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-          RAW_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-          APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
-        run: |
-          set -x
+      - name: Install Fastlane
+        run: gem install fastlane
+
       - name: Upload to App Store Connect
         env:
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+          IPA_PATH: ${{ runner.temp }}/export/App.ipa
         run: |
-          set -x
+          set -euo pipefail
           mkdir -p fastlane
           cat << 'EOF' > fastlane/Fastfile
           lane :deploy do
@@ -111,5 +108,4 @@ jobs:
           end
           EOF
           
-          export IPA_PATH="$RUNNER_TEMP/export/App.ipa"
           fastlane deploy
