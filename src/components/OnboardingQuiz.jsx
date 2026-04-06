@@ -200,7 +200,7 @@ export default function OnboardingQuiz({ onComplete }) {
     const progress = ((step + 1) / STEPS.length) * 100;
 
     return (
-        <div className="auth-page" style={{ background: 'var(--bg-primary)', height: '100vh', overflowY: 'auto', padding: '40px 20px 80px 20px', display: 'flex', justifyContent: 'center' }}>
+        <div className="auth-page" style={{ background: 'var(--bg-primary)', minHeight: '100vh', overflowY: 'auto', padding: 'max(40px, env(safe-area-inset-top)) 20px max(80px, env(safe-area-inset-bottom)) 20px', display: 'flex', justifyContent: 'center' }}>
             <div style={{ width: '100%', maxWidth: '520px' }}>
                 {/* Progress bar */}
                 <div style={{
