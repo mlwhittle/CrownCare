@@ -182,3 +182,38 @@
 .nav-ai-button:active {
     transform: scale(0.9);
 }
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .desktop-header {
+        display: flex;
+        top: 16px;
+        width: 95%;
+        height: 64px;
+        padding: 0 var(--space-lg);
+    }
+    .mobile-tabs {
+        display: none !important;
+    }
+    .main-content {
+        padding-top: 100px !important;
+    }
+    .header-nav {
+        gap: 2px;
+    }
+    .nav-link {
+        padding: var(--space-xs) var(--space-sm);
+        font-size: 12px;
+    }
+}
+
+@supports (padding-top: env(safe-area-inset-top)) {
+    .desktop-header {
+        top: calc(16px + env(safe-area-inset-top));
+    }
+    .mobile-tabs {
+        bottom: calc(24px + env(safe-area-inset-bottom));
+    }
+    .main-content {
+        padding-bottom: calc(100px + env(safe-area-inset-bottom));
+    }
+}
