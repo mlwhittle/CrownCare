@@ -1,7 +1,8 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { auth, db } from '../firebase';
 import { onAuthStateChanged, signInAnonymously } from 'firebase/auth';
 import { doc, getDoc, setDoc, onSnapshot, collection, query, where } from 'firebase/firestore';
+import { syncToCloud, restoreFromCloud, pushAllToCloud } from '../services/SyncService';
 
 const AppContext = createContext();
 export const useApp = () => useContext(AppContext);
@@ -77,7 +78,7 @@ export const AppProvider = ({ children }) => {
 
     // Narrative Archives
     const [archivedNarratives, setArchivedNarratives] = useState(() => load('cc_archives', []));
-    useEffect(() => { save('cc_archives', archivedNarratives); }, [archivedNarratives]);
+    useEffect(() => { save('cc_archives', archivedNarratives); if (user) syncToCloud(user.uid, 'cc_archives', archivedNarratives); }, [archivedNarratives]);
     
     const saveNarrativeArchive = (text, score, targetMonth, images) => {
         const newArchive = {
@@ -158,6 +159,18 @@ export const AppProvider = ({ children }) => {
                 setUser(currentUser);
                 setAuthLoading(false);
 
+                // Restore cloud data to localStorage before loading state
+                await restoreFromCloud(currentUser.uid);
+                // Reload state from localStorage after cloud restore
+                setTreatments(load(STORAGE_KEYS.treatments, []));
+                setNutritionLogs(load(STORAGE_KEYS.nutrition, []));
+                setRoutineLogs(load(STORAGE_KEYS.routines, []));
+                setPhotos(load(STORAGE_KEYS.photos, []));
+                setJournalLogs(load(STORAGE_KEYS.journal, []));
+                setUnlockedBadges(load(STORAGE_KEYS.badges, []));
+                setAppointments(load(STORAGE_KEYS.appointments, []));
+                setArchivedNarratives(load('cc_archives', []));
+
                 // Ensure the user document exists and permanently attach any affiliate referrals
                 const userRef = doc(db, 'users', currentUser.uid);
                 const currentStylist = load('cc_stylist', null);
@@ -237,11 +250,12 @@ export const AppProvider = ({ children }) => {
     const completeOnboarding = (data) => {
         setOnboarding(data);
         setIsStylistAccount(data.userType === 'stylist');
+        if (user) pushAllToCloud(user.uid);
     };
 
     // Photos
     const [photos, setPhotos] = useState(() => load(STORAGE_KEYS.photos, []));
-    useEffect(() => { save(STORAGE_KEYS.photos, photos); }, [photos]);
+    useEffect(() => { save(STORAGE_KEYS.photos, photos); if (user) syncToCloud(user.uid, STORAGE_KEYS.photos, photos); }, [photos]);
 
     const addPhoto = (photo) => {
         setPhotos(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), ...photo }, ...prev]);
@@ -250,7 +264,7 @@ export const AppProvider = ({ children }) => {
 
     // Nutrition logs (daily)
     const [nutritionLogs, setNutritionLogs] = useState(() => load(STORAGE_KEYS.nutrition, []));
-    useEffect(() => { save(STORAGE_KEYS.nutrition, nutritionLogs); }, [nutritionLogs]);
+    useEffect(() => { save(STORAGE_KEYS.nutrition, nutritionLogs); if (user) syncToCloud(user.uid, STORAGE_KEYS.nutrition, nutritionLogs); }, [nutritionLogs]);
 
     const getTodayNutrition = () => {
         const today = new Date().toISOString().split('T')[0];
@@ -272,7 +286,7 @@ export const AppProvider = ({ children }) => {
 
     // Treatment logs
     const [treatments, setTreatments] = useState(() => load(STORAGE_KEYS.treatments, []));
-    useEffect(() => { save(STORAGE_KEYS.treatments, treatments); }, [treatments]);
+    useEffect(() => { save(STORAGE_KEYS.treatments, treatments); if (user) syncToCloud(user.uid, STORAGE_KEYS.treatments, treatments); }, [treatments]);
 
     const addTreatment = (t) => {
         setTreatments(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), ...t }, ...prev]);
@@ -284,7 +298,7 @@ export const AppProvider = ({ children }) => {
 
     // Routine logs
     const [routineLogs, setRoutineLogs] = useState(() => load(STORAGE_KEYS.routines, []));
-    useEffect(() => { save(STORAGE_KEYS.routines, routineLogs); }, [routineLogs]);
+    useEffect(() => { save(STORAGE_KEYS.routines, routineLogs); if (user) syncToCloud(user.uid, STORAGE_KEYS.routines, routineLogs); }, [routineLogs]);
 
     const logRoutine = (routine) => {
         setRoutineLogs(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), ...routine }, ...prev]);
@@ -319,7 +333,7 @@ export const AppProvider = ({ children }) => {
 
     // --- Badge Evaluators ---
     const [unlockedBadges, setUnlockedBadges] = useState(() => load(STORAGE_KEYS.badges, []));
-    useEffect(() => { save(STORAGE_KEYS.badges, unlockedBadges); }, [unlockedBadges]);
+    useEffect(() => { save(STORAGE_KEYS.badges, unlockedBadges); if (user) syncToCloud(user.uid, STORAGE_KEYS.badges, unlockedBadges); }, [unlockedBadges]);
 
     const unlockBadge = (badgeId) => {
         if (!unlockedBadges.includes(badgeId)) {
@@ -435,7 +449,7 @@ export const AppProvider = ({ children }) => {
 
     // Journal Logs
     const [journalLogs, setJournalLogs] = useState(() => load(STORAGE_KEYS.journal, []));
-    useEffect(() => { save(STORAGE_KEYS.journal, journalLogs); }, [journalLogs]);
+    useEffect(() => { save(STORAGE_KEYS.journal, journalLogs); if (user) syncToCloud(user.uid, STORAGE_KEYS.journal, journalLogs); }, [journalLogs]);
 
     const addJournalEntry = (text, tags = []) => {
         setJournalLogs(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), text, tags }, ...prev]);
@@ -445,7 +459,7 @@ export const AppProvider = ({ children }) => {
 
     // Appointments (Client View)
     const [appointments, setAppointments] = useState(() => load(STORAGE_KEYS.appointments, []));
-    useEffect(() => { save(STORAGE_KEYS.appointments, appointments); }, [appointments]);
+    useEffect(() => { save(STORAGE_KEYS.appointments, appointments); if (user) syncToCloud(user.uid, STORAGE_KEYS.appointments, appointments); }, [appointments]);
 
     const addAppointment = (appt) => {
         setAppointments(prev => [{ id: Date.now().toString(), dateAdded: new Date().toISOString(), ...appt }, ...prev]);

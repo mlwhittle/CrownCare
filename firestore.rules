@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // User private data sync — read/write only by the owner
+    match /user_data/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // User profile — read/write only by the owner
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Stripe subscriptions — read only by the owner, no client writes
+    match /customers/{userId}/subscriptions/{subId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false;
+    }
+
+    // Web subscription records — read by any authenticated user, no client writes
+    match /web_subscriptions/{email} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+  }
+}

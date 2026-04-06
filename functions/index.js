@@ -42,8 +42,8 @@ exports.createOnboardingLink = onRequest((req, res) => {
             // Generating link for the Stripe-hosted onboarding flow
             const accountLink = await stripe.accountLinks.create({
                 account: accountId,
-                refresh_url: `http://localhost:5173/portal?setup=refresh`,
-                return_url: `http://localhost:5173/portal?setup=success`,
+                refresh_url: `https://crowncare-116e4.web.app/portal?setup=refresh`,
+                return_url: `https://crowncare-116e4.web.app/portal?setup=success`,
                 type: 'account_onboarding',
             });
 

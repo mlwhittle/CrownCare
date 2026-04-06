@@ -62,15 +62,6 @@ export default function Paywall({ onSubscribeSuccess }) {
         setIsClaiming(true);
         setClaimMessage('');
         
-        // --- MASTER ADMIN DEMO BYPASS ---
-        if (claimEmail.trim().toLowerCase() === 'admin') {
-            setClaimMessage('👑 Admin Override Accepted. Unlocking app...');
-            setTimeout(() => {
-                onSubscribeSuccess(true);
-            }, 1500);
-            return;
-        }
-
         try {
             const apiEndpoint = 'https://claimwebsubscription-6tvsh2cpua-uc.a.run.app';
 

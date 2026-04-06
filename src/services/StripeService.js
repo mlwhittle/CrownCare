@@ -1,4 +1,4 @@
-const FIREBASE_FUNCTIONS_URL = "http://localhost:5001/church-website-357206/us-central1";
+const FIREBASE_FUNCTIONS_URL = "https://us-central1-crowncare-116e4.cloudfunctions.net";
 
 const StripeService = {
   /**
