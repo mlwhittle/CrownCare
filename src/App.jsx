@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Capacitor } from '@capacitor/core';
-
+import { Purchases } from '@revenuecat/purchases-capacitor';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from './components/Header';
 import Home from './components/Home';
@@ -31,14 +31,15 @@ function AppInner() {
     const { onboarding, completeOnboarding, isPremium, isTrialExpired, redeemVipCode, user } = useApp();
     const [showAuthModal, setShowAuthModal] = useState(true);
 
-    // iOS App Store native payments initialization (RevenueCat temporarily removed for clean build)
+    // Initialize RevenueCat for iOS Apple App Store native payments
     useEffect(() => {
         const initRC = async () => {
             if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== 'ios') return;
             try {
-                // Initialize here later
+                // Note: The owner must paste the Public App-Specific API Key in from their RevenueCat Dashboard
+                await Purchases.configure({ apiKey: 'appl_rmJkhAccGqKfBficXZljJwWggOD' });
             } catch (error) {
-                console.error("Failed to initialize:", error);
+                console.error("Failed to initialize RevenueCat:", error);
             }
         };
         initRC();

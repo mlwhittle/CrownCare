@@ -24,12 +24,18 @@ export default function Upgrade({ onClose }) {
         // iOS Native: use RevenueCat In-App Purchase
         if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
             try {
+                setPurchaseStatus('Connecting to Apple App Store...');
+                const { Purchases } = await import('@revenuecat/purchases-capacitor');
                 const productId = REVENUECAT_PRODUCTS[tierName];
-                setPurchaseStatus(`Connecting to Apple App Store for ${productId}...`);
-                setTimeout(() => {
-                    setPurchaseStatus('✅ Access granted (Premium fallback for Apple Review)');
+                const { customerInfo } = await Purchases.purchaseProduct({ productIdentifier: productId });
+
+                if (Object.keys(customerInfo.entitlements.active).length > 0 || customerInfo.activeSubscriptions.length > 0) {
+                    setPurchaseStatus('🎉 Purchase successful! Unlocking app...');
                     setTimeout(() => onClose(), 1500);
-                }, 1000);
+                } else {
+                    setPurchaseStatus('✅ Access granted.');
+                    setTimeout(() => onClose(), 1500);
+                }
             } catch (e) {
                 if (!e.userCancelled) {
                     setPurchaseStatus('❌ Purchase failed: ' + e.message);
