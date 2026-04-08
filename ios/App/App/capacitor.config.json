@@ -1,0 +1,9 @@
+{
+	"appId": "com.crowncare.app",
+	"appName": "CrownCare",
+	"webDir": "dist",
+	"packageClassList": [
+		"CAPCameraPlugin",
+		"PurchasesPlugin"
+	]
+}
