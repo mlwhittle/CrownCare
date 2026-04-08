@@ -1,6 +1,6 @@
-const LEONARDO_API_KEY = "***REMOVED***";
-const META_USER_ACCESS_TOKEN = "***REMOVED***";
-const TARGET_PAGE_ID = "955839617620959"; // Melvin's Social Studio
+const LEONARDO_API_KEY = process.env.LEONARDO_API_KEY;
+const META_USER_ACCESS_TOKEN = process.env.META_USER_ACCESS_TOKEN;
+const TARGET_PAGE_ID = process.env.TARGET_PAGE_ID || "955839617620959"; // Melvin's Social Studio
 
 async function testPipeline() {
     console.log("🚀 INITIALIZING AUTONOMOUS MARKETING ENGINE (TEST RUN) 🚀");
