@@ -22,12 +22,14 @@ import MonthlyNarrative from './components/MonthlyNarrative';
 import StylistPortal from './components/StylistPortal';
 import VisualDiary from './components/VisualDiary';
 import Menu from './components/Menu';
+import AuthModal from './components/AuthModal';
 import { Sparkles } from 'lucide-react';
 
 const MAIN_TABS = ['home', 'treatments', 'diary', 'nutrition', 'routines', 'stylist-portal', 'reports', 'settings'];
 
 function AppInner() {
-    const { onboarding, completeOnboarding, isPremium, isTrialExpired, redeemVipCode } = useApp();
+    const { onboarding, completeOnboarding, isPremium, isTrialExpired, redeemVipCode, user } = useApp();
+    const [showAuthModal, setShowAuthModal] = useState(true);
 
     // Initialize RevenueCat for iOS Apple App Store native payments
     useEffect(() => {
@@ -142,6 +144,9 @@ function AppInner() {
 
     return (
         <div className="app" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+            {user && user.isAnonymous === true && showAuthModal && (
+                <AuthModal onComplete={() => setShowAuthModal(false)} userName={onboarding?.name} />
+            )}
             <Header currentView={currentView} setCurrentView={navigateTo} openAI={() => setShowAI(true)} />
             <main className="main-content" style={{ position: 'relative', overflowX: 'hidden' }}>
                 <AnimatePresence mode="popLayout" initial={false}>
