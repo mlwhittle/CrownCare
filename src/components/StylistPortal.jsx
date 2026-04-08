@@ -89,7 +89,7 @@ export default function StylistPortal() {
             
         } catch (error) {
             console.error(error);
-            alert("Failed to connect to Stripe Checkout. Ensure your Firebase emulators are running.");
+            alert("Failed to connect to payment system. Please try again.");
         } finally {
             setIsStripeLoading(false);
         }
