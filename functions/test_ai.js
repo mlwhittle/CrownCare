@@ -1,6 +1,6 @@
-const LEONARDO_API_KEY = "935bbf29-f07a-44d1-ac9d-a4f4e03272fc";
-const META_USER_ACCESS_TOKEN = "EAAaNyYE4qE8BRNo8Hl0ikX8KCHLTtO4ZCJYLuUpdliEVzaMkrrWBDEkRCzqW9fpeVJlJQAdFwrMKkuaZAHU6AerKjEb8ivc5LTbrBwvb72Hwl8dzMyCVzVKwfHJM7EmCmJ0fWWVSzHZAKvycdGtvywZA2tuytggrHuZAxcfdEEcf0RrQgQR7n3HMgOt7xBZC6kJcuG8HTpZBQZDZD";
-const TARGET_PAGE_ID = "955839617620959"; // Melvin's Social Studio
+const LEONARDO_API_KEY = process.env.LEONARDO_API_KEY;
+const META_USER_ACCESS_TOKEN = process.env.META_USER_ACCESS_TOKEN;
+const TARGET_PAGE_ID = process.env.TARGET_PAGE_ID || "955839617620959"; // Melvin's Social Studio
 
 async function testPipeline() {
     console.log("🚀 INITIALIZING AUTONOMOUS MARKETING ENGINE (TEST RUN) 🚀");
