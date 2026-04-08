@@ -320,13 +320,6 @@ export default function Settings({ setCurrentView }) {
                                         if (code === 'PRO-MODE') {
                                             setIsStylistAccount(true);
                                             setNewStylistCode('');
-                                            alert('Developer Override: Pro Portal Unlocked! You are now viewing the app as a Hair Professional.');
-                                            return;
-                                        }
-
-                                        if (code === 'GOD-MODE') {
-                                            setNewStylistCode('');
-                                            if (setCurrentView) setCurrentView('admin');
                                             return;
                                         }
 
@@ -379,13 +372,6 @@ export default function Settings({ setCurrentView }) {
                                     if (code === 'PRO-MODE') {
                                         setIsStylistAccount(true);
                                         setNewStylistCode('');
-                                        alert('Developer Override: Pro Portal Unlocked! You are now viewing the app as a Hair Professional.');
-                                        return;
-                                    }
-
-                                    if (code === 'GOD-MODE') {
-                                        setNewStylistCode('');
-                                        if (setCurrentView) setCurrentView('admin');
                                         return;
                                     }
 
@@ -515,14 +501,6 @@ export default function Settings({ setCurrentView }) {
                 </p>
             </div>
 
-            {/* God Mode Override */}
-            <div className="card mb-lg" style={{ border: '2px solid var(--primary)', background: 'var(--bg-primary)' }}>
-                <h3 style={{ color: 'var(--primary)', marginBottom: 'var(--space-md)' }}>Admin Override</h3>
-                <p className="text-sm text-muted mb-md">Instantly deploy the B2B and B2C tracking matrix.</p>
-                <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => setCurrentView && setCurrentView('admin')}>
-                    Launch Executive Command Center
-                </button>
-            </div>
 
             {/* Danger zone */}
             <div className="card danger-card">
