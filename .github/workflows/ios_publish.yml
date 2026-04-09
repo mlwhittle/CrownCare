@@ -57,6 +57,17 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
+      - name: Select Xcode 26 and iOS 26 SDK
+        run: |
+          XCODE_APP=$(ls /Applications/ | grep -E '^Xcode_26.*\.app$' | sort -V | tail -n 1)
+          if [ -n "$XCODE_APP" ]; then
+            echo "Selecting /Applications/$XCODE_APP"
+            sudo xcode-select -s "/Applications/$XCODE_APP/Contents/Developer"
+          else
+            echo "Warning: Xcode 26 not dynamically found in /Applications/. Trying hardcoded standard paths."
+            sudo xcode-select -s /Applications/Xcode_26.0.app/Contents/Developer || sudo xcode-select -s /Applications/Xcode_26.app/Contents/Developer || true
+          fi
+
       - name: Build iOS Xcode App
         run: |
           cd ios/App
