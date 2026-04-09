@@ -66,7 +66,14 @@ jobs:
           require 'xcodeproj'
           project = Xcodeproj::Project.open('App.xcodeproj')
           project.targets.each do |target|
-            if target.name != 'App'
+            if target.name == 'App'
+              target.build_configurations.each do |config|
+                config.build_settings['CODE_SIGN_STYLE'] = 'Manual'
+                config.build_settings['DEVELOPMENT_TEAM'] = '6LW5TYA8KT'
+                config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = 'CrownCare App Store Profile'
+                config.build_settings['CODE_SIGN_IDENTITY'] = 'iPhone Distribution'
+              end
+            else
               target.build_configurations.each do |config|
                 config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
                 config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
@@ -80,11 +87,7 @@ jobs:
           
           xcodebuild -project App.xcodeproj -scheme App -configuration Release clean archive -archivePath $RUNNER_TEMP/App.xcarchive \
             -skipPackagePluginValidation \
-            -skipMacroValidation \
-            CODE_SIGN_STYLE="Manual" \
-            DEVELOPMENT_TEAM="6LW5TYA8KT" \
-            'PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos][arch=]=CrownCare App Store Profile' \
-            CODE_SIGN_IDENTITY="iPhone Distribution"
+            -skipMacroValidation
 
       - name: Export App Binary (.ipa)
         run: |
