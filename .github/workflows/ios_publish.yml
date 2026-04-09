@@ -62,11 +62,29 @@ jobs:
           cd ios/App
           # Automatically bind the Native iOS Build Number to the Git Action Runner ID to guarantee zero App Store Server collisions
           xcrun agvtool new-version -all ${{ github.run_number }}
+          cat << 'EOF' > fix_signing.rb
+          require 'xcodeproj'
+          project = Xcodeproj::Project.open('App.xcodeproj')
+          project.targets.each do |target|
+            if target.name != 'App'
+              target.build_configurations.each do |config|
+                config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
+                config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+              end
+            end
+          end
+          project.save
+          EOF
+          gem install xcodeproj
+          ruby fix_signing.rb
+          
           xcodebuild -project App.xcodeproj -scheme App -configuration Release clean archive -archivePath $RUNNER_TEMP/App.xcarchive \
+            -skipPackagePluginValidation \
+            -skipMacroValidation \
             CODE_SIGN_STYLE="Manual" \
             DEVELOPMENT_TEAM="6LW5TYA8KT" \
-            PROVISIONING_PROFILE_SPECIFIER="CrownCare App Store Profile" \
-            CODE_SIGN_IDENTITY="Apple Distribution"
+            'PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos][arch=]=CrownCare App Store Profile' \
+            CODE_SIGN_IDENTITY="iPhone Distribution"
 
       - name: Export App Binary (.ipa)
         run: |
