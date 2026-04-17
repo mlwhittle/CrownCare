@@ -37,7 +37,7 @@ function AppInner() {
             if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== 'ios') return;
             try {
                 // Note: The owner must paste the Public App-Specific API Key in from their RevenueCat Dashboard
-                await Purchases.configure({ apiKey: '***REMOVED***' });
+                await Purchases.configure({ apiKey: import.meta.env.VITE_REVENUECAT_API_KEY });
             } catch (error) {
                 console.error("Failed to initialize RevenueCat:", error);
             }

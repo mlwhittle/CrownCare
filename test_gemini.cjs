@@ -1,6 +1,7 @@
 const https = require('https');
 
-const API_KEY = "***REMOVED***"; // Extracted from AIAssistantWidget.jsx
+require('dotenv').config();
+const API_KEY = process.env.GEMINI_API_KEY; // Extracted from AIAssistantWidget.jsx
 const data = JSON.stringify({
   contents: [{ parts: [{ text: "Hello" }] }]
 });

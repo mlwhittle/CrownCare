@@ -13,3 +13,7 @@ dist-ssr
 GITHUB_SECRETS.txt
 ios/App/App.xcarchive
 ios/App/export
+google-services.json
+GoogleService-Info.plist
+*serviceAccount*.json
+firebase-adminsdk*.json
