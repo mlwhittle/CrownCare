@@ -180,12 +180,13 @@ export const AppProvider = ({ children }) => {
                 }, { merge: true });
 
                 // STRIPE INTEGRATION: Listen for active apps subscriptions AND web bridge upgrades
-                let hasAppSubscription = false;
+                let hasAppSubscription = false; // Stripe app subcollection
                 let hasWebSubscription = false;
+                let hasNativeAppSubscription = false;
 
                 const evaluatePremium = () => {
                     const isUserVIP = load('cc_vip', false);
-                    if (isUserVIP || hasAppSubscription || hasWebSubscription) {
+                    if (isUserVIP || hasAppSubscription || hasWebSubscription || hasNativeAppSubscription) {
                         setIsPremium(true);
                     } else {
                         setIsPremium(false);
@@ -215,6 +216,7 @@ export const AppProvider = ({ children }) => {
                     }
 
                     hasWebSubscription = data?.hasActiveWebSubscription === true;
+                    hasNativeAppSubscription = data?.hasActiveAppSubscription === true;
                     evaluatePremium();
                 });
 
