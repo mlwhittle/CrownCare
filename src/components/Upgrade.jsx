@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Sparkles, Check, ArrowRight, ShieldCheck, X, Crown, Users, Stethoscope, Calendar, Database } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { Capacitor } from '@capacitor/core';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 import './Upgrade.css';
 
 export default function Upgrade({ onClose }) {
@@ -29,7 +31,23 @@ export default function Upgrade({ onClose }) {
                 const productId = REVENUECAT_PRODUCTS[tierName];
                 const { customerInfo } = await Purchases.purchaseProduct({ productIdentifier: productId });
 
-                if (Object.keys(customerInfo.entitlements.active).length > 0 || customerInfo.activeSubscriptions.length > 0) {
+                const activeEntitlements = customerInfo?.entitlements?.active || {};
+                let activeTier = null;
+                if (activeEntitlements['pro']) activeTier = 'pro';
+                else if (activeEntitlements['connected']) activeTier = 'connected';
+                else if (activeEntitlements['solo']) activeTier = 'solo';
+
+                if (activeTier || customerInfo.activeSubscriptions.length > 0) {
+                    if (user) {
+                        try {
+                            await setDoc(doc(db, 'users', user.uid), {
+                                hasActiveAppSubscription: true,
+                                subscriptionTier: activeTier || tierName.split(' ')[0].toLowerCase()
+                            }, { merge: true });
+                        } catch (err) {
+                            console.error("Firebase sync failed:", err);
+                        }
+                    }
                     setPurchaseStatus('🎉 Purchase successful! Unlocking app...');
                     setTimeout(() => onClose(), 1500);
                 } else {

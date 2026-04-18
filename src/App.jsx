@@ -36,8 +36,12 @@ function AppInner() {
         const initRC = async () => {
             if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== 'ios') return;
             try {
-                // Note: The owner must paste the Public App-Specific API Key in from their RevenueCat Dashboard
-                await Purchases.configure({ apiKey: '***REMOVED***' });
+                const rcKey = import.meta.env.VITE_REVENUECAT_IOS_KEY;
+                if (rcKey) {
+                    await Purchases.configure({ apiKey: rcKey });
+                } else {
+                    console.warn("Missing VITE_REVENUECAT_IOS_KEY in environment variables.");
+                }
             } catch (error) {
                 console.error("Failed to initialize RevenueCat:", error);
             }
