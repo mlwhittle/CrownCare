@@ -54,157 +54,117 @@ function DeleteAccount({ setCurrentView }) {
             const uid = auth.currentUser.uid;
             
             // Delete checkout_sessions subcollection first
-            try {
-                const sessionsSnapshot = await getDocs(collection(db, 'users', uid, 'checkout_sessions'));
-                const batch = writeBatch(db);
-                sessionsSnapshot.docs.forEach((d) => batch.delete(d.ref));
-                await batch.commit();
-            } catch (e) {
-                console.warn("Failed to clean up checkout_sessions", e);
-            }
+            const checkoutSnap = await getDocs(collection(db, 'users', uid, 'checkout_sessions'));
+            const batch1 = writeBatch(db);
+            checkoutSnap.forEach(d => batch1.delete(d.ref));
+            await batch1.commit();
 
-            // Clean up Stripe customers subscriptions and payments
-            try {
-                const subsSnapshot = await getDocs(collection(db, 'customers', uid, 'subscriptions'));
-                const paySnapshot = await getDocs(collection(db, 'customers', uid, 'payments'));
-                const batch = writeBatch(db);
-                subsSnapshot.docs.forEach((d) => batch.delete(d.ref));
-                paySnapshot.docs.forEach((d) => batch.delete(d.ref));
-                await batch.commit();
-                await deleteDoc(doc(db, 'customers', uid));
-            } catch (e) {
-                console.warn("Failed to clean up customers data", e);
-            }
+            // Delete customers/{uid}/subscriptions
+            const subsSnap = await getDocs(collection(db, 'customers', uid, 'subscriptions'));
+            const batch2 = writeBatch(db);
+            subsSnap.forEach(d => batch2.delete(d.ref));
+            await batch2.commit();
 
-            // Delete root synced user_data where logs and photos are mapped
-            try {
-                await deleteDoc(doc(db, 'user_data', uid));
-            } catch (e) {
-                console.warn("Failed to clean up user_data", e);
-            }
+            // Delete customers/{uid}/payments
+            const paymentsSnap = await getDocs(collection(db, 'customers', uid, 'payments'));
+            const batch3 = writeBatch(db);
+            paymentsSnap.forEach(d => batch3.delete(d.ref));
+            await batch3.commit();
 
-            // Delete main user document
+            // Delete customers/{uid} parent doc
+            await deleteDoc(doc(db, 'customers', uid));
+
+            // Delete user_data/{uid}
+            await deleteDoc(doc(db, 'user_data', uid));
+
+            // Delete users/{uid}
             await deleteDoc(doc(db, 'users', uid));
 
-            // Wipe Auth Profile via Firebase Auth
-            await fbDeleteUser(auth.currentUser);
-
-            // Clear Subscription Hooks (Apple StoreKit logic)
+            // Logout RevenueCat on iOS
             if (Capacitor.isNativePlatform()) {
-                const { Purchases } = await import('@revenuecat/purchases-capacitor');
-                await Purchases.logOut();
+                try {
+                    const { Purchases } = await import('@revenuecat/purchases-capacitor');
+                    await Purchases.logOut();
+                } catch (e) {
+                    console.warn('RevenueCat logOut skipped:', e);
+                }
             }
 
-            // Local Storage and Redirects
+            // Delete Firebase Auth account
+            await fbDeleteUser(auth.currentUser);
+
+            // Clear local storage and redirect
             localStorage.clear();
-            window.location.href = '/'; // Hard reload sends them cleanly back to App.jsx onboarding
-            
+            setCurrentView('onboarding');
+
         } catch (error) {
-            console.error(error);
             if (error.code === 'auth/requires-recent-login') {
                 setNeedsReauth(true);
             } else {
-                alert(`Failed to delete account: ${error.message}`);
+                alert(`Deletion failed: ${error.message}`);
             }
+        } finally {
             setIsDeleting(false);
         }
     };
 
-    const handleDeleteClick = async () => {
-        if (confirmText !== 'DELETE') {
-            return alert("Please type DELETE exactly in all caps to confirm.");
-        }
-        setIsDeleting(true);
-        // Start the process
-        await processDeletion();
-    };
+    return (
+        <div style={{ padding: 'var(--space-lg)', maxWidth: '480px', margin: '0 auto' }}>
+            <button onClick={() => setCurrentView('settings')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', marginBottom: 'var(--space-lg)' }}>
+                <ArrowLeft size={18} /> Back to Settings
+            </button>
 
-    if (needsReauth) {
-        const isGoogle = auth.currentUser?.providerData.some(p => p.providerId === 'google.com');
+            <div style={{ textAlign: 'center', marginBottom: 'var(--space-lg)' }}>
+                <AlertTriangle size={48} color="var(--error)" />
+                <h2 style={{ color: 'var(--error)', marginTop: 'var(--space-sm)' }}>Delete Account</h2>
+                <p style={{ color: 'var(--text-secondary)', marginTop: 'var(--space-sm)' }}>
+                    This will permanently delete your account, all photos, logs, routines, and subscription data. This action cannot be undone.
+                </p>
+            </div>
 
-        return (
-            <div style={{ padding: 'var(--space-xl) var(--space-md)', maxWidth: '600px', margin: '0 auto' }}>
-                <div className="card danger-card">
-                    <h2 style={{ color: 'var(--error)', marginBottom: 'var(--space-md)' }}>Security Verification Required</h2>
-                    <p style={{ marginBottom: 'var(--space-lg)' }}>
-                        For security reasons, Firebase requires you to verify your identity to permanently delete your account because your session has been active for a long time.
-                    </p>
-
-                    {isGoogle ? (
-                        <button className="btn btn-primary" onClick={handleReauthAndRetry} disabled={isDeleting} style={{ width: '100%' }}>
-                            {isDeleting ? "Verifying..." : "Verify with Google"}
+            {needsReauth ? (
+                <div className="card" style={{ borderColor: 'var(--error)' }}>
+                    <h3 style={{ marginBottom: 'var(--space-sm)' }}>Re-authenticate to Continue</h3>
+                    {auth.currentUser?.providerData.some(p => p.providerId === 'google.com') ? (
+                        <button className="btn btn-danger" style={{ width: '100%' }} onClick={handleReauthAndRetry} disabled={isDeleting}>
+                            Re-authenticate with Google
                         </button>
                     ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+                        <>
                             <input
                                 type="password"
-                                className="form-input"
-                                placeholder="Enter your current password"
+                                placeholder="Enter your password"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                onChange={e => setPassword(e.target.value)}
+                                style={{ width: '100%', padding: '10px', marginBottom: 'var(--space-sm)', borderRadius: '8px', border: '1px solid var(--border)' }}
                             />
-                            <button className="btn btn-primary" onClick={handleReauthAndRetry} disabled={isDeleting}>
-                                {isDeleting ? "Verifying..." : "Verify Password & Delete"}
+                            <button className="btn btn-danger" style={{ width: '100%' }} onClick={handleReauthAndRetry} disabled={isDeleting}>
+                                {isDeleting ? 'Deleting...' : 'Confirm & Delete'}
                             </button>
-                        </div>
+                        </>
                     )}
-                    
-                    <button 
-                        className="btn btn-outline" 
-                        style={{ width: '100%', marginTop: 'var(--space-md)' }} 
-                        onClick={() => { setNeedsReauth(false); setIsDeleting(false); }}
+                </div>
+            ) : (
+                <div className="card" style={{ borderColor: 'var(--error)' }}>
+                    <p style={{ marginBottom: 'var(--space-sm)', fontWeight: 600 }}>Type <strong>DELETE</strong> to confirm:</p>
+                    <input
+                        type="text"
+                        placeholder="Type DELETE"
+                        value={confirmText}
+                        onChange={e => setConfirmText(e.target.value)}
+                        style={{ width: '100%', padding: '10px', marginBottom: 'var(--space-md)', borderRadius: '8px', border: '1px solid var(--border)' }}
+                    />
+                    <button
+                        className="btn btn-danger"
+                        style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                        onClick={processDeletion}
+                        disabled={confirmText !== 'DELETE' || isDeleting}
                     >
-                        Cancel
+                        <Trash2 size={16} />
+                        {isDeleting ? 'Deleting your account...' : 'Permanently Delete My Account'}
                     </button>
                 </div>
-            </div>
-        );
-    }
-
-    return (
-        <div style={{ padding: 'var(--space-xl) var(--space-md)', maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
-            <button 
-                className="btn btn-outline" 
-                style={{ position: 'absolute', top: 'var(--space-md)', left: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: '4px' }}
-                onClick={() => setCurrentView('settings')}
-            >
-                <ArrowLeft size={16} /> Back
-            </button>
-            
-            <AlertTriangle size={48} style={{ color: 'var(--error)', margin: '0 auto', marginBottom: 'var(--space-md)' }} />
-            <h1 style={{ color: 'var(--error)', marginBottom: 'var(--space-sm)' }}>Delete Account</h1>
-
-            <div className="card danger-card" style={{ textAlign: 'left', marginTop: 'var(--space-lg)' }}>
-                <h3 style={{ color: 'var(--error)', marginBottom: 'var(--space-sm)' }}>Warning: This action is permanent.</h3>
-                <p style={{ marginBottom: 'var(--space-md)' }}>
-                    Deleting your account will immediately and permanently erase all of your data, including:
-                </p>
-                <ul style={{ paddingLeft: 'var(--space-lg)', marginBottom: 'var(--space-lg)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <li>All symptom logs, clinical tracking data, and visual diary photos.</li>
-                    <li>Your personal protocols and routine history.</li>
-                    <li>All Stylist and Portal connections.</li>
-                    <li>Any active Subscription records (will be terminated immediately).</li>
-                </ul>
-
-                <p style={{ marginBottom: 'var(--space-sm)', fontWeight: 'bold' }}>To confirm your deletion, type DELETE below:</p>
-                <input
-                    type="text"
-                    className="form-input"
-                    placeholder="DELETE"
-                    value={confirmText}
-                    onChange={(e) => setConfirmText(e.target.value)}
-                    style={{ textTransform: 'uppercase', marginBottom: 'var(--space-lg)', borderColor: confirmText === 'DELETE' ? 'var(--error)' : 'var(--border-color)' }}
-                />
-
-                <button
-                    className="btn btn-danger"
-                    onClick={handleDeleteClick}
-                    disabled={isDeleting || confirmText !== 'DELETE'}
-                    style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
-                >
-                    <Trash2 size={16} /> {isDeleting ? 'Deleting...' : 'Permanently Delete My Account'}
-                </button>
-            </div>
+            )}
         </div>
     );
 }

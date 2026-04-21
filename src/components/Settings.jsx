@@ -511,18 +511,32 @@ export default function Settings({ setCurrentView }) {
                 </p>
             </div>
 
-
-            {/* Danger zone */}
-            <div className="card danger-card">
-                <h3 style={{ color: 'var(--error)', marginBottom: 'var(--space-md)' }}>Danger Zone</h3>
-                <p className="text-sm text-muted mb-md">Permanently delete all your data including photos, logs, and quiz results.</p>
-                <button className="btn btn-danger" onClick={clearAll} style={{ marginBottom: '12px' }}>
+            {/* Danger Zone */}
+            <div className="card danger-card" style={{ borderColor: 'var(--error)', marginTop: 'var(--space-lg)' }}>
+                <h3 style={{ color: 'var(--error)', marginBottom: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <AlertTriangle size={18} /> Danger Zone
+                </h3>
+                <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-md)' }}>
+                    Permanently delete all your data including photos, logs, and quiz results.
+                </p>
+                <button
+                    className="btn btn-danger"
+                    style={{ width: '100%', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                    onClick={clearAll}
+                >
                     <Trash2 size={16} /> Clear All Data
                 </button>
-                <button className="btn btn-outline" style={{ width: '100%', borderColor: 'var(--error)', color: 'var(--error)' }} onClick={() => setCurrentView('delete-account')}>
-                    Permanently Delete Account
+                <button
+                    className="btn btn-outline"
+                    style={{ width: '100%', borderColor: 'var(--error)', color: 'var(--error)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                    onClick={() => setCurrentView('delete-account')}
+                >
+                    <Trash2 size={16} /> Permanently Delete Account
                 </button>
             </div>
+
         </div>
     );
 }
+
+export default Settings;
