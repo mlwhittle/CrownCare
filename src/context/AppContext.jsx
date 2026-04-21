@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { auth, db } from '../firebase';
-import { onAuthStateChanged, signInAnonymously } from 'firebase/auth';
+import { onAuthStateChanged, signInAnonymously, getRedirectResult } from 'firebase/auth';
 import { doc, getDoc, setDoc, onSnapshot, collection, query, where } from 'firebase/firestore';
 import { syncToCloud, restoreFromCloud, pushAllToCloud } from '../services/SyncService';
 
@@ -153,6 +153,11 @@ export const AppProvider = ({ children }) => {
     };
 
     useEffect(() => {
+        // Global hook to catch the Apple returning auth payload natively
+        getRedirectResult(auth).catch(err => {
+            console.error("Redirect Auth Error:", err);
+        });
+
         // Sign in anonymously if no user is present, to ensure a sterile profile
         const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {

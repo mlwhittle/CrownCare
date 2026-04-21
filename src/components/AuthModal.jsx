@@ -12,11 +12,12 @@ import {
     signInWithPopup,
     linkWithCredential,
     EmailAuthProvider,
-    linkWithPopup
+    linkWithPopup,
+    signInWithRedirect,
+    linkWithRedirect
 } from 'firebase/auth';
 import { Crown, Mail, Lock, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
-import { SignInWithApple } from '@capacitor-community/apple-sign-in';
 
 export default function AuthModal({ onComplete, userName }) {
     const [mode, setMode] = useState('choice'); // choice, email, signin
@@ -103,54 +104,18 @@ export default function AuthModal({ onComplete, userName }) {
     };
 
     const linkAnonymousToApple = async () => {
-        setIsLoading(true);
-        setError('');
-
+        const provider = new OAuthProvider('apple.com');
+        provider.addScope('email');
+        provider.addScope('name');
         try {
-            // Generate a random string 
-            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
-            const randomValues = new Uint8Array(32);
-            crypto.getRandomValues(randomValues);
-            let rawNonce = '';
-            for (let i = 0; i < 32; i++) {
-                rawNonce += chars[randomValues[i] % chars.length];
+            if (auth.currentUser?.isAnonymous) {
+                await linkWithRedirect(auth.currentUser, provider);
+            } else {
+                await signInWithRedirect(auth, provider);
             }
-
-            // Compute SHA-256 hash of the raw string
-            const encoder = new TextEncoder();
-            const data = encoder.encode(rawNonce);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashedNonce = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
-            const { response } = await SignInWithApple.authorize({
-                clientId: 'com.crowncare.app',
-                redirectURI: '',
-                scopes: 'email name',
-                state: '12345',
-                nonce: hashedNonce,
-            });
-            
-            if (response && response.identityToken) {
-                const provider = new OAuthProvider('apple.com');
-                const credential = provider.credential({
-                    idToken: response.identityToken,
-                    rawNonce: rawNonce,
-                });
-                
-                const currentUser = auth.currentUser;
-                if (currentUser?.isAnonymous) {
-                    await linkWithCredential(currentUser, credential);
-                } else {
-                    await signInWithPopup(auth, provider);
-                }
-                onComplete();
-            }
-        } catch (err) {
-            console.error(err);
-            setError('Apple sign-in failed or was cancelled.');
-        } finally {
-            setIsLoading(false);
+        } catch (error) {
+            console.error('Apple Sign-In error:', error);
+            setError('Apple Sign-In failed. Please try again.');
         }
     };
 
