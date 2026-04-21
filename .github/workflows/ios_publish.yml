@@ -138,7 +138,8 @@ jobs:
               app_identifier: "com.crowncare.app",
               skip_screenshots: true,
               skip_metadata: true,
-              submit_for_review: false
+              submit_for_review: false,
+              run_precheck_before_submit: false
             )
           end
           EOF
