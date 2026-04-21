@@ -6,6 +6,7 @@ import MonthlyGrowthReport from './MonthlyGrowthReport';
 import MonthlyNarrative from './MonthlyNarrative';
 import StripeService from '../services/StripeService';
 import InviteClientModal from './InviteClientModal';
+import { Capacitor } from '@capacitor/core';
 
 export default function StylistPortal() {
     const { stylistDashboardData, updateStylistDashboard, linkedClients, isStylistAccount, addAppointment, appointments, stylistContact, setStylistContact, clientContacts, updateClientContact, sharedAudits } = useApp();
@@ -80,7 +81,9 @@ export default function StylistPortal() {
             
             // For safety in this environment, open in new tab or mock. 
             // The Firebase emulator returns an https://connect.stripe.com/setup/s/ URL.
-            window.open(url, '_blank'); 
+            if (!Capacitor.isNativePlatform()) {
+                window.open(url, '_blank'); 
+            }
             
             // Mocking success locally so the banner goes away
             setTimeout(() => {

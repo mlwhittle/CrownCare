@@ -8,12 +8,15 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     GoogleAuthProvider,
+    OAuthProvider,
     signInWithPopup,
     linkWithCredential,
     EmailAuthProvider,
     linkWithPopup
 } from 'firebase/auth';
 import { Crown, Mail, Lock, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
+import { SignInWithApple } from '@capacitor-community/apple-sign-in';
 
 export default function AuthModal({ onComplete, userName }) {
     const [mode, setMode] = useState('choice'); // choice, email, signin
@@ -99,6 +102,58 @@ export default function AuthModal({ onComplete, userName }) {
         }
     };
 
+    const linkAnonymousToApple = async () => {
+        setIsLoading(true);
+        setError('');
+
+        try {
+            // Generate a random string 
+            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+            const randomValues = new Uint8Array(32);
+            crypto.getRandomValues(randomValues);
+            let rawNonce = '';
+            for (let i = 0; i < 32; i++) {
+                rawNonce += chars[randomValues[i] % chars.length];
+            }
+
+            // Compute SHA-256 hash of the raw string
+            const encoder = new TextEncoder();
+            const data = encoder.encode(rawNonce);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashedNonce = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            const { response } = await SignInWithApple.authorize({
+                clientId: 'com.crowncare.app',
+                redirectURI: '',
+                scopes: 'email name',
+                state: '12345',
+                nonce: hashedNonce,
+            });
+            
+            if (response && response.identityToken) {
+                const provider = new OAuthProvider('apple.com');
+                const credential = provider.credential({
+                    idToken: response.identityToken,
+                    rawNonce: rawNonce,
+                });
+                
+                const currentUser = auth.currentUser;
+                if (currentUser?.isAnonymous) {
+                    await linkWithCredential(currentUser, credential);
+                } else {
+                    await signInWithPopup(auth, provider);
+                }
+                onComplete();
+            }
+        } catch (err) {
+            console.error(err);
+            setError('Apple sign-in failed or was cancelled.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const skipForNow = () => {
         // User can skip — anonymous auth continues but data may not survive reinstall
         onComplete();
@@ -139,6 +194,26 @@ export default function AuthModal({ onComplete, userName }) {
                 {/* Choice Mode */}
                 {mode === 'choice' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+
+                        {/* Apple Button (iOS Only) */}
+                        {Capacitor.getPlatform() === 'ios' && (
+                            <button
+                                onClick={linkAnonymousToApple}
+                                disabled={isLoading}
+                                style={{
+                                    width: '100%', padding: '14px', borderRadius: '12px',
+                                    border: '1px solid var(--text-primary)', background: 'var(--text-primary)',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    gap: '12px', cursor: 'pointer', fontSize: '15px', fontWeight: 600,
+                                    color: 'var(--bg-primary)', transition: 'all 0.2s'
+                                }}
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M17.05 15.68c-.02 2.7 2.37 3.6 2.4 3.61-.02.16-.36 1.25-1.14 2.4-.68 1-1.4 2-2.47 2.03-1.05.02-1.4-.62-2.58-.62-1.2 0-1.6.6-2.6.64-1.07.03-1.88-1.08-2.55-2.07-1.4-2-2.73-5.65-1.3-8.1 7.1-1.2 1.6-1.92 2.5-1.92 3.6 0 1.02.6 1.6.64 1.2 0 2-.64 3.32-.64 1.13 0 1.83.5 2.27 1.13-2.04 1.2-1.74 3.9-.03 4.88zM15.4 6.94c.58-.7 1-1.7 8.9-2.67-.1-1.1-.55-2.05-1.13-2.75-.72-.82-1.74-1.38-2.65-1.4-.13 1.14.34 2.15.93 2.87z"/>
+                                </svg>
+                                {isLoading ? 'Connecting...' : 'Continue with Apple'}
+                            </button>
+                        )}
 
                         {/* Google Button */}
                         <button
@@ -278,6 +353,13 @@ export default function AuthModal({ onComplete, userName }) {
                             }}
                         >
                             ← Back
+                        </button>
+
+                        <button
+                            onClick={() => { setEmail('tester1@crowncare.app'); setPassword(''); }}
+                            style={{ fontSize: '11px', color: '#888', background: 'none', border: 'none', cursor: 'pointer', marginTop: '8px' }}
+                        >
+                            App Store Reviewer Login
                         </button>
                     </div>
                 )}

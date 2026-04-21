@@ -66,7 +66,7 @@ export default function Upgrade({ onClose }) {
 
         // Web / Android: open Stripe payment link
         const stripeUrl = STRIPE_LINKS[tierName];
-        if (stripeUrl) {
+        if (stripeUrl && !Capacitor.isNativePlatform()) {
             window.open(stripeUrl, '_blank');
         }
         onClose();

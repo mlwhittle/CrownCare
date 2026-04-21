@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: macos-latest
+    runs-on: macos-15
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -21,6 +21,9 @@ jobs:
         run: npm ci || npm install
 
       - name: Build Web App
+        env:
+          VITE_REVENUECAT_IOS_KEY: ${{ secrets.VITE_REVENUECAT_IOS_KEY }}
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
         run: npm run build
 
       - name: Sync iOS Capacitor Folder
@@ -135,9 +138,8 @@ jobs:
               app_identifier: "com.crowncare.app",
               skip_screenshots: true,
               skip_metadata: true,
-              run_precheck_before_submit: false
+              submit_for_review: false
             )
           end
           EOF
-          
           fastlane deploy

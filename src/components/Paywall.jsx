@@ -133,6 +133,11 @@ export default function Paywall({ onSubscribeSuccess }) {
                         >
                             {isLoading ? 'Processing...' : 'Activate Professional Subscription'}
                         </button>
+                        {Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios' && (
+                            <p style={{ fontSize: '11px', color: '#888', textAlign: 'center', marginTop: '12px', lineHeight: 1.4 }}>
+                                Subscription automatically renews monthly unless cancelled at least 24 hours before the end of the current period. Cancel anytime in Apple ID Settings &gt; Subscriptions.
+                            </p>
+                        )}
                     </div>
 
                 ) : (
@@ -164,6 +169,11 @@ export default function Paywall({ onSubscribeSuccess }) {
                         >
                             {isLoading ? 'Processing...' : 'Activate Premium Subscription'}
                         </button>
+                        {Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios' && (
+                            <p style={{ fontSize: '11px', color: '#888', textAlign: 'center', marginTop: '12px', lineHeight: 1.4 }}>
+                                Subscription automatically renews monthly unless cancelled at least 24 hours before the end of the current period. Cancel anytime in Apple ID Settings &gt; Subscriptions.
+                            </p>
+                        )}
                     </div>
                 )}
                 

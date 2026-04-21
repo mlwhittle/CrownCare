@@ -55,5 +55,9 @@
 	<string>CrownCare requires access to your photo library so you can select and upload existing photos to your Visual Hair Diary.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>CrownCare requires microphone access for recording video diaries of your hair progress.</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>We use analytics to improve your CrownCare experience.</string>
 </dict>
 </plist>

@@ -51,7 +51,9 @@ export default function Settings({ setCurrentView }) {
                 }
                 if (data?.url) {
                     // Redirect to the Stripe Hosted Checkout page!
-                    window.location.assign(data.url);
+                    if (!Capacitor.isNativePlatform()) {
+                        window.location.assign(data.url);
+                    }
                 }
             });
         } catch (error) {
@@ -83,7 +85,9 @@ export default function Settings({ setCurrentView }) {
                     setIsUpgrading(false);
                 }
                 if (data?.url) {
-                    window.location.assign(data.url);
+                    if (!Capacitor.isNativePlatform()) {
+                        window.location.assign(data.url);
+                    }
                 }
             });
         } catch (error) {
@@ -116,7 +120,9 @@ export default function Settings({ setCurrentView }) {
                     setIsUpgrading(false);
                 }
                 if (data?.url) {
-                    window.location.assign(data.url);
+                    if (!Capacitor.isNativePlatform()) {
+                        window.location.assign(data.url);
+                    }
                 }
             });
         } catch (error) {
@@ -231,7 +237,9 @@ export default function Settings({ setCurrentView }) {
                                             const functions = getFunctions(db.app, 'us-central1');
                                             const functionRef = httpsCallable(functions, 'ext-firestore-stripe-payments-createPortalLink');
                                             const { data } = await functionRef({ returnUrl: window.location.origin });
-                                            window.location.assign(data.url);
+                                            if (!Capacitor.isNativePlatform()) {
+                                                window.location.assign(data.url);
+                                            }
                                         } catch (e) {
                                             console.error(e);
                                             alert("Failed to connect to the Stripe Billing Portal. Ensure the Firebase Stripe Extension is correctly configured.");
@@ -439,7 +447,9 @@ export default function Settings({ setCurrentView }) {
                                         const functions = getFunctions(db.app, 'us-central1');
                                         const functionRef = httpsCallable(functions, 'ext-firestore-stripe-payments-createPortalLink');
                                         const { data } = await functionRef({ returnUrl: window.location.origin });
-                                        window.location.assign(data.url);
+                                        if (!Capacitor.isNativePlatform()) {
+                                            window.location.assign(data.url);
+                                        }
                                     } catch (e) {
                                         console.error(e);
                                         alert("Failed to connect to the Stripe Billing Portal.");
@@ -506,8 +516,11 @@ export default function Settings({ setCurrentView }) {
             <div className="card danger-card">
                 <h3 style={{ color: 'var(--error)', marginBottom: 'var(--space-md)' }}>Danger Zone</h3>
                 <p className="text-sm text-muted mb-md">Permanently delete all your data including photos, logs, and quiz results.</p>
-                <button className="btn btn-danger" onClick={clearAll}>
+                <button className="btn btn-danger" onClick={clearAll} style={{ marginBottom: '12px' }}>
                     <Trash2 size={16} /> Clear All Data
+                </button>
+                <button className="btn btn-outline" style={{ width: '100%', borderColor: 'var(--error)', color: 'var(--error)' }} onClick={() => setCurrentView('delete-account')}>
+                    Permanently Delete Account
                 </button>
             </div>
         </div>
