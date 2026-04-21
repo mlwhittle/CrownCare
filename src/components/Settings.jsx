@@ -538,5 +538,3 @@ export default function Settings({ setCurrentView }) {
         </div>
     );
 }
-
-export default Settings;
