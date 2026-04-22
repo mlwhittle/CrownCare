@@ -8,12 +8,14 @@ import { Capacitor } from '@capacitor/core';
 import settingsImg from '../assets/images/settings.png';
 import UserManual from './UserManual';
 import ScaleYourBusiness from './ScaleYourBusiness';
+import DeleteAccount from './DeleteAccount';
 import './Settings.css';
 
 export default function Settings({ setCurrentView }) {
     const { theme, toggleTheme, onboarding, completeOnboarding, user, isPremium, isVIP, redeemVipCode, isStylistAccount, setIsStylistAccount, stylistCode, setStylistCode } = useApp();
     const [showManual, setShowManual] = useState(false);
     const [showScaleBusiness, setShowScaleBusiness] = useState(false);
+    const [showDeleteAccount, setShowDeleteAccount] = useState(false);
     const [isCanceling, setIsCanceling] = useState(false);
     const [isUpgrading, setIsUpgrading] = useState(false);
     const [vipInput, setVipInput] = useState('');
@@ -145,6 +147,16 @@ export default function Settings({ setCurrentView }) {
 
     if (showScaleBusiness) {
         return <ScaleYourBusiness onClose={() => setShowScaleBusiness(false)} />;
+    }
+
+    if (showDeleteAccount) {
+        return <DeleteAccount setCurrentView={(view) => {
+            if (view === 'settings') {
+                setShowDeleteAccount(false);
+            } else {
+                setCurrentView(view);
+            }
+        }} />;
     }
 
     return (
@@ -529,7 +541,7 @@ export default function Settings({ setCurrentView }) {
                 <button
                     className="btn btn-outline"
                     style={{ width: '100%', borderColor: 'var(--error)', color: 'var(--error)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                    onClick={() => setCurrentView('delete-account')}
+                    onClick={() => setShowDeleteAccount(true)}
                 >
                     <Trash2 size={16} /> Permanently Delete Account
                 </button>
