@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
 import { doc, updateDoc, collection, addDoc, onSnapshot } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
+import { deleteUser } from 'firebase/auth';
 import { Settings as SettingsIcon, Sun, MoonStar, Crown, Trash2, User, Zap, Briefcase, Scissors, AlertTriangle, Activity, BookOpen } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import settingsImg from '../assets/images/settings.png';
@@ -134,10 +135,17 @@ export default function Settings({ setCurrentView }) {
         }
     };
 
-    const clearAll = () => {
+    const clearAll = async () => {
         if (confirm('This will delete ALL your data — photos, logs, everything. Are you sure?')) {
-            localStorage.clear();
-            window.location.reload();
+            try {
+                if (auth.currentUser) {
+                    await deleteUser(auth.currentUser);
+                }
+                localStorage.clear();
+                setCurrentView('onboarding');
+            } catch (error) {
+                alert(`Deletion failed: ${error.message}`);
+            }
         }
     };
 
