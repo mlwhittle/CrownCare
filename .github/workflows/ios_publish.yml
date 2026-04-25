@@ -18,6 +18,8 @@ jobs:
           node-version: 22
 
       - name: Install JS Dependencies
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: "true"
         run: npm ci || npm install
 
       - name: Build Web App
