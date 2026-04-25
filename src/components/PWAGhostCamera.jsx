@@ -9,20 +9,35 @@ export default function PWAGhostCamera({ onCapture, onClose, ghostImage }) {
     const [captured, setCaptured] = useState(null);
     const [opacity, setOpacity] = useState(0.5);
     const [facingMode, setFacingMode] = useState('environment'); // Rear camera preferred
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const timeoutRef = useRef(null);
 
     const initCamera = useCallback(async () => {
+        setError(null);
+        setIsLoading(true);
+
+        // Set 10-second timeout
+        timeoutRef.current = setTimeout(() => {
+            setError("Camera is taking too long to initialize. Check permissions and try again.");
+            setIsLoading(false);
+        }, 10000);
+
         try {
             if (stream) { stream.getTracks().forEach(t => t.stop()); }
             const newStream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: facingMode, width: { ideal: 1920 }, height: { ideal: 1080 } },
                 audio: false
             });
+            clearTimeout(timeoutRef.current);
             setStream(newStream);
+            setIsLoading(false);
             if (videoRef.current) {
                 videoRef.current.srcObject = newStream;
             }
         } catch (err) {
             console.error("WebRTC Camera Error (Falling back to native):", err);
+            clearTimeout(timeoutRef.current);
             // Fallback to Capacitor camera
             try {
                 const image = await Camera.getPhoto({
@@ -32,19 +47,24 @@ export default function PWAGhostCamera({ onCapture, onClose, ghostImage }) {
                     source: CameraSource.Camera,
                     width: 800
                 });
+                setIsLoading(false);
                 onCapture(image.dataUrl);
             } catch (capErr) {
-                onClose();
+                clearTimeout(timeoutRef.current);
+                console.error("Capacitor Camera Error:", capErr);
+                setError(`Camera access denied. Please check your device's camera permissions in Settings.`);
+                setIsLoading(false);
             }
         }
-    }, [facingMode]);
+    }, [facingMode, stream]);
 
     useEffect(() => {
         initCamera();
         return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
             if (stream) stream.getTracks().forEach(t => t.stop());
         };
-    }, [facingMode]);
+    }, [facingMode, initCamera]);
 
     const takePhoto = () => {
         if (!videoRef.current || !canvasRef.current) return;
@@ -68,6 +88,59 @@ export default function PWAGhostCamera({ onCapture, onClose, ghostImage }) {
     const confirmPhoto = () => {
         onCapture(captured);
     };
+
+    if (error) {
+        return (
+            <div style={styles.container}>
+                <div style={styles.header}>
+                    <button onClick={onClose} style={styles.iconBtn}><X color="white" /></button>
+                    <span style={{color: 'white', fontWeight: 600}}>Camera Error</span>
+                    <div style={{width: 44}}></div>
+                </div>
+                <div style={{...styles.viewfinder, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '20px', padding: '20px'}}>
+                    <div style={{color: 'white', textAlign: 'center', fontSize: '16px', lineHeight: '1.5'}}>
+                        {error}
+                    </div>
+                    <button onClick={initCamera} style={{...styles.captureBtn, marginTop: '20px'}}>
+                        Retry Camera
+                    </button>
+                    <button onClick={onClose} style={{...styles.captureBtn, background: 'rgba(255,255,255,0.2)', color: 'white'}}>
+                        Close
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    if (isLoading && !stream) {
+        return (
+            <div style={styles.container}>
+                <div style={styles.header}>
+                    <button onClick={onClose} style={styles.iconBtn}><X color="white" /></button>
+                    <span style={{color: 'white', fontWeight: 600}}>Initializing Camera...</span>
+                    <div style={{width: 44}}></div>
+                </div>
+                <div style={{...styles.viewfinder, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '20px'}}>
+                    <div style={{color: 'white', fontSize: '16px', opacity: 0.8}}>
+                        Accessing your camera...
+                    </div>
+                    <div style={{
+                        width: '50px',
+                        height: '50px',
+                        border: '3px solid rgba(255,255,255,0.3)',
+                        borderTop: '3px solid white',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite'
+                    }} />
+                </div>
+                <style>{`
+                    @keyframes spin {
+                        to { transform: rotate(360deg); }
+                    }
+                `}</style>
+            </div>
+        );
+    }
 
     if (captured) {
         return (

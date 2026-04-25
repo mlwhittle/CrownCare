@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Capacitor } from '@capacitor/core';
+import { App as CapacitorApp } from '@capacitor/app';
 import { Purchases } from '@revenuecat/purchases-capacitor';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from './components/Header';
@@ -26,6 +27,7 @@ import AuthModal from './components/AuthModal';
 import { Sparkles } from 'lucide-react';
 
 const MAIN_TABS = ['home', 'treatments', 'diary', 'nutrition', 'routines', 'stylist-portal', 'reports', 'settings'];
+const SUB_PAGES = ['journal', 'narrative', 'menu', 'results', 'privacy', 'delete-account']; // Pages that don't slide back through tabs
 
 function AppInner() {
     const { onboarding, completeOnboarding, isPremium, isTrialExpired, redeemVipCode, user } = useApp();
@@ -66,12 +68,15 @@ function AppInner() {
     const [showAI, setShowAI] = useState(false);
     const [direction, setDirection] = useState(0); // 1 for right-to-left, -1 for left-to-right
 
+    // Keep track of navigation history for back button support
+    const [navHistory, setNavHistory] = useState(['home']);
+
     // Wrapper for setCurrentView that calculates animation direction
     const navigateTo = (newView) => {
         if (newView === currentView) return;
         const currentIndex = MAIN_TABS.indexOf(currentView);
         const newIndex = MAIN_TABS.indexOf(newView);
-        
+
         // If both are in the main tab array, calculate direction
         if (currentIndex !== -1 && newIndex !== -1) {
             setDirection(newIndex > currentIndex ? 1 : -1);
@@ -79,7 +84,39 @@ function AppInner() {
             setDirection(0); // Fade instead of slide for sub-pages
         }
         setCurrentView(newView);
+        setNavHistory([...navHistory, newView]);
     };
+
+    // Go back to previous view
+    const goBack = () => {
+        if (navHistory.length > 1) {
+            const newHistory = navHistory.slice(0, -1);
+            setNavHistory(newHistory);
+            setCurrentView(newHistory[newHistory.length - 1]);
+            setDirection(-1); // Animate backwards
+        }
+    };
+
+    useEffect(() => {
+        const setupHardwareBackButton = async () => {
+            if (Capacitor.isNativePlatform()) {
+                await CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+                    if (navHistory.length > 1) {
+                        goBack();
+                    } else {
+                        CapacitorApp.exitApp();
+                    }
+                });
+            }
+        };
+        setupHardwareBackButton();
+        
+        return () => {
+            if (Capacitor.isNativePlatform()) {
+                CapacitorApp.removeAllListeners();
+            }
+        };
+    }, [navHistory]);
 
     // If no onboarding, show quiz
     if (!onboarding) {
@@ -99,15 +136,15 @@ function AppInner() {
             case 'nutrition': return <NutritionPlanner />;
             case 'treatments': return <TreatmentTracker openAI={() => setShowAI(true)} />;
             case 'routines': return <LifestyleRoutines />;
-            case 'settings': return <Settings setCurrentView={navigateTo} />;
-            case 'menu': return <Menu setCurrentView={navigateTo} />;
-            case 'journal': return <Journal />;
-            case 'reports': return <Reports />;
-            case 'narrative': return <MonthlyNarrative setCurrentView={navigateTo} />;
-            case 'results': return <RealResults setCurrentView={navigateTo} />;
-            case 'stylist-portal': return <StylistPortal />;
-            case 'privacy': return <PrivacyPolicy setCurrentView={navigateTo} />;
-            case 'delete-account': return <DeleteAccount setCurrentView={navigateTo} />;
+            case 'settings': return <Settings setCurrentView={navigateTo} goBack={goBack} />;
+            case 'menu': return <Menu setCurrentView={navigateTo} goBack={goBack} />;
+            case 'journal': return <Journal setCurrentView={navigateTo} goBack={goBack} />;
+            case 'reports': return <Reports setCurrentView={navigateTo} />;
+            case 'narrative': return <MonthlyNarrative setCurrentView={navigateTo} goBack={goBack} />;
+            case 'results': return <RealResults setCurrentView={navigateTo} goBack={goBack} />;
+            case 'stylist-portal': return <StylistPortal setCurrentView={navigateTo} goBack={goBack} />;
+            case 'privacy': return <PrivacyPolicy setCurrentView={navigateTo} goBack={goBack} />;
+            case 'delete-account': return <DeleteAccount setCurrentView={navigateTo} goBack={goBack} />;
             default: return <Home setCurrentView={navigateTo} openAI={() => setShowAI(true)} />;
         }
     };
@@ -132,16 +169,16 @@ function AppInner() {
 
         // If it's a pronounced horizontal swipe and NOT a vertical scroll
         if (Math.abs(deltaX) > 60 && Math.abs(deltaY) < 40) {
-             const currentIndex = MAIN_TABS.indexOf(currentView);
-             if (currentIndex !== -1) {
-                 if (deltaX > 0 && currentIndex < MAIN_TABS.length - 1) {
-                     // Swiped Left -> Go to next tab
-                     navigateTo(MAIN_TABS[currentIndex + 1]);
-                 } else if (deltaX < 0 && currentIndex > 0) {
-                     // Swiped Right -> Go to prev tab
-                     navigateTo(MAIN_TABS[currentIndex - 1]);
-                 }
-             }
+            const currentIndex = MAIN_TABS.indexOf(currentView);
+            const isMainTab = currentIndex !== -1;
+
+            if (deltaX < 0) {
+                // Apple Native Paradigm: Right swipe ALWAYS pops the history stack
+                goBack();
+            } else if (deltaX > 0 && isMainTab && currentIndex < MAIN_TABS.length - 1) {
+                // Swiped Left on a main tab -> Go to next tab
+                navigateTo(MAIN_TABS[currentIndex + 1]);
+            }
         }
         touchStartX = 0;
     };
@@ -153,7 +190,7 @@ function AppInner() {
             )}
             <Header currentView={currentView} setCurrentView={navigateTo} openAI={() => setShowAI(true)} />
             <main className="main-content" style={{ position: 'relative', overflowX: 'hidden' }}>
-                <AnimatePresence mode="popLayout" initial={false}>
+                <AnimatePresence mode="wait" initial={false}>
                     <motion.div
                         key={currentView}
                         initial={{ x: direction * 50, opacity: 0 }}

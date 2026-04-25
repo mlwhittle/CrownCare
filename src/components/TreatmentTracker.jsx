@@ -311,7 +311,7 @@ export default function TreatmentTracker({ openAI }) {
             )}
 
             {tab === 'prescribed' && (
-                <div className="card mb-lg prescribed-section" style={{ animation: 'fadeIn 0.2s ease-out', border: '1px solid var(--brand-200)', background: 'var(--brand-50)' }}>
+                <div className="card mb-lg prescribed-section" style={{ animation: 'fadeIn 0.2s ease-out', border: '1px solid var(--brand-200)', background: 'var(--brand-50)', overflow: 'hidden' }}>
                     {!stylistCode ? (
                         <div style={{ textAlign: 'center', padding: 'var(--space-lg)' }}>
                             <ClipboardList size={32} style={{ color: 'var(--brand-400)', marginBottom: 'var(--space-sm)' }} />

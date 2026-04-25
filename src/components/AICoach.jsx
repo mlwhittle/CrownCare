@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { askGemini, loadApiKey, saveApiKey, loadSavedAnswers, persistSavedAnswers } from '../services/GeminiService';
+import { askGemini, loadApiKey, saveApiKey, loadSavedAnswers, persistSavedAnswers, validateApiKey } from '../services/GeminiService';
 import { sendEscalationEmail } from '../services/EmailService';
 import { Sparkles, Send, X, Save, Trash2, MessageCircle, Key, ShieldCheck, Headset, Paperclip, Mic, User, Volume2, VolumeX } from 'lucide-react';
 import { useApp } from '../context/AppContext';
@@ -24,6 +24,8 @@ export default function AICoach({ isOverlay, onClose }) {
     
     const [apiKey, setApiKey] = useState(loadApiKey);
     const [showSetup, setShowSetup] = useState(!loadApiKey());
+    const [isValidating, setIsValidating] = useState(false);
+    const [setupError, setSetupError] = useState('');
     const [question, setQuestion] = useState('');
     const [loading, setLoading] = useState(false);
     const [chat, setChat] = useState([]);
@@ -97,10 +99,22 @@ export default function AICoach({ isOverlay, onClose }) {
         }
     }, [customEvaluationPrompt, apiKey, hasConsent]);
 
-    const handleSaveKey = () => {
-        if (apiKey.trim()) {
+    const handleSaveKey = async () => {
+        if (!apiKey.trim()) {
+            setSetupError('Please enter an API key.');
+            return;
+        }
+
+        setIsValidating(true);
+        setSetupError('');
+        const isValid = await validateApiKey(apiKey.trim());
+        setIsValidating(false);
+
+        if (isValid) {
             saveApiKey(apiKey.trim());
             setShowSetup(false);
+        } else {
+            setSetupError('API key validation failed. Please check that your key is correct and has access to the Gemini API. Visit console.cloud.google.com to verify your API key.');
         }
     };
 
@@ -166,7 +180,24 @@ export default function AICoach({ isOverlay, onClose }) {
             setChat(prev => [...prev, { role: 'ai', text: response, timestamp: new Date().toISOString() }]);
         } catch (err) {
             setFrustrationCount(prev => prev + 1);
-            setChat(prev => [...prev, { role: 'error', text: err.message || 'Failed to get response. Please try again.' }]);
+            let errorMessage = 'Failed to get response. Please try again.';
+
+            // Map specific API errors to user-friendly messages
+            if (err.message === 'API_KEY_MISSING') {
+                errorMessage = 'API Key is not configured. Please add your Gemini API key in settings.';
+            } else if (err.message === 'API_KEY_INVALID') {
+                errorMessage = 'Your API key appears to be invalid. Please check it in settings and try again.';
+            } else if (err.message === 'API_KEY_PERMISSION_DENIED') {
+                errorMessage = 'Your API key does not have permission to access this service. Please check your API permissions.';
+            } else if (err.message === 'API_RATE_LIMIT') {
+                errorMessage = 'You\'ve reached the API rate limit. Please wait a moment and try again.';
+            } else if (err.message === 'API_QUOTA_EXCEEDED') {
+                errorMessage = 'Your API quota has been exceeded. Please check your Gemini API account.';
+            } else if (err.message === 'API_ERROR') {
+                errorMessage = 'The AI service encountered an error. Please ensure your API key is valid and try again.';
+            }
+
+            setChat(prev => [...prev, { role: 'error', text: errorMessage, timestamp: new Date().toISOString() }]);
         } finally {
             setLoading(false);
         }
@@ -261,9 +292,11 @@ export default function AICoach({ isOverlay, onClose }) {
                                 value={apiKey}
                                 onChange={(e) => setApiKey(e.target.value)}
                                 style={{ marginTop: 'var(--space-md)' }}
+                                disabled={isValidating}
                             />
-                            <button className="btn btn-primary" onClick={handleSaveKey} style={{ width: '100%', marginTop: 'var(--space-md)' }}>
-                                Save & Connect
+                            {setupError && <p style={{ color: 'var(--error)', fontSize: '0.85rem', marginTop: '8px', textAlign: 'center' }}>{setupError}</p>}
+                            <button className="btn btn-primary" onClick={handleSaveKey} disabled={isValidating} style={{ width: '100%', marginTop: 'var(--space-md)', opacity: isValidating ? 0.7 : 1 }}>
+                                {isValidating ? 'Validating...' : 'Save & Connect'}
                             </button>
                         </div>
                     ) : showSaved ? (

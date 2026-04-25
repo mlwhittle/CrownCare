@@ -26,7 +26,7 @@ export default function Journal() {
     const handleListen = () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            alert("Your browser does not support Voice Dictation. Please use Safari or Chrome.");
+            alert("To use voice dictation on this device, please tap the microphone icon built directly into your device's keyboard.");
             return;
         }
         
@@ -126,7 +126,7 @@ export default function Journal() {
     const fmtTime = (d) => new Date(d).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 
     return (
-        <div className="page-container fade-in">
+        <div className="page-container fade-in" style={{ padding: 'var(--space-md)' }}>
             <img src={journalImg} alt="Voice Journal" className="page-header-img" style={{ marginTop: '1rem' }} />
             <div className="page-header" style={{ marginBottom: 'var(--space-md)' }}>
                 <h2>My Journal</h2>

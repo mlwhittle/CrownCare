@@ -55,11 +55,11 @@
 
 .custom-bg {
     background: var(--gradient-warm);
-    color: white;
+    color: var(--brand-primary);
 }
 
 .custom-bg .section-title h2 {
-    color: white;
+    color: var(--brand-primary);
 }
 
 .section-title {
@@ -219,9 +219,10 @@
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: var(--radius-xl);
     padding: var(--space-xl);
+    box-shadow: var(--shadow-sm);
 }
 
 .ai-loading {
@@ -250,17 +251,18 @@
     font-size: var(--font-size-md);
     line-height: 1.6;
     margin-bottom: var(--space-md);
-    color: white;
+    color: var(--brand-primary);
+    text-shadow: 0 1px 1px rgba(255,255,255,0.3);
 }
 
 .ai-response p:last-child {
     font-family: var(--font-serif);
     font-weight: 700;
     font-size: var(--font-size-lg);
-    color: var(--gold-400);
+    color: var(--brand-primary);
     margin-bottom: 0;
     padding-top: var(--space-md);
-    border-top: 1px solid rgba(255,255,255,0.2);
+    border-top: 1px solid rgba(0,0,0,0.1);
 }
 
 /* Retention Hook Button */

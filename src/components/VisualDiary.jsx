@@ -13,7 +13,7 @@ import './VisualDiary.css';
 const ZONES = ['All', 'Part Line', 'Hairline', 'Crown', 'Edges', 'Nape', 'Overall'];
 
 export default function VisualDiary({ setCurrentView, openAI }) {
-    const { photos, addPhoto, deletePhoto, isPremium, shareAuditWithStylist } = useApp();
+    const { photos, addPhoto, updatePhoto, deletePhoto, isPremium, shareAuditWithStylist } = useApp();
     const [zone, setZone] = useState('All');
     const [showNextSteps, setShowNextSteps] = useState(false);
     const [showUpgrade, setShowUpgrade] = useState(false);
@@ -41,6 +41,9 @@ export default function VisualDiary({ setCurrentView, openAI }) {
         const result = await analyzeScalpPhotoWithGemini(apiKey, photo.imageData);
         setAuditResult(result);
         setAuditLoading(false);
+        if (!result.includes("Audit Failed")) {
+            updatePhoto(photo.id, { auditResult: result });
+        }
     };
 
     const handleCapture = async (source = CameraSource.Prompt) => {
@@ -270,14 +273,20 @@ export default function VisualDiary({ setCurrentView, openAI }) {
                                 </div>
 
                                 {/* Top Left (Delete) */}
-                                <button onClick={e => { e.stopPropagation(); deletePhoto(p.id); }} style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(0,0,0,0.5)', border: 'none', color: 'white', padding: '6px', borderRadius: '50%', cursor: 'pointer', backdropFilter: 'blur(4px)' }}>
+                                <button onClick={e => { e.stopPropagation(); if(window.confirm('Are you sure you want to permanently delete this photo?')) deletePhoto(p.id); }} style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(0,0,0,0.5)', border: 'none', color: 'white', padding: '6px', borderRadius: '50%', cursor: 'pointer', backdropFilter: 'blur(4px)' }}>
                                     <Trash2 size={12} />
                                 </button>
                                 
                                 {/* Top Left (AI Audit) */}
-                                <button onClick={e => { e.stopPropagation(); runScalpAudit(p); }} style={{ position: 'absolute', top: '8px', left: '42px', background: 'rgba(252, 211, 77, 0.95)', border: 'none', color: '#050508', padding: '4px 10px', borderRadius: '12px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 2px 5px rgba(0,0,0,0.3)' }}>
-                                    <ScanSearch size={12} /> AI Scan
-                                </button>
+                                {p.auditResult ? (
+                                    <button onClick={e => { e.stopPropagation(); setAuditPhoto(p); setAuditResult(p.auditResult); }} style={{ position: 'absolute', top: '8px', left: '42px', background: 'var(--success)', border: 'none', color: 'white', padding: '4px 10px', borderRadius: '12px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 2px 5px rgba(0,0,0,0.3)' }}>
+                                        <Check size={12} /> Scanned
+                                    </button>
+                                ) : (
+                                    <button onClick={e => { e.stopPropagation(); runScalpAudit(p); }} style={{ position: 'absolute', top: '8px', left: '42px', background: 'rgba(252, 211, 77, 0.95)', border: 'none', color: '#050508', padding: '4px 10px', borderRadius: '12px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 2px 5px rgba(0,0,0,0.3)' }}>
+                                        <ScanSearch size={12} /> AI Scan
+                                    </button>
+                                )}
                                 
                                 {/* Bottom Floating Tags & Meta */}
                                 <div style={{ position: 'absolute', bottom: '10px', left: '10px', right: '10px' }}>

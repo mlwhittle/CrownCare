@@ -2,7 +2,7 @@
 const STORAGE_KEY = 'cc_gemini_key';
 const STORAGE_SAVED = 'cc_saved_answers';
 
-export const loadApiKey = () => localStorage.getItem(STORAGE_KEY) || import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.VITE_GEMINI_DEMO_KEY || '';
+export const loadApiKey = () => import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem(STORAGE_KEY) || import.meta.env.VITE_GEMINI_DEMO_KEY || '';
 export const saveApiKey = (key) => localStorage.setItem(STORAGE_KEY, key);
 
 export const loadSavedAnswers = () => {
@@ -13,6 +13,20 @@ export const loadSavedAnswers = () => {
 export const persistSavedAnswers = (answers) => {
    localStorage.setItem(STORAGE_SAVED, JSON.stringify(answers.slice(0, 3)));
 };
+
+export async function validateApiKey(apiKey) {
+   if (!apiKey) return false;
+   try {
+       const { GoogleGenerativeAI } = await import('@google/generative-ai');
+       const genAI = new GoogleGenerativeAI(apiKey);
+       const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+       await model.generateContent("test");
+       return true;
+   } catch (error) {
+       console.error("API Key Validation Error:", error);
+       return false;
+   }
+}
 
 // Trichologist system prompt — comprehensive hair science knowledge base
 export const SYSTEM_PROMPT = `You are a world-class trichologist and hair science expert AI assistant inside the CrownCare app, specifically designed to help women experiencing hair thinning and hair loss.
@@ -83,14 +97,19 @@ RULES:
 - Acknowledge emotional aspects of hair loss — it affects self-esteem and mental health`;
 
 export async function askGemini(question, apiKey, userData = null) {
-   const { GoogleGenerativeAI } = await import('@google/generative-ai');
-   const genAI = new GoogleGenerativeAI(apiKey);
-   const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+   if (!apiKey) {
+      throw new Error('API_KEY_MISSING');
+   }
 
-   let contextPrompt = SYSTEM_PROMPT;
-   
-   if (userData) {
-      contextPrompt += `
+   try {
+      const { GoogleGenerativeAI } = await import('@google/generative-ai');
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+      let contextPrompt = SYSTEM_PROMPT;
+
+      if (userData) {
+         contextPrompt += `
 
 --- CURRENT USER CONTEXT & CLINICAL DATA ---
 Please personalize your response based on the following user data if relevant to their question:
@@ -99,11 +118,32 @@ Please personalize your response based on the following user data if relevant to
 - Total Photos: ${userData.photos}
 - Recent Treatments Logged: ${userData.recentTreatments || 'None'}
 - Recent Nutrition Logged: ${userData.recentNutrition ? 'Yes' : 'No'}`;
+      }
+
+      const result = await model.generateContent(`${contextPrompt}\n\n--- USER QUESTION ---\n${question}`);
+      return result.response.text();
+   } catch (error) {
+      console.error("Gemini API Error:", error);
+
+      // Parse specific API errors
+      const errorMessage = error?.message || '';
+
+      if (errorMessage.includes('401') || errorMessage.includes('UNAUTHENTICATED') || apiKey.length < 10) {
+         throw new Error('API_KEY_INVALID');
+      }
+      if (errorMessage.includes('403') || errorMessage.includes('PERMISSION_DENIED')) {
+         throw new Error('API_KEY_PERMISSION_DENIED');
+      }
+      if (errorMessage.includes('429') || errorMessage.includes('RESOURCE_EXHAUSTED')) {
+         throw new Error('API_RATE_LIMIT');
+      }
+      if (errorMessage.includes('QUOTA_EXCEEDED')) {
+         throw new Error('API_QUOTA_EXCEEDED');
+      }
+
+      // Generic API error
+      throw new Error('API_ERROR');
    }
-
-   const result = await model.generateContent(`${contextPrompt}\n\n--- USER QUESTION ---\n${question}`);
-
-   return result.response.text();
 }
 
 export async function generateMonthlyNarrative(apiKey, userData) {
@@ -123,10 +163,11 @@ USER DATA OVER THE LAST 30 DAYS:
 - Recent Actives & Serums Used: ${userData.recentActives || 'None'}
 - Self-Reported Scalp Condition: ${userData.latestDiagnostics} (Rated 1-5, where Oil/Hydration 3 is balanced, Flakes 1 is clear)
 - Nutrition Logs: ${userData.nutritionCount} days
+- AI Scalp Audit (Density/Breakage Scan): ${userData.latestScanResult || 'No scans performed yet'}
 
 INSTRUCTIONS:
 1. Analyze their use of Actives/Serums and correlate it directly to their self-reported Scalp Condition metrics. Praise their dedication to their scalp microbiome.
-2. Specifically mention how their *nutrition* combined with their *scalp actives* are neutralizing inflammation and preparing the follicle for dense, uninhibited growth.
+2. If an AI Scalp Audit was performed, comment clinically on the density and breakage results observed in the scan. Specifically mention how their *nutrition* and *scalp actives* are supporting these visual results.
 3. End with a "Legacy Milestone Prediction" in this exact format: "At your current rate of follicular health, you are on track to reach your Goal Length with optimal density by [Realistic Future Date, e.g., December 2026]."
 `;
 
@@ -255,7 +296,7 @@ export async function analyzeScalpPhotoWithGemini(apiKey, base64Image, mimeType 
         return result.response.text();
     } catch (e) {
         console.error("AI Scalp Audit Failed:", e);
-        return "The AI Coach is currently analyzing another patient's data. Please ensure your API key is valid and try this scan again.";
+        return `Audit Failed: ${e.message || "Please ensure your API key has Vision permissions and try again."}`;
     }
 }
 

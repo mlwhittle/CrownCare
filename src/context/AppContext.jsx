@@ -267,6 +267,9 @@ export const AppProvider = ({ children }) => {
     const addPhoto = (photo) => {
         setPhotos(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), ...photo }, ...prev]);
     };
+    const updatePhoto = (id, updates) => {
+        setPhotos(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
+    };
     const deletePhoto = (id) => setPhotos(prev => prev.filter(p => p.id !== id));
 
     // Nutrition logs (daily)
@@ -575,7 +578,7 @@ export const AppProvider = ({ children }) => {
             user, isPremium, isVIP, isTrialExpired, redeemVipCode, authLoading,
             theme, toggleTheme,
             onboarding, completeOnboarding,
-            photos, addPhoto, deletePhoto,
+            photos, addPhoto, updatePhoto, deletePhoto,
             nutritionLogs, getTodayNutrition, saveNutrition,
             treatments, addTreatment, deleteTreatment, toggleTreatmentDone,
             routineLogs, logRoutine, getTodayRoutines,

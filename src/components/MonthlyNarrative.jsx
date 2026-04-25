@@ -43,7 +43,8 @@ export default function MonthlyNarrative({ setCurrentView, isStylistView, mocked
                 latestDiagnostics: latestPhoto?.diagnostics ? 
                     `Sebum: ${latestPhoto.diagnostics.oil}/5, Hydration: ${latestPhoto.diagnostics.hydration}/5, Flakes: ${latestPhoto.diagnostics.flakes}/5` : 
                     'No condition data',
-                nutritionCount: isStylistView && mockedClientData ? Math.floor(mockedClientData.consistencyScore * 1.5) : nutritionLogs.length
+                nutritionCount: isStylistView && mockedClientData ? Math.floor(mockedClientData.consistencyScore * 1.5) : nutritionLogs.length,
+                latestScanResult: latestPhoto?.auditResult || null
             };
 
             const result = await generateMonthlyNarrative(apiKey, userData);
@@ -73,7 +74,8 @@ export default function MonthlyNarrative({ setCurrentView, isStylistView, mocked
     };
 
     const handleExportPDF = () => {
-        alert("The PDF Synthesis Engine would generate a highly stylized document off this view for your records.");
+        // Native browser/OS print dialog acts as the functional "Save to PDF" capability
+        window.print();
     };
 
     if (viewMode === 'archives') {
