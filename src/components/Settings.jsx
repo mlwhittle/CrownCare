@@ -10,6 +10,7 @@ import settingsImg from '../assets/images/settings.png';
 import UserManual from './UserManual';
 import ScaleYourBusiness from './ScaleYourBusiness';
 import DeleteAccount from './DeleteAccount';
+import Upgrade from './Upgrade';
 import './Settings.css';
 
 export default function Settings({ setCurrentView }) {
@@ -17,6 +18,7 @@ export default function Settings({ setCurrentView }) {
     const [showManual, setShowManual] = useState(false);
     const [showScaleBusiness, setShowScaleBusiness] = useState(false);
     const [showDeleteAccount, setShowDeleteAccount] = useState(false);
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [isCanceling, setIsCanceling] = useState(false);
     const [isUpgrading, setIsUpgrading] = useState(false);
     const [vipInput, setVipInput] = useState('');
@@ -153,6 +155,10 @@ export default function Settings({ setCurrentView }) {
         return <UserManual onClose={() => setShowManual(false)} />;
     }
 
+    if (showUpgradeModal) {
+        return <Upgrade onClose={() => setShowUpgradeModal(false)} />;
+    }
+
     if (showScaleBusiness) {
         return <ScaleYourBusiness onClose={() => setShowScaleBusiness(false)} />;
     }
@@ -217,7 +223,6 @@ export default function Settings({ setCurrentView }) {
             </div>
 
             {/* Subscription Management */}
-            {!Capacitor.isNativePlatform() && (
             <div className="card mb-lg" style={{
                 border: isPremium ? '2px solid var(--gold-400)' : '2px solid var(--border-color)',
                 background: isPremium ? 'var(--bg-tertiary)' : 'var(--bg-secondary)',
@@ -231,7 +236,7 @@ export default function Settings({ setCurrentView }) {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-sm)' }}>
                         <span style={{ fontWeight: 600 }}>Current Plan</span>
                         <span className={`badge ${isPremium ? 'badge-gold' : 'badge-sky'}`}>
-                            {isPremium ? (isVIP ? 'VIP Access' : 'Premium ($19.99/mo)') : 'Free Tier'}
+                            {isPremium ? (isVIP ? 'VIP Access' : 'Premium Access') : 'Free Tier'}
                         </span>
                     </div>
 
@@ -241,76 +246,13 @@ export default function Settings({ setCurrentView }) {
                             : "Upgrade to Premium to unlock personalized AI coaching and detailed clinical logs."}
                     </p>
 
-                    {isPremium && !isVIP && (
-                        <div style={{ marginTop: 'var(--space-lg)', borderTop: '1px solid var(--border-color)', paddingTop: 'var(--space-md)' }}>
-                            <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)', marginBottom: 'var(--space-sm)', fontStyle: 'italic' }}>
-                                Note: While you are in your 7-Day Free Trial, you will not be charged. However, your trial will automatically convert into to a paid subscription based on your decision to stay with the app. You can cancel at any time below.
-                            </p>
-                            <button
-                                className="btn btn-outline"
-                                style={{ width: '100%', borderColor: 'var(--error)', color: 'var(--error)' }}
-                                disabled={isCanceling}
-                                onClick={async () => {
-                                    if (confirm("To cancel, you will be redirected to the Stripe Customer Portal. Continue?")) {
-                                        setIsCanceling(true);
-                                        try {
-                                            const functions = getFunctions(db.app, 'us-central1');
-                                            const functionRef = httpsCallable(functions, 'ext-firestore-stripe-payments-createPortalLink');
-                                            const { data } = await functionRef({ returnUrl: window.location.origin });
-                                            if (!Capacitor.isNativePlatform()) {
-                                                window.location.assign(data.url);
-                                            }
-                                        } catch (e) {
-                                            console.error(e);
-                                            alert("Failed to connect to the Stripe Billing Portal. Ensure the Firebase Stripe Extension is correctly configured.");
-                                        } finally {
-                                            setIsCanceling(false);
-                                        }
-                                    }
-                                }}
-                            >
-                                {isCanceling ? "Canceling..." : "Cancel Subscription"}
-                            </button>
-                        </div>
-                    )}
-                    
-                    {!isPremium && (
-                        <div style={{ marginTop: 'var(--space-lg)', borderTop: '1px solid var(--border-color)', paddingTop: 'var(--space-md)' }}>
-                            <button className="btn btn-primary" style={{ width: '100%' }} disabled={isUpgrading} onClick={handleUpgrade}>
-                                <Zap size={16} /> {isUpgrading ? 'Redirecting to Stripe...' : 'Upgrade to Premium'}
-                            </button>
-
-                            <div style={{ marginTop: 'var(--space-lg)', paddingTop: 'var(--space-md)', borderTop: '1px dashed var(--border-color)' }}>
-                                <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>Have a VIP Code?</p>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <input
-                                        type="text"
-                                        className="form-input"
-                                        placeholder="Enter code..."
-                                        value={vipInput}
-                                        onChange={e => setVipInput(e.target.value)}
-                                        style={{ flex: 1, textTransform: 'uppercase' }}
-                                    />
-                                    <button
-                                        className="btn btn-outline"
-                                        onClick={() => {
-                                            if (redeemVipCode(vipInput)) {
-                                                setVipInput('');
-                                                alert("VIP Code Applied! You now have lifetime access.");
-                                            } else {
-                                                alert("Invalid VIP Code. Please check with the creator.");
-                                            }
-                                        }}
-                                    >
-                                        Redeem
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    <div style={{ marginTop: 'var(--space-lg)', borderTop: '1px solid var(--border-color)', paddingTop: 'var(--space-md)' }}>
+                        <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => setShowUpgradeModal(true)}>
+                            <Zap size={16} /> Manage Subscriptions & Upgrades
+                        </button>
+                    </div>
                 </div>
             </div>
-            )}
             {/* Stylist Connection */}
             <div className="card mb-lg" style={{ border: stylistCode ? '2px solid var(--success)' : '1px solid var(--border-color)' }}>
                 <h3 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
@@ -426,7 +368,6 @@ export default function Settings({ setCurrentView }) {
             </div>
 
             {/* Account Type */}
-            {!Capacitor.isNativePlatform() && (
             <div className="card mb-lg" style={{ 
                 border: isStylistAccount ? '2px solid var(--brand-400)' : '2px solid var(--border-color)',
                 background: isStylistAccount ? 'var(--bg-tertiary)' : 'var(--bg-secondary)',
@@ -460,26 +401,9 @@ export default function Settings({ setCurrentView }) {
                         <button 
                             className="btn btn-outline" 
                             style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                            onClick={async () => {
-                                if (confirm("You will be redirected to the secure Stripe Customer Portal to manage your professional billing. Continue?")) {
-                                    setIsCanceling(true);
-                                    try {
-                                        const functions = getFunctions(db.app, 'us-central1');
-                                        const functionRef = httpsCallable(functions, 'ext-firestore-stripe-payments-createPortalLink');
-                                        const { data } = await functionRef({ returnUrl: window.location.origin });
-                                        if (!Capacitor.isNativePlatform()) {
-                                            window.location.assign(data.url);
-                                        }
-                                    } catch (e) {
-                                        console.error(e);
-                                        alert("Failed to connect to the Stripe Billing Portal.");
-                                    } finally {
-                                        setIsCanceling(false);
-                                    }
-                                }
-                            }}
+                            onClick={() => setShowUpgradeModal(true)}
                         >
-                            Manage Pro Billing
+                            Manage Pro Subscriptions
                         </button>
                     </div>
                 ) : (
@@ -494,20 +418,17 @@ export default function Settings({ setCurrentView }) {
                         <button 
                             className="btn btn-primary" 
                             style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
-                            disabled={isUpgrading}
-                            onClick={handleStylistUpgrade}
+                            onClick={() => setShowUpgradeModal(true)}
                         >
-                            <Crown size={18} /> {isUpgrading ? 'Redirecting to Checkout...' : 'Upgrade to Stylist Tier ($49.99/mo)'}
+                            <Crown size={18} /> Upgrade to Stylist Tier
                         </button>
                     </div>
                 )}
             </div>
-            )}
 
-            {/* About */}
             <div className="card mb-lg">
                 <h3 style={{ marginBottom: 'var(--space-lg)' }}>About CrownCare</h3>
-                <div className="setting-row"><span>Version</span><span className="text-muted">1.0.0 (Beta)</span></div>
+                <div className="setting-row"><span>Version</span><span className="text-muted">1.0.0</span></div>
                 <div className="setting-row"><span>AI Engine</span><span className="text-muted">Gemini 2.0 Flash</span></div>
                 
                 <button 
