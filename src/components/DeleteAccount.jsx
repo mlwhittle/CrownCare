@@ -18,6 +18,7 @@ function DeleteAccount({ setCurrentView }) {
     const [isDeleting, setIsDeleting] = useState(false);
     const [needsReauth, setNeedsReauth] = useState(false);
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleReauthAndRetry = async () => {
         if (!auth.currentUser) return;
@@ -39,46 +40,62 @@ function DeleteAccount({ setCurrentView }) {
             }
             // If re-auth is successful, hide the re-auth prompt and try deleting again
             setNeedsReauth(false);
+            setErrorMessage('');
             await processDeletion();
         } catch (error) {
             console.error("Re-Auth Failed:", error);
-            alert(`Authentication failed: ${error.message}`);
+            setErrorMessage(`Authentication failed: ${error.message}`);
             setIsDeleting(false);
         }
     };
 
     const processDeletion = async () => {
         if (!auth.currentUser) return;
+        setErrorMessage('');
 
         try {
             const uid = auth.currentUser.uid;
             
+            const tryDelete = async (action) => {
+                try {
+                    await action();
+                } catch (e) {
+                    console.warn('Cleanup step skipped due to permissions/error:', e);
+                }
+            };
+
             // Delete checkout_sessions subcollection first
-            const checkoutSnap = await getDocs(collection(db, 'users', uid, 'checkout_sessions'));
-            const batch1 = writeBatch(db);
-            checkoutSnap.forEach(d => batch1.delete(d.ref));
-            await batch1.commit();
+            await tryDelete(async () => {
+                const checkoutSnap = await getDocs(collection(db, 'users', uid, 'checkout_sessions'));
+                const batch1 = writeBatch(db);
+                checkoutSnap.forEach(d => batch1.delete(d.ref));
+                await batch1.commit();
+            });
 
             // Delete customers/{uid}/subscriptions
-            const subsSnap = await getDocs(collection(db, 'customers', uid, 'subscriptions'));
-            const batch2 = writeBatch(db);
-            subsSnap.forEach(d => batch2.delete(d.ref));
-            await batch2.commit();
+            await tryDelete(async () => {
+                const subsSnap = await getDocs(collection(db, 'customers', uid, 'subscriptions'));
+                const batch2 = writeBatch(db);
+                subsSnap.forEach(d => batch2.delete(d.ref));
+                await batch2.commit();
+            });
 
             // Delete customers/{uid}/payments
-            const paymentsSnap = await getDocs(collection(db, 'customers', uid, 'payments'));
-            const batch3 = writeBatch(db);
-            paymentsSnap.forEach(d => batch3.delete(d.ref));
-            await batch3.commit();
+            await tryDelete(async () => {
+                const paymentsSnap = await getDocs(collection(db, 'customers', uid, 'payments'));
+                const batch3 = writeBatch(db);
+                paymentsSnap.forEach(d => batch3.delete(d.ref));
+                await batch3.commit();
+            });
 
             // Delete customers/{uid} parent doc
-            await deleteDoc(doc(db, 'customers', uid));
+            await tryDelete(() => deleteDoc(doc(db, 'customers', uid)));
 
             // Delete user_data/{uid}
-            await deleteDoc(doc(db, 'user_data', uid));
+            await tryDelete(() => deleteDoc(doc(db, 'user_data', uid)));
 
             // Delete users/{uid}
-            await deleteDoc(doc(db, 'users', uid));
+            await tryDelete(() => deleteDoc(doc(db, 'users', uid)));
 
             // Logout RevenueCat on iOS
             if (Capacitor.isNativePlatform()) {
@@ -101,7 +118,7 @@ function DeleteAccount({ setCurrentView }) {
             if (error.code === 'auth/requires-recent-login') {
                 setNeedsReauth(true);
             } else {
-                alert(`Deletion failed: ${error.message}`);
+                setErrorMessage(`Deletion failed: ${error.message}`);
             }
         } finally {
             setIsDeleting(false);
@@ -121,6 +138,12 @@ function DeleteAccount({ setCurrentView }) {
                     This will permanently delete your account, all photos, logs, routines, and subscription data. This action cannot be undone.
                 </p>
             </div>
+
+            {errorMessage && (
+                <div style={{ padding: '12px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--error)', borderRadius: '8px', color: 'var(--error)', marginBottom: '16px', fontSize: '0.875rem' }}>
+                    {errorMessage}
+                </div>
+            )}
 
             {needsReauth ? (
                 <div className="card" style={{ borderColor: 'var(--error)' }}>

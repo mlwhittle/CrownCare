@@ -137,19 +137,6 @@ export default function Settings({ setCurrentView }) {
         }
     };
 
-    const clearAll = async () => {
-        if (confirm('This will delete ALL your data — photos, logs, everything. Are you sure?')) {
-            try {
-                if (auth.currentUser) {
-                    await deleteUser(auth.currentUser);
-                }
-                localStorage.clear();
-                setCurrentView('onboarding');
-            } catch (error) {
-                alert(`Deletion failed: ${error.message}`);
-            }
-        }
-    };
 
     if (showManual) {
         return <UserManual onClose={() => setShowManual(false)} />;
@@ -460,13 +447,6 @@ export default function Settings({ setCurrentView }) {
                 <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-md)' }}>
                     Permanently delete all your data including photos, logs, and quiz results.
                 </p>
-                <button
-                    className="btn btn-danger"
-                    style={{ width: '100%', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                    onClick={clearAll}
-                >
-                    <Trash2 size={16} /> Clear All Data
-                </button>
                 <button
                     className="btn btn-outline"
                     style={{ width: '100%', borderColor: 'var(--error)', color: 'var(--error)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
