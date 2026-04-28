@@ -139,7 +139,7 @@ export default function Upgrade({ onClose }) {
 
                 <div className="upgrade-footer" style={{ textAlign: 'center', background: 'transparent', border: 'none', paddingTop: 0 }}>
                     <p className="secure-badge" style={{ justifyContent: 'center' }}>
-                        <ShieldCheck size={14} /> Secure recurring billing powered by Stripe
+                        <ShieldCheck size={14} /> Secure recurring billing
                     </p>
                 </div>
             </div>

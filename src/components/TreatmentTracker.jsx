@@ -274,7 +274,7 @@ export default function TreatmentTracker({ openAI }) {
                             <p className="text-sm text-muted" style={{ margin: 0 }}>No appointments scheduled.</p>
                             <button className="btn btn-sm btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 12px', fontSize: '12px' }} onClick={() => {
                                 if (!stylistCode && !isStylistAccount) {
-                                    alert("Please connect your stylist using the 'Stylist Protocol' tab below, or tell them to get the app at Crowncare.net/professionals!");
+                                    alert("Please connect your stylist using the 'Stylist Protocol' tab below!");
                                     setTab('prescribed');
                                 } else if (isStylistAccount) {
                                     alert("Invite your clients to book appointments with you through the CrownCare portal!");
@@ -349,7 +349,7 @@ export default function TreatmentTracker({ openAI }) {
                                     <div>
                                         <h4 style={{ margin: '0 0 4px 0', fontSize: '1rem', color: '#1E3A8A', fontWeight: 800 }}>Don't have a code? Connect Your Stylist</h4>
                                         <p style={{ margin: 0, fontSize: '0.85rem', color: '#1E40AF', lineHeight: 1.5, fontWeight: 500 }}>
-                                            Tell your stylist to visit <strong style={{color:'#2563EB'}}>Crowncare.net/professionals</strong> to download the B2B portal so they can oversee your hair data and issue your protocol.
+                                            Ask your stylist for their CrownCare invite code.
                                         </p>
                                     </div>
                                 </div>

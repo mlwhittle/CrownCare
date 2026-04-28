@@ -80,7 +80,7 @@ export default function Reports({ isStylistView, mockedClientData }) {
                     <div>
                         <h4 style={{ margin: '0 0 4px 0', fontSize: '1rem', color: 'var(--text-primary)', fontWeight: 700 }}>Maximize Your Results</h4>
                         <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                            This analytics data takes your hair care to a new level when tracked by a professional. Tell your stylist to visit <strong style={{color:'#60A5FA'}}>Crowncare.net/professionals</strong> to connect to your journal, or upgrade to the Stylist-Connected tier!
+                            This analytics data takes your hair care to a new level when tracked by a professional. Ask your stylist for their CrownCare invite code to connect to your journal, or upgrade to the Stylist-Connected tier!
                         </p>
                     </div>
                 </div>

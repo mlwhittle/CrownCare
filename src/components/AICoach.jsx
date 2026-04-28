@@ -155,7 +155,7 @@ export default function AICoach({ isOverlay, onClose }) {
              const isIOS = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
              const portalMessage = isIOS 
                  ? "To resolve issues regarding your subscription, please navigate to your Apple ID Settings on this device to manage or cancel subscriptions."
-                 : "To resolve issue regarding your account, password, or billing, please visit your secure portal: [Customer Portal](https://billing.stripe.com/p/login/test_portal).";
+                 : "To resolve issues regarding your subscription, please manage it through your app store settings.";
 
              setChat(prev => [...prev, { 
                 role: 'ai', 

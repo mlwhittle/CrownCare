@@ -17,7 +17,7 @@ export default function Journal() {
         
         // Intercept clinical trigger selection for unlinked users to drive B2B adoption
         if (isSelecting && !isStylistAccount && !stylistCode) {
-            alert("To share this clinical data for specific treatment and advice, please connect your Stylist!\n\nTell them to visit Crowncare.net/professionals to download the B2B portal and give you their referral code.");
+            alert("To share this clinical data for specific treatment and advice, please connect your Stylist!\n\nAsk them for their CrownCare referral code.");
         }
         
         setSelectedTags(prev => isSelecting ? [...prev, tag] : prev.filter(t => t !== tag));

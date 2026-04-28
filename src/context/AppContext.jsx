@@ -52,7 +52,7 @@ export const AppProvider = ({ children }) => {
     const [stylistCode, setStylistCode] = useState(() => {
         if (typeof window !== 'undefined') {
             const params = new URLSearchParams(window.location.search);
-            const ref = params.get('ref') || params.get('stylist');
+            const ref = params.get('ref') || params.get('stylist') || params.get('via');
             if (ref) {
                 save('cc_stylist', ref.toUpperCase());
                 return ref.toUpperCase();
@@ -515,63 +515,7 @@ export const AppProvider = ({ children }) => {
     const updateStylistDashboard = (updates) => {
         setStylistDashboardData(prev => ({ ...prev, ...updates }));
     };
-    const linkedClients = [
-        { 
-            id: 'c1', name: 'Alisha Washington', consistencyScore: 85, lastActive: '2026-03-15', tier: 'Royal Growth',
-            hairType: '4C', porosity: 'Low', concern: 'Postpartum Shedding',
-            activity: [
-                { id: 'a1', date: '2026-03-15', type: 'treatment', description: 'Logged Clinical Routine: Rosewater Hydration Mist' },
-                { id: 'a2', date: '2026-03-14', type: 'routine', description: 'Completed Nightly Wrap Routine' },
-                { id: 'a3', date: '2026-03-12', type: 'journal', description: 'Journal Entry: Experiencing a lot of shedding today.', tags: ['High Stress', 'Hormonal Shift'] }
-            ],
-            recentPhotos: [
-                { id: 'p1', date: '2026-03-15', zone: 'Part Line', imageData: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' },
-                { id: 'p2', date: '2026-03-01', zone: 'Part Line', imageData: 'https://images.unsplash.com/photo-1519699047748-de8e457a634e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' }
-            ],
-            recentNutrition: {
-                waterGlasses: 6,
-                checks: { protein: true, iron: true, vitaminD: false }
-            },
-            appointments: [
-                { id: 'appt1', date: '2026-03-25T14:30:00', stylistName: 'Sarah at Studio 54', notes: 'Protein treatment follow-up and trim.' }
-            ]
-        },
-        { 
-            id: 'c2', name: 'Jasmine Carter', consistencyScore: 42, lastActive: '2026-03-10', tier: 'Seedling',
-            hairType: '3B', porosity: 'High', concern: 'Color Damage / Breakage',
-            activity: [
-                { id: 'a4', date: '2026-03-10', type: 'treatment', description: 'Logged Custom Product: Mielle Organics Rosemary Mint Oil' },
-                { id: 'a5', date: '2026-03-02', type: 'treatment', description: 'Logged Clinical Routine: Clarifying Shampoo' }
-            ]
-        },
-        { 
-            id: 'c3', name: 'Monique Davis', consistencyScore: 92, lastActive: '2026-03-16', tier: 'Royal Growth',
-            activity: [
-                { id: 'a6', date: '2026-03-16', type: 'routine', description: 'Completed Morning Moisture Routine' },
-                { id: 'a7', date: '2026-03-15', type: 'treatment', description: 'Logged Natural Treatment: Aloe Vera Mask' },
-                { id: 'a8', date: '2026-03-14', type: 'routine', description: 'Completed Nightly Wrap Routine' }
-            ],
-            recentPhotos: [
-                { id: 'p3', date: '2026-03-16', zone: 'Crown', imageData: 'https://images.unsplash.com/photo-1579895914389-42b77227eb04?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' }
-            ],
-            recentNutrition: {
-                waterGlasses: 8,
-                checks: { protein: true, iron: true, vitaminD: true }
-            }
-        },
-        { 
-            id: 'c4', name: 'Kiesha Jenkins', consistencyScore: 68, lastActive: '2026-03-14', tier: 'Sprout',
-            activity: [
-                { id: 'a9', date: '2026-03-14', type: 'treatment', description: 'Logged Clinical Routine: Moisture Retention' }
-            ]
-        },
-        { 
-            id: 'c5', name: 'LaToya Smith', consistencyScore: 30, lastActive: '2026-03-01', tier: 'Seedling',
-            activity: [
-                { id: 'a10', date: '2026-03-01', type: 'treatment', description: 'Logged Custom Product' }
-            ]
-        },
-    ];
+    const linkedClients = [];
 
     return (
         <AppContext.Provider value={{

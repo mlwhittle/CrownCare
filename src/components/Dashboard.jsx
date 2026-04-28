@@ -90,7 +90,7 @@ export default function Dashboard({ setCurrentView, openAI }) {
                     <div>
                         <h4 style={{ margin: '0 0 4px 0', fontSize: '1rem', color: 'var(--brand-primary)', fontWeight: 700 }}>Connect Your Stylist</h4>
                         <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                            Tell your stylist to visit <strong style={{color:'#60A5FA'}}>Crowncare.net/professionals</strong> to download the B2B portal so they can oversee your hair data.
+                            Ask your stylist for their CrownCare invite code.
                         </p>
                     </div>
                 </div>

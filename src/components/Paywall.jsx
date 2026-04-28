@@ -179,7 +179,7 @@ export default function Paywall({ onSubscribeSuccess }) {
                 
                 {!Capacitor.isNativePlatform() && (
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: 'var(--space-xl)', color: 'var(--text-tertiary)', fontSize: '12px' }}>
-                        <ShieldAlert size={14} /> Secure AES-256 Stripe Encrypted Checkout
+                        <ShieldAlert size={14} /> Secure AES-256 Encrypted Checkout
                     </div>
                 )}
 

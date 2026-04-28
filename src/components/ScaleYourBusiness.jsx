@@ -40,7 +40,7 @@ export default function ScaleYourBusiness({ onClose }) {
                         <span style={{ fontSize: 'var(--font-size-xs)', color: 'rgba(255,255,255,0.5)', marginLeft: '6px' }}>one-time</span>
                     </div>
                     {Capacitor.isNativePlatform() ? (
-                        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}>To purchase this package, visit crowncare.app on your desktop browser.</p>
+                        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}>Professional growth tools are coming soon.</p>
                     ) : (
                         <button
                             onClick={() => window.open('https://buy.stripe.com/8x228sfZl2Ci4Kn07kfUQ09', '_blank')}

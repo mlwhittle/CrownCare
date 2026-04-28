@@ -202,34 +202,41 @@ export default function StylistPortal() {
             </div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
-                {linkedClients.map((client) => (
-                    <div key={client.id} className="card-glass" style={{ padding: 'var(--space-md)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid var(--border-color)', borderRadius: '20px' }}>
-                        <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                                <strong style={{ fontSize: '1rem', color: 'var(--text-primary)' }}>{client.name}</strong>
-                                {client.consistencyScore < 50 && <AlertCircle size={14} style={{ color: 'var(--error)' }} />}
-                            </div>
-                            <span className={`badge ${client.tier === 'Royal Growth' ? 'badge-gold' : client.tier === 'Sprout' ? 'badge-sky' : 'badge-danger'}`} style={{ marginBottom: '8px', display: 'inline-block' }}>
-                                {client.tier} (Score: {client.consistencyScore})
-                            </span>
-                            
-                            <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-                                <div style={{ fontSize: '9px', fontWeight: 800, color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '4px', background: 'var(--success-light)', padding: '2px 6px', borderRadius: '4px', border: '1px solid rgba(16,185,129,0.3)' }}>
-                                    <Activity size={10} /> BIO SYNC
-                                </div>
-                                <div style={{ fontSize: '9px', fontWeight: 800, color: 'var(--gold-primary)', display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(212, 175, 55, 0.1)', padding: '2px 6px', borderRadius: '4px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>
-                                    <Sparkles size={10} /> AUDIT: 86
-                                </div>
-                            </div>
-                        </div>
-                        <button className="btn btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 12px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '2px solid var(--border-color)', borderRadius: '12px', fontWeight: 700 }} onClick={() => {
-                            setSelectedClient(client.id);
-                            setTab('profile');
-                        }}>
-                            Profile <ChevronRight size={14} />
-                        </button>
+                {linkedClients.length === 0 ? (
+                    <div className="card text-center" style={{ padding: 'var(--space-xl)' }}>
+                        <Users size={32} style={{ color: 'var(--text-muted)', margin: '0 auto var(--space-sm)' }} />
+                        <p className="text-muted">No clients connected yet. Invite a client with your CrownCare code to begin.</p>
                     </div>
-                ))}
+                ) : (
+                    linkedClients.map((client) => (
+                        <div key={client.id} className="card-glass" style={{ padding: 'var(--space-md)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid var(--border-color)', borderRadius: '20px' }}>
+                            <div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                    <strong style={{ fontSize: '1rem', color: 'var(--text-primary)' }}>{client.name}</strong>
+                                    {client.consistencyScore < 50 && <AlertCircle size={14} style={{ color: 'var(--error)' }} />}
+                                </div>
+                                <span className={`badge ${client.tier === 'Royal Growth' ? 'badge-gold' : client.tier === 'Sprout' ? 'badge-sky' : 'badge-danger'}`} style={{ marginBottom: '8px', display: 'inline-block' }}>
+                                    {client.tier} (Score: {client.consistencyScore})
+                                </span>
+                                
+                                <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                                    <div style={{ fontSize: '9px', fontWeight: 800, color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '4px', background: 'var(--success-light)', padding: '2px 6px', borderRadius: '4px', border: '1px solid rgba(16,185,129,0.3)' }}>
+                                        <Activity size={10} /> BIO SYNC
+                                    </div>
+                                    <div style={{ fontSize: '9px', fontWeight: 800, color: 'var(--gold-primary)', display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(212, 175, 55, 0.1)', padding: '2px 6px', borderRadius: '4px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>
+                                        <Sparkles size={10} /> AUDIT: 86
+                                    </div>
+                                </div>
+                            </div>
+                            <button className="btn btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 12px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '2px solid var(--border-color)', borderRadius: '12px', fontWeight: 700 }} onClick={() => {
+                                setSelectedClient(client.id);
+                                setTab('profile');
+                            }}>
+                                Profile <ChevronRight size={14} />
+                            </button>
+                        </div>
+                    ))
+                )}
             </div>
         </div>
     );

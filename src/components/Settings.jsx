@@ -341,8 +341,7 @@ export default function Settings({ setCurrentView }) {
                                     }
 
                                     // Normally we would check if they already have an active $29.99 connected tier subscription in standard logic.
-                                    // For now, if they're not a stylist themselves, we intercept and send to Stripe directly.
-                                    if(confirm(`Connecting to a professional stylist requires the Connected Premium Tier ($29.99/mo).\n\nAre you ready to securely proceed to Stripe Checkout?`)) {
+                                    if(confirm(`Connecting with a professional stylist requires an active CrownCare subscription.`)) {
                                         handleConnectedTierUpgrade(code);
                                     }
                                 }}
