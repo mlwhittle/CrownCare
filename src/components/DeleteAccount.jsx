@@ -51,7 +51,12 @@ function DeleteAccount({ setCurrentView }) {
 
     const processDeletion = async () => {
         if (!auth.currentUser) return;
+
+        const isConfirmed = window.confirm("This permanently deletes your CrownCare account and cannot be undone.");
+        if (!isConfirmed) return;
+
         setErrorMessage('');
+        setIsDeleting(true);
 
         try {
             const uid = auth.currentUser.uid;
@@ -112,13 +117,16 @@ function DeleteAccount({ setCurrentView }) {
 
             // Clear local storage and redirect
             localStorage.clear();
+            alert("Account successfully deleted.");
             setCurrentView('onboarding');
 
         } catch (error) {
+            console.error("Deletion Error:", error);
             if (error.code === 'auth/requires-recent-login') {
                 setNeedsReauth(true);
+                setErrorMessage('For your security, please sign in again before deleting your account.');
             } else {
-                setErrorMessage(`Deletion failed: ${error.message}`);
+                setErrorMessage(`Deletion failed: We couldn't complete your request at this time. Please try again or contact support.`);
             }
         } finally {
             setIsDeleting(false);
@@ -184,7 +192,7 @@ function DeleteAccount({ setCurrentView }) {
                         disabled={confirmText !== 'DELETE' || isDeleting}
                     >
                         <Trash2 size={16} />
-                        {isDeleting ? 'Deleting your account...' : 'Permanently Delete My Account'}
+                        {isDeleting ? 'Deleting account...' : 'Permanently Delete My Account'}
                     </button>
                 </div>
             )}

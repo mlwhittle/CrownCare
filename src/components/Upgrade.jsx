@@ -9,6 +9,8 @@ import './Upgrade.css';
 export default function Upgrade({ onClose }) {
     const { user, isVIP } = useApp();
     const [purchaseStatus, setPurchaseStatus] = useState('');
+    const [isPurchaseLoading, setIsPurchaseLoading] = useState(false);
+    const [isProductsLoading, setIsProductsLoading] = useState(true);
 
     const STRIPE_LINKS = {
         'Solo Client': 'https://buy.stripe.com/eVq3cwbJ5b8O7WzbQ2fUQ04',
@@ -22,11 +24,30 @@ export default function Upgrade({ onClose }) {
         'Stylist Pro': 'crowncare_pro_monthly',
     };
 
+    React.useEffect(() => {
+        const loadProducts = async () => {
+            if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
+                try {
+                    const { Purchases } = await import('@revenuecat/purchases-capacitor');
+                    await Purchases.getProducts(Object.values(REVENUECAT_PRODUCTS));
+                } catch (e) {
+                    console.error("Failed to load RevenueCat products:", e);
+                } finally {
+                    setIsProductsLoading(false);
+                }
+            } else {
+                setIsProductsLoading(false);
+            }
+        };
+        loadProducts();
+    }, []);
+
     const handleSelectTier = async (tierName, price) => {
         // iOS Native: use RevenueCat In-App Purchase
         if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
+            setIsPurchaseLoading(true);
             try {
-                setPurchaseStatus('Connecting to Apple App Store...');
+                setPurchaseStatus('Opening secure purchase...');
                 const { Purchases } = await import('@revenuecat/purchases-capacitor');
                 const productId = REVENUECAT_PRODUCTS[tierName];
                 const { customerInfo } = await Purchases.purchaseProduct({ productIdentifier: productId });
@@ -55,11 +76,14 @@ export default function Upgrade({ onClose }) {
                     setTimeout(() => onClose(), 1500);
                 }
             } catch (e) {
+                console.error("Purchase error:", e);
                 if (!e.userCancelled) {
-                    setPurchaseStatus('❌ Purchase failed: ' + e.message);
+                    setPurchaseStatus("We couldn't open the purchase screen. Please try again.");
                 } else {
                     setPurchaseStatus('');
                 }
+            } finally {
+                setIsPurchaseLoading(false);
             }
             return;
         }
@@ -99,7 +123,9 @@ export default function Upgrade({ onClose }) {
                             <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)' }}><Check size={16} color="var(--success)" /> Visual Diary Tracking</li>
                             <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)' }}><Check size={16} color="var(--success)" /> Basic Product Analysis</li>
                         </ul>
-                        <button className="btn btn-outline" style={{ width: '100%' }} onClick={() => handleSelectTier('Solo Client', '$19.99')}>Select Plan</button>
+                        <button className="btn btn-outline" style={{ width: '100%' }} onClick={() => handleSelectTier('Solo Client', '$19.99')} disabled={isProductsLoading || isPurchaseLoading}>
+                            {isProductsLoading ? 'Loading plans...' : 'Select Plan'}
+                        </button>
                     </div>
 
                     {/* Tier 2: Connected Client */}
@@ -115,7 +141,9 @@ export default function Upgrade({ onClose }) {
                             <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)', color: 'var(--brand-900)' }}><Stethoscope size={16} color="var(--brand-500)" /> 24/7 Stylist Monitoring</li>
                             <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)', color: 'var(--brand-900)' }}><Check size={16} color="var(--brand-500)" /> Custom Clinical Protocols</li>
                         </ul>
-                        <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => handleSelectTier('Connected Client', '$29.99')}>Select Plan</button>
+                        <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => handleSelectTier('Connected Client', '$29.99')} disabled={isProductsLoading || isPurchaseLoading}>
+                            {isProductsLoading ? 'Loading plans...' : 'Select Plan'}
+                        </button>
                     </div>
 
                     {/* Tier 3: Stylist Pro */}
@@ -132,15 +160,30 @@ export default function Upgrade({ onClose }) {
                             <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)' }}><Check size={16} color="var(--gray-500)" /> Issue Clinical Protocols</li>
                             <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)' }}><Check size={16} color="var(--gray-500)" /> <strong>Manage Client Connections</strong></li>
                         </ul>
-                        <button className="btn btn-outline" style={{ width: '100%' }} onClick={() => handleSelectTier('Stylist Pro', '$49.99')}>Select Plan</button>
+                        <button className="btn btn-outline" style={{ width: '100%' }} onClick={() => handleSelectTier('Stylist Pro', '$49.99')} disabled={isProductsLoading || isPurchaseLoading}>
+                            {isProductsLoading ? 'Loading plans...' : 'Select Plan'}
+                        </button>
                     </div>
 
                 </div>
 
-                <div className="upgrade-footer" style={{ textAlign: 'center', background: 'transparent', border: 'none', paddingTop: 0 }}>
-                    <p className="secure-badge" style={{ justifyContent: 'center' }}>
-                        <ShieldCheck size={14} /> Secure recurring billing
-                    </p>
+                {purchaseStatus && (
+                    <div style={{ textAlign: 'center', marginBottom: 'var(--space-md)', color: purchaseStatus.includes('Purchase successful') || purchaseStatus.includes('Access granted') ? 'var(--success)' : 'var(--error)' }}>
+                        {purchaseStatus}
+                    </div>
+                )}
+
+                <div className="upgrade-footer" style={{ textAlign: 'center', background: 'transparent', border: 'none', paddingTop: 0, paddingBottom: 'var(--space-md)' }}>
+                    {!(Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') && (
+                        <p className="secure-badge" style={{ justifyContent: 'center', marginBottom: 'var(--space-md)' }}>
+                            <ShieldCheck size={14} /> Secure recurring billing
+                        </p>
+                    )}
+                    <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>
+                        <a href="https://crowncare.app/privacy-policy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-tertiary)', textDecoration: 'underline', cursor: 'pointer' }}>Privacy Policy</a>
+                        {' | '}
+                        <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-tertiary)', textDecoration: 'underline', cursor: 'pointer' }}>Terms of Use</a>
+                    </div>
                 </div>
             </div>
         </div>

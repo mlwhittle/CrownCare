@@ -7,12 +7,31 @@ import { Purchases } from '@revenuecat/purchases-capacitor';
 export default function Paywall({ onSubscribeSuccess }) {
     const { onboarding, user, setIsPremium } = useApp();
     const [isLoading, setIsLoading] = useState(false);
+    const [isProductsLoading, setIsProductsLoading] = useState(true);
     const [claimEmail, setClaimEmail] = useState('');
     const [isClaiming, setIsClaiming] = useState(false);
     const [claimMessage, setClaimMessage] = useState('');
     
     const userType = onboarding?.userType || 'solo';
     const isStylist = userType === 'stylist';
+
+    React.useEffect(() => {
+        const loadProducts = async () => {
+            if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
+                try {
+                    const { Purchases } = await import('@revenuecat/purchases-capacitor');
+                    await Purchases.getProducts(['crowncare_solo_monthly', 'crowncare_connected_monthly', 'crowncare_pro_monthly']);
+                } catch (e) {
+                    console.error("Failed to load RevenueCat products:", e);
+                } finally {
+                    setIsProductsLoading(false);
+                }
+            } else {
+                setIsProductsLoading(false);
+            }
+        };
+        loadProducts();
+    }, []);
 
     const handleCheckout = async (tier) => {
         setIsLoading(true);
@@ -45,7 +64,8 @@ export default function Paywall({ onSubscribeSuccess }) {
                     setTimeout(() => onSubscribeSuccess(true), 1500);
                 }
             } catch (e) {
-                if (!e.userCancelled) setClaimMessage('❌ Apple Purchase Failed: ' + e.message);
+                console.error("Purchase error:", e);
+                if (!e.userCancelled) setClaimMessage("We couldn't open the purchase screen. Please try again.");
                 else setClaimMessage(''); // clear if they just closed the FaceID prompt
                 setIsLoading(false);
             }
@@ -127,11 +147,11 @@ export default function Paywall({ onSubscribeSuccess }) {
                         <button 
                             type="button"
                             onClick={() => handleCheckout('stylist')}
-                            disabled={isLoading}
+                            disabled={isLoading || isProductsLoading}
                             className="btn btn-primary btn-lg" 
                             style={{ width: '100%', fontSize: 'var(--font-size-lg)', height: '60px', background: 'var(--crown-gold)', color: '#000' }}
                         >
-                            {isLoading ? 'Processing...' : 'Activate Professional Subscription'}
+                            {isProductsLoading ? 'Loading plans...' : (isLoading ? 'Opening secure purchase...' : 'Activate Professional Subscription')}
                         </button>
                         {Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios' && (
                             <p style={{ fontSize: '11px', color: '#888', textAlign: 'center', marginTop: '12px', lineHeight: 1.4 }}>
@@ -163,11 +183,11 @@ export default function Paywall({ onSubscribeSuccess }) {
                         <button 
                             type="button"
                             onClick={() => handleCheckout('client')}
-                            disabled={isLoading}
+                            disabled={isLoading || isProductsLoading}
                             className="btn btn-primary btn-lg" 
                             style={{ width: '100%', fontSize: 'var(--font-size-lg)', height: '60px', background: 'var(--blue-500)' }}
                         >
-                            {isLoading ? 'Processing...' : 'Activate Premium Subscription'}
+                            {isProductsLoading ? 'Loading plans...' : (isLoading ? 'Opening secure purchase...' : 'Activate Premium Subscription')}
                         </button>
                         {Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios' && (
                             <p style={{ fontSize: '11px', color: '#888', textAlign: 'center', marginTop: '12px', lineHeight: 1.4 }}>
@@ -229,6 +249,12 @@ export default function Paywall({ onSubscribeSuccess }) {
                             {claimMessage && <p style={{ marginTop: 'var(--space-md)', fontSize: '13px', color: claimMessage.includes('❌') ? 'var(--error)' : 'var(--success)', fontWeight: 'bold' }}>{claimMessage}</p>}
                         </>
                     )}
+                </div>
+
+                <div style={{ marginTop: 'var(--space-xl)', textAlign: 'center', fontSize: '12px', color: 'var(--text-tertiary)' }}>
+                    <a href="https://crowncare.app/privacy-policy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-tertiary)', textDecoration: 'underline', cursor: 'pointer' }}>Privacy Policy</a>
+                    {' | '}
+                    <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-tertiary)', textDecoration: 'underline', cursor: 'pointer' }}>Terms of Use</a>
                 </div>
 
             </div>
