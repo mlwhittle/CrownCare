@@ -102,10 +102,10 @@ jobs:
           gem install xcodeproj
           ruby fix_signing.rb
           
-          env SWIFTPM_MAX_CONCURRENT_OPERATIONS=1 xcodebuild -resolvePackageDependencies -project App.xcodeproj -scheme App
+          env SWIFTPM_MAX_CONCURRENT_OPERATIONS=1 xcodebuild -resolvePackageDependencies -project App.xcodeproj -scheme App > resolve.log 2>&1 || { echo "RESOLVE FAILED! LOG:"; cat resolve.log; exit 1; }
           env SWIFTPM_MAX_CONCURRENT_OPERATIONS=1 xcodebuild -project App.xcodeproj -scheme App -configuration Release clean archive -archivePath $RUNNER_TEMP/App.xcarchive \
             -skipPackagePluginValidation \
-            -skipMacroValidation > xcodebuild.log 2>&1 || { echo "XCODEBUILD FAILED! TAILING LOG:"; tail -n 200 xcodebuild.log; exit 1; }
+            -skipMacroValidation > xcodebuild.log 2>&1 || { echo "XCODEBUILD FAILED! EXTRACTING ERRORS:"; grep -A 20 -B 5 -i "error:" xcodebuild.log; exit 1; }
 
       - name: Export App Binary (.ipa)
         run: |
