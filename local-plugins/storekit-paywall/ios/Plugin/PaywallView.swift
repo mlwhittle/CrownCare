@@ -14,17 +14,8 @@ struct PaywallView: View {
                 .subscriptionStorePolicyDestination(for: .termsOfService) {
                     URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
                 }
-                .storeButton(.visible, for: .policies)
                 .navigationTitle("Choose a Plan")
                 .navigationBarTitleDisplayMode(.inline)
-                .onInAppPurchaseCompletion { product, result in
-                    switch result {
-                    case .success(let successResult):
-                        print("CrownCare StoreKit Purchase success: \(successResult)")
-                    case .failure(let error):
-                        print("CrownCare StoreKit Purchase error: \(error.localizedDescription)")
-                    }
-                }
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button("Close") {
