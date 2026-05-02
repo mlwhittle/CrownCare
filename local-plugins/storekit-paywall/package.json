@@ -1,0 +1,27 @@
+{
+  "name": "capacitor-storekit-paywall",
+  "version": "1.0.0",
+  "description": "StoreKit 2 Paywall Plugin",
+  "main": "dist/plugin.cjs.js",
+  "module": "dist/plugin.js",
+  "types": "dist/esm/index.d.ts",
+  "unpkg": "dist/plugin.js",
+  "scripts": {
+    "build": "npm run tsc && rollup -c rollup.config.js",
+    "tsc": "tsc"
+  },
+  "peerDependencies": {
+    "@capacitor/core": "^6.0.0 || ^7.0.0 || ^8.0.0"
+  },
+  "capacitor": {
+    "ios": {
+      "src": "ios",
+      "SwiftVersion": "5.1"
+    }
+  },
+  "devDependencies": {
+    "@capacitor/core": "^8.3.1",
+    "rollup": "^4.60.2",
+    "typescript": "^6.0.3"
+  }
+}

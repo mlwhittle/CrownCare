@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext';
 import { Capacitor } from '@capacitor/core';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { StoreKitPaywall } from 'capacitor-storekit-paywall';
 import './Upgrade.css';
 
 export default function Upgrade({ onClose }) {
@@ -42,52 +43,46 @@ export default function Upgrade({ onClose }) {
         loadProducts();
     }, []);
 
-    const handleSelectTier = async (tierName, price) => {
-        // iOS Native: use RevenueCat In-App Purchase
-        if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
-            setIsPurchaseLoading(true);
-            try {
-                setPurchaseStatus('Opening secure purchase...');
-                const { Purchases } = await import('@revenuecat/purchases-capacitor');
-                const productId = REVENUECAT_PRODUCTS[tierName];
-                const { customerInfo } = await Purchases.purchaseProduct({ productIdentifier: productId });
+    const openNativePaywall = async () => {
+        setIsPurchaseLoading(true);
+        try {
+            await StoreKitPaywall.presentPaywall();
+            
+            // Sync with RevenueCat/Firebase after native Apple view closes
+            const { Purchases } = await import('@revenuecat/purchases-capacitor');
+            const { customerInfo } = await Purchases.getCustomerInfo();
+            const activeEntitlements = customerInfo?.entitlements?.active || {};
+            
+            let activeTier = null;
+            if (activeEntitlements['pro']) activeTier = 'pro';
+            else if (activeEntitlements['connected']) activeTier = 'connected';
+            else if (activeEntitlements['solo']) activeTier = 'solo';
 
-                const activeEntitlements = customerInfo?.entitlements?.active || {};
-                let activeTier = null;
-                if (activeEntitlements['pro']) activeTier = 'pro';
-                else if (activeEntitlements['connected']) activeTier = 'connected';
-                else if (activeEntitlements['solo']) activeTier = 'solo';
-
-                if (activeTier || customerInfo.activeSubscriptions.length > 0) {
-                    if (user) {
-                        try {
-                            await setDoc(doc(db, 'users', user.uid), {
-                                hasActiveAppSubscription: true,
-                                subscriptionTier: activeTier || tierName.split(' ')[0].toLowerCase()
-                            }, { merge: true });
-                        } catch (err) {
-                            console.error("Firebase sync failed:", err);
-                        }
+            if (activeTier || customerInfo.activeSubscriptions.length > 0) {
+                if (user) {
+                    try {
+                        await setDoc(doc(db, 'users', user.uid), {
+                            hasActiveAppSubscription: true,
+                            subscriptionTier: activeTier || 'solo'
+                        }, { merge: true });
+                    } catch (err) {
+                        console.error("Firebase sync failed:", err);
                     }
-                    setPurchaseStatus('🎉 Purchase successful! Unlocking app...');
-                    setTimeout(() => onClose(), 1500);
-                } else {
-                    setPurchaseStatus('✅ Access granted.');
-                    setTimeout(() => onClose(), 1500);
                 }
-            } catch (e) {
-                console.error("Purchase error:", e);
-                if (!e.userCancelled) {
-                    setPurchaseStatus("We couldn't open the purchase screen. Please try again.");
-                } else {
-                    setPurchaseStatus('');
-                }
-            } finally {
-                setIsPurchaseLoading(false);
+                setPurchaseStatus('🎉 Purchase successful! Unlocking app...');
+                setTimeout(() => onClose(), 1500);
+            } else {
+                onClose();
             }
-            return;
+        } catch (e) {
+            console.error("StoreKitPaywall Error:", e);
+            setPurchaseStatus("Failed to open Apple Subscriptions.");
+        } finally {
+            setIsPurchaseLoading(false);
         }
+    };
 
+    const handleSelectTier = async (tierName, price) => {
         // Web / Android: open Stripe payment link
         const stripeUrl = STRIPE_LINKS[tierName];
         if (stripeUrl && !Capacitor.isNativePlatform()) {
@@ -96,6 +91,43 @@ export default function Upgrade({ onClose }) {
         onClose();
     };
 
+    // --- NATIVE IOS STOREKIT 2 PAYWALL RENDER ---
+    if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
+        return (
+            <div className="upgrade-modal-overlay">
+                <div className="upgrade-modal" style={{ maxWidth: '500px', width: '95%', textAlign: 'center' }}>
+                    <button className="upgrade-close-btn" onClick={onClose}><X size={24} /></button>
+                    
+                    <div className="upgrade-header" style={{ marginBottom: 'var(--space-xl)' }}>
+                        <div className="upgrade-icon-wrap" style={{ margin: '0 auto', marginBottom: 'var(--space-sm)' }}>
+                            <Crown size={32} color="var(--brand-500)" />
+                        </div>
+                        <h2>CrownCare Subscriptions</h2>
+                        <p className="text-muted">Choose the plan that fits your hair journey via secure Apple subscriptions.</p>
+                    </div>
+
+                    <div style={{ padding: '0 var(--space-md)' }}>
+                        <button 
+                            className="btn btn-primary" 
+                            style={{ width: '100%', padding: '1rem', fontSize: '1.1rem', marginBottom: 'var(--space-md)' }} 
+                            onClick={openNativePaywall} 
+                            disabled={isPurchaseLoading}
+                        >
+                            {isPurchaseLoading ? 'Opening App Store...' : 'Select Plan'}
+                        </button>
+                    </div>
+
+                    {purchaseStatus && (
+                        <div style={{ textAlign: 'center', marginBottom: 'var(--space-md)', color: purchaseStatus.includes('successful') ? 'var(--success)' : 'var(--error)' }}>
+                            {purchaseStatus}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // --- WEB / ANDROID STRIPE RENDER ---
     return (
         <div className="upgrade-modal-overlay">
             <div className="upgrade-modal" style={{ maxWidth: '900px', width: '95%' }}>
@@ -123,8 +155,8 @@ export default function Upgrade({ onClose }) {
                             <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)' }}><Check size={16} color="var(--success)" /> Visual Diary Tracking</li>
                             <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)' }}><Check size={16} color="var(--success)" /> Basic Product Analysis</li>
                         </ul>
-                        <button className="btn btn-outline" style={{ width: '100%' }} onClick={() => handleSelectTier('Solo Client', '$19.99')} disabled={isProductsLoading || isPurchaseLoading}>
-                            {isProductsLoading ? 'Loading plans...' : 'Select Plan'}
+                        <button className="btn btn-outline" style={{ width: '100%' }} onClick={() => handleSelectTier('Solo Client', '$19.99')}>
+                            Select Plan
                         </button>
                     </div>
 
@@ -141,8 +173,8 @@ export default function Upgrade({ onClose }) {
                             <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)', color: 'var(--brand-900)' }}><Stethoscope size={16} color="var(--brand-500)" /> 24/7 Stylist Monitoring</li>
                             <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)', color: 'var(--brand-900)' }}><Check size={16} color="var(--brand-500)" /> Custom Clinical Protocols</li>
                         </ul>
-                        <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => handleSelectTier('Connected Client', '$29.99')} disabled={isProductsLoading || isPurchaseLoading}>
-                            {isProductsLoading ? 'Loading plans...' : 'Select Plan'}
+                        <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => handleSelectTier('Connected Client', '$29.99')}>
+                            Select Plan
                         </button>
                     </div>
 
@@ -160,25 +192,17 @@ export default function Upgrade({ onClose }) {
                             <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)' }}><Check size={16} color="var(--gray-500)" /> Issue Clinical Protocols</li>
                             <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)' }}><Check size={16} color="var(--gray-500)" /> <strong>Manage Client Connections</strong></li>
                         </ul>
-                        <button className="btn btn-outline" style={{ width: '100%' }} onClick={() => handleSelectTier('Stylist Pro', '$49.99')} disabled={isProductsLoading || isPurchaseLoading}>
-                            {isProductsLoading ? 'Loading plans...' : 'Select Plan'}
+                        <button className="btn btn-outline" style={{ width: '100%' }} onClick={() => handleSelectTier('Stylist Pro', '$49.99')}>
+                            Select Plan
                         </button>
                     </div>
 
                 </div>
 
-                {purchaseStatus && (
-                    <div style={{ textAlign: 'center', marginBottom: 'var(--space-md)', color: purchaseStatus.includes('Purchase successful') || purchaseStatus.includes('Access granted') ? 'var(--success)' : 'var(--error)' }}>
-                        {purchaseStatus}
-                    </div>
-                )}
-
                 <div className="upgrade-footer" style={{ textAlign: 'center', background: 'transparent', border: 'none', paddingTop: 0, paddingBottom: 'var(--space-md)' }}>
-                    {!(Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') && (
-                        <p className="secure-badge" style={{ justifyContent: 'center', marginBottom: 'var(--space-md)' }}>
-                            <ShieldCheck size={14} /> Secure recurring billing
-                        </p>
-                    )}
+                    <p className="secure-badge" style={{ justifyContent: 'center', marginBottom: 'var(--space-md)' }}>
+                        <ShieldCheck size={14} /> Secure recurring billing
+                    </p>
                     <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>
                         <a href="https://crowncare.app/privacy-policy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-tertiary)', textDecoration: 'underline', cursor: 'pointer' }}>Privacy Policy</a>
                         {' | '}

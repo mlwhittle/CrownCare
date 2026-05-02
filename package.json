@@ -19,6 +19,7 @@
         "@ionic/pwa-elements": "^3.4.0",
         "@revenuecat/purchases-capacitor": "^12.3.0",
         "@stripe/stripe-js": "^8.8.0",
+        "capacitor-storekit-paywall": "file:local-plugins/storekit-paywall",
         "chart.js": "^4.4.7",
         "firebase": "^12.10.0",
         "framer-motion": "^12.38.0",
