@@ -76,7 +76,7 @@ export default function Upgrade({ onClose }) {
             }
         } catch (e) {
             console.error("StoreKitPaywall Error:", e);
-            setPurchaseStatus("Failed to open Apple Subscriptions.");
+            setPurchaseStatus("Error: " + (e.message || e.toString()));
         } finally {
             setIsPurchaseLoading(false);
         }

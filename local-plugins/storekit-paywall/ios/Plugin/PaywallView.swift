@@ -7,7 +7,7 @@ struct PaywallView: View {
     
     var body: some View {
         NavigationView {
-            SubscriptionStoreView(groupID: "21996977")
+            SubscriptionStoreView(productIDs: ["crowncare_solo_monthly", "crowncare_connected_monthly", "crowncare_pro_monthly"])
                 .subscriptionStorePolicyDestination(for: .privacyPolicy) {
                     URL(string: "https://crowncare.app/privacy")!
                 }
@@ -17,6 +17,14 @@ struct PaywallView: View {
                 .storeButton(.visible, for: .policies)
                 .navigationTitle("Choose a Plan")
                 .navigationBarTitleDisplayMode(.inline)
+                .onInAppPurchaseCompletion { product, result in
+                    switch result {
+                    case .success(let successResult):
+                        print("CrownCare StoreKit Purchase success: \(successResult)")
+                    case .failure(let error):
+                        print("CrownCare StoreKit Purchase error: \(error.localizedDescription)")
+                    }
+                }
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button("Close") {
@@ -24,6 +32,9 @@ struct PaywallView: View {
                         }
                     }
                 }
+        }
+        .onDisappear {
+            onDismiss()
         }
     }
 }
