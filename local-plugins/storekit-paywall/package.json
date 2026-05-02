@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "StoreKit 2 Paywall Plugin",
   "main": "dist/plugin.cjs.js",
-  "module": "dist/plugin.js",
+  "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "unpkg": "dist/plugin.js",
   "scripts": {
