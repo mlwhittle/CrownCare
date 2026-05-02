@@ -3,7 +3,12 @@ import Capacitor
 import SwiftUI
 
 @objc(StoreKitPaywallPlugin)
-public class StoreKitPaywallPlugin: CAPPlugin {
+public class StoreKitPaywallPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "StoreKitPaywallPlugin"
+    public let jsName = "StoreKitPaywall"
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "presentPaywall", returnType: CAPPluginReturnPromise)
+    ]
     
     @objc func presentPaywall(_ call: CAPPluginCall) {
         DispatchQueue.main.async {

@@ -7,7 +7,7 @@ let package = Package(
     products: [
         .library(
             name: "CapacitorStorekitPaywall",
-            targets: ["StoreKitPaywallPlugin", "StoreKitPaywallPluginObjc"])
+            targets: ["StoreKitPaywallPlugin"])
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", branch: "main")
@@ -19,13 +19,6 @@ let package = Package(
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
                 .product(name: "Cordova", package: "capacitor-swift-pm")
             ],
-            path: "ios/Plugin"),
-        .target(
-            name: "StoreKitPaywallPluginObjc",
-            dependencies: [
-                .product(name: "Capacitor", package: "capacitor-swift-pm"),
-                .product(name: "Cordova", package: "capacitor-swift-pm")
-            ],
-            path: "ios/PluginObjc")
+            path: "ios/Plugin")
     ]
 )
