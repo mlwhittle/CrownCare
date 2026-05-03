@@ -193,10 +193,10 @@ function AppInner() {
                 <AnimatePresence mode="wait" initial={false}>
                     <motion.div
                         key={currentView}
-                        initial={{ x: direction * 50, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: direction * -50, opacity: 0 }}
-                        transition={{ type: "spring", bounce: 0, duration: 0.25 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.15 }}
                         style={{ width: '100%', height: '100%' }}
                     >
                         {renderView()}

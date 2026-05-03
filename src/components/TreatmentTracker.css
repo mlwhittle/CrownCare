@@ -14,7 +14,7 @@
     gap: 4px;
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-xl);
     padding: 6px;
     margin-bottom: var(--space-xl);
     max-width: 320px;
@@ -28,7 +28,7 @@
     justify-content: center;
     gap: 6px;
     padding: var(--space-sm) var(--space-lg);
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-lg);
     font-size: var(--font-size-sm);
     font-weight: 600;
     background: transparent;

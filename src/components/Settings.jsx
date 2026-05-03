@@ -263,7 +263,7 @@ export default function Settings({ setCurrentView }) {
                                 <input
                                     type="text"
                                     className="form-input"
-                                    placeholder="New stylist code..."
+                                    placeholder="Stylist ID..."
                                     value={newStylistCode}
                                     onChange={e => setNewStylistCode(e.target.value)}
                                     style={{ flex: 1, textTransform: 'uppercase' }}
@@ -314,7 +314,7 @@ export default function Settings({ setCurrentView }) {
                             <input
                                 type="text"
                                 className="form-input"
-                                placeholder="Enter Stylist Code..."
+                                placeholder="Stylist ID..."
                                 value={newStylistCode}
                                 onChange={e => setNewStylistCode(e.target.value)}
                                 style={{ flex: 1, textTransform: 'uppercase' }}

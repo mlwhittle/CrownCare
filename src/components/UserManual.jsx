@@ -1,7 +1,12 @@
+import React, { useEffect } from 'react';
 import { X, BookOpen, Camera, ShieldCheck, BarChart2, Zap } from 'lucide-react';
 import './Settings.css'; // Reuse Settings CSS for styling
 
 export default function UserManual({ onClose }) {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     return (
         <div className="settings" style={{ paddingBottom: '100px', backgroundColor: 'var(--bg-primary)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>

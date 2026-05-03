@@ -8,7 +8,7 @@ struct PaywallView: View {
     var body: some View {
         NavigationView {
             SubscriptionStoreView(productIDs: ["crowncare_solo_monthly", "crowncare_connected_monthly", "crowncare_pro_monthly"])
-                .subscriptionStorePolicyDestination(url: URL(string: "https://crowncare.app/privacy")!, for: .privacyPolicy)
+                .subscriptionStorePolicyDestination(url: URL(string: "https://crowncare.app/privacy-policy")!, for: .privacyPolicy)
                 .subscriptionStorePolicyDestination(url: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!, for: .termsOfService)
                 .storeButton(.visible, for: .policies)
                 .navigationTitle("Choose a Plan")

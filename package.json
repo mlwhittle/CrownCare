@@ -11,6 +11,7 @@
         "deploy": "npm run build && firebase deploy --project crowncare-116e4"
     },
     "dependencies": {
+        "@capacitor-community/speech-recognition": "^7.0.1",
         "@capacitor/android": "^8.1.0",
         "@capacitor/app": "^8.1.0",
         "@capacitor/camera": "^8.0.2",

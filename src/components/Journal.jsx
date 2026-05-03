@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { BookOpen, Send, Trash2, Calendar, Clock, Edit3, Mic, MicOff, Volume2 } from 'lucide-react';
 import { generateEmpatheticResponse, loadApiKey } from '../services/GeminiService';
+import { SpeechRecognition } from '@capacitor-community/speech-recognition';
+import { Capacitor } from '@capacitor/core';
 import journalImg from '../assets/images/journal.png';
 
 export default function Journal() {
@@ -23,19 +25,56 @@ export default function Journal() {
         setSelectedTags(prev => isSelecting ? [...prev, tag] : prev.filter(t => t !== tag));
     };
 
-    const handleListen = () => {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            alert("To use voice dictation on this device, please tap the microphone icon built directly into your device's keyboard.");
-            return;
-        }
-        
+    const handleListen = async () => {
         if (isListening) {
+            if (Capacitor.isNativePlatform()) {
+                try { await SpeechRecognition.stop(); } catch(e) {}
+            }
             setIsListening(false);
             return;
         }
 
-        const recognition = new SpeechRecognition();
+        if (Capacitor.isNativePlatform()) {
+            try {
+                const hasPerm = await SpeechRecognition.hasPermission();
+                if (!hasPerm.permission) {
+                    await SpeechRecognition.requestPermission();
+                }
+                
+                setIsListening(true);
+                
+                // Depending on the OS, the plugin handles partials differently.
+                // It is safest to just grab the final result from the start() call if we are using popup: true on Android.
+                SpeechRecognition.removeAllListeners();
+                
+                const result = await SpeechRecognition.start({
+                    language: "en-US",
+                    maxResults: 1,
+                    prompt: "Speak your journal entry",
+                    partialResults: false,
+                    popup: true
+                });
+                
+                if (result && result.matches && result.matches.length > 0) {
+                    setEntry(prev => prev + (prev ? ' ' : '') + result.matches[0]);
+                }
+                
+                setIsListening(false);
+            } catch (err) {
+                console.error(err);
+                setIsListening(false);
+                alert("Speech recognition failed. Please ensure microphone permissions are granted.");
+            }
+            return;
+        }
+
+        const WebSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!WebSpeechRecognition) {
+            alert("To use voice dictation on this device, please tap the microphone icon built directly into your device's keyboard.");
+            return;
+        }
+
+        const recognition = new WebSpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = false;
         
@@ -128,7 +167,7 @@ export default function Journal() {
     return (
         <div className="page-container fade-in" style={{ padding: 'var(--space-md)' }}>
             <img src={journalImg} alt="Voice Journal" className="page-header-img" style={{ marginTop: '1rem' }} />
-            <div className="page-header" style={{ marginBottom: 'var(--space-md)' }}>
+            <div className="page-header" style={{ marginBottom: 'var(--space-md)', padding: '0 var(--space-sm)' }}>
                 <h2>My Journal</h2>
                 <p className="text-muted text-sm" style={{ marginTop: 'var(--space-xs)' }}>
                     Your private space to document the emotional and qualitative moments of your hair growth journey.

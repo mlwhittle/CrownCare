@@ -251,7 +251,7 @@
     font-size: var(--font-size-md);
     line-height: 1.6;
     margin-bottom: var(--space-md);
-    color: var(--brand-primary);
+    color: #001F3F; /* Forced Deep Navy for contrast on the yellow gradient */
     text-shadow: 0 1px 1px rgba(255,255,255,0.3);
 }
 
@@ -259,7 +259,7 @@
     font-family: var(--font-serif);
     font-weight: 700;
     font-size: var(--font-size-lg);
-    color: var(--brand-primary);
+    color: #001F3F; /* Forced Deep Navy */
     margin-bottom: 0;
     padding-top: var(--space-md);
     border-top: 1px solid rgba(0,0,0,0.1);
