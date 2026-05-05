@@ -127,7 +127,7 @@ exports.claimWebSubscription = onRequest((req, res) => {
             }
 
             const normalizedEmail = email.toLowerCase().trim();
-            const allowedVips = ['mlwhittle@gmail.com', 'admin@crowncare.app'];
+            const allowedVips = ['mlwhittle@gmail.com', 'admin@crowncare.net'];
 
             let isActive = false;
             if (allowedVips.includes(normalizedEmail)) {

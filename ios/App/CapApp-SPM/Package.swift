@@ -14,7 +14,8 @@ let package = Package(
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.3.0"),
         .package(name: "CapacitorApp", path: "..\..\..\node_modules\@capacitor\app"),
         .package(name: "CapacitorCamera", path: "..\..\..\node_modules\@capacitor\camera"),
-        .package(name: "RevenuecatPurchasesCapacitor", path: "..\..\..\node_modules\@revenuecat\purchases-capacitor")
+        .package(name: "RevenuecatPurchasesCapacitor", path: "..\..\..\node_modules\@revenuecat\purchases-capacitor"),
+        .package(name: "CapacitorStorekitPaywall", path: "..\..\..\local-plugins\storekit-paywall")
     ],
     targets: [
         .target(
@@ -24,7 +25,8 @@ let package = Package(
                 .product(name: "Cordova", package: "capacitor-swift-pm"),
                 .product(name: "CapacitorApp", package: "CapacitorApp"),
                 .product(name: "CapacitorCamera", package: "CapacitorCamera"),
-                .product(name: "RevenuecatPurchasesCapacitor", package: "RevenuecatPurchasesCapacitor")
+                .product(name: "RevenuecatPurchasesCapacitor", package: "RevenuecatPurchasesCapacitor"),
+                .product(name: "CapacitorStorekitPaywall", package: "CapacitorStorekitPaywall")
             ]
         )
     ]

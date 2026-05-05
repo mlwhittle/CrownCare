@@ -107,14 +107,7 @@ export default function UserManual({ onClose }) {
                     </p>
                 </div>
 
-                <div style={{ marginBottom: 'var(--space-md)' }}>
-                    <h5 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)', marginBottom: '4px' }}>
-                        <ShieldCheck size={16} /> Automated Stylist Passive Income
-                    </h5>
-                    <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                        For utilizing this highly advanced portal to monitor you, the Stylist is provided with elite B2B professional networking tools directly through CrownCare.
-                    </p>
-                </div>
+
 
                 <p style={{ fontSize: 'var(--font-size-sm)', fontStyle: 'italic', color: 'var(--gold-600)', marginTop: 'var(--space-md)', lineHeight: 1.5 }}>
                     By connecting your Core Pages to a Master Professional, you ensure you never accidentally damage your hair again. You are always being monitored, diagnosed, and protected by a professional—even when you are 3,000 miles away from their salon chair.

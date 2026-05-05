@@ -176,7 +176,7 @@ export const AppProvider = ({ children }) => {
                 setAppointments(load(STORAGE_KEYS.appointments, []));
                 setArchivedNarratives(load('cc_archives', []));
 
-                // Ensure the user document exists and permanently attach any affiliate referrals
+                // Ensure the user document exists and permanently attach any client referrals
                 const userRef = doc(db, 'users', currentUser.uid);
                 const currentStylist = load('cc_stylist', null);
                 setDoc(userRef, { 
@@ -191,7 +191,7 @@ export const AppProvider = ({ children }) => {
 
                 const evaluatePremium = () => {
                     const isUserVIP = load('cc_vip', false);
-                    if (isUserVIP || hasAppSubscription || hasWebSubscription || hasNativeAppSubscription || currentUser?.email === 'tester1@crowncare.app') {
+                    if (isUserVIP || hasAppSubscription || hasWebSubscription || hasNativeAppSubscription || currentUser?.email === 'tester1@crowncare.net') {
                         setIsPremium(true);
                     } else {
                         setIsPremium(false);
@@ -500,11 +500,7 @@ export const AppProvider = ({ children }) => {
         const saved = load('cc_stylist_dashboard', null);
         if (saved) return saved;
         return {
-            affiliateCode: 'STUDIO54-SARAH',
-            monthlyEst: 120.00,
-            unpaidEarnings: 45.00,
-            stripeAccountId: null,
-            isStripeOnboarded: false
+            inviteCode: 'STUDIO54-SARAH'
         };
     });
 

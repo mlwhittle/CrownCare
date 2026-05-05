@@ -204,7 +204,7 @@ export default function Upgrade({ onClose }) {
                         <ShieldCheck size={14} /> Secure recurring billing
                     </p>
                     <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>
-                        <a href="https://crowncare.app/privacy-policy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-tertiary)', textDecoration: 'underline', cursor: 'pointer' }}>Privacy Policy</a>
+                        <a href="https://crowncare.net/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-tertiary)', textDecoration: 'underline', cursor: 'pointer' }}>Privacy Policy</a>
                         {' | '}
                         <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-tertiary)', textDecoration: 'underline', cursor: 'pointer' }}>Terms of Use</a>
                     </div>

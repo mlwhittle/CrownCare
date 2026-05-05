@@ -321,7 +321,7 @@ export default function AuthModal({ onComplete, userName }) {
                         </button>
 
                         <button
-                            onClick={() => { setEmail('tester1@crowncare.app'); setPassword(''); }}
+                            onClick={() => { setEmail('tester1@crowncare.net'); setPassword(''); }}
                             style={{ fontSize: '11px', color: '#888', background: 'none', border: 'none', cursor: 'pointer', marginTop: '8px' }}
                         >
                             App Store Reviewer Login

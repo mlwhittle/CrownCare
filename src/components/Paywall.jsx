@@ -235,7 +235,7 @@ export default function Paywall({ onSubscribeSuccess }) {
                     ) : (
                         <>
                             {/* STRIPE WEB RESTORE CHECKOUT */}
-                            <h3 style={{ fontSize: 'var(--font-size-md)', marginBottom: 'var(--space-sm)' }}>Already purchased on Crowncare.app?</h3>
+                            <h3 style={{ fontSize: 'var(--font-size-md)', marginBottom: 'var(--space-sm)' }}>Already purchased on crowncare.net/app?</h3>
                             <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: 'var(--space-md)' }}>Enter the email address you used to purchase to instantly unlock the app.</p>
                             <form 
                                 onSubmit={(e) => { e.preventDefault(); handleClaim(); }}
@@ -252,7 +252,7 @@ export default function Paywall({ onSubscribeSuccess }) {
                 </div>
 
                 <div style={{ marginTop: 'var(--space-xl)', textAlign: 'center', fontSize: '12px', color: 'var(--text-tertiary)' }}>
-                    <a href="https://crowncare.app/privacy-policy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-tertiary)', textDecoration: 'underline', cursor: 'pointer' }}>Privacy Policy</a>
+                    <a href="https://crowncare.net/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-tertiary)', textDecoration: 'underline', cursor: 'pointer' }}>Privacy Policy</a>
                     {' | '}
                     <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-tertiary)', textDecoration: 'underline', cursor: 'pointer' }}>Terms of Use</a>
                 </div>

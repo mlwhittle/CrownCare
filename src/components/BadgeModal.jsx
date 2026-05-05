@@ -38,7 +38,7 @@ export default function BadgeModal({ badgeId, onClose }) {
         const shareData = {
             title: `I unlocked the ${badge.title} badge!`,
             text: `I'm tracking my hair restoration journey with CrownCare and just hit a major consistency milestone: ${badge.desc}`,
-            url: 'https://crowncare.app',
+            url: 'https://crowncare.net/app',
         };
 
         if (navigator.share) {

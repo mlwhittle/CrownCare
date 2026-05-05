@@ -9,15 +9,15 @@ export default function InviteClientModal({ isOpen, onClose }) {
 
     if (!isOpen) return null;
 
-    // Use specific Rewardful ID if configured, otherwise fallback to their cleaned name or Firebase UID
+    // Generate invite ID based on stylist name or Firebase UID
     const safeName = (onboarding?.name || 'stylist').toLowerCase().replace(/\s+/g, '');
-    const affiliateId = onboarding?.rewardfulId || safeName || user?.uid;
+    const inviteId = safeName || user?.uid;
     
-    // Generates the web link so they bypass App Store fees
-    const referralUrl = `https://crowncare.app/?via=${affiliateId}`;
+    // Generates the connection link for the client app
+    const inviteUrl = `https://crowncare.net/app?via=${inviteId}`;
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(referralUrl);
+        navigator.clipboard.writeText(inviteUrl);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
@@ -52,9 +52,9 @@ export default function InviteClientModal({ isOpen, onClose }) {
                         <Users size={28} color="var(--gold-primary)" />
                     </div>
                     
-                    <h2 style={{ fontSize: '1.5rem', margin: '0 0 8px 0', fontFamily: 'var(--font-serif)', color: 'var(--brand-primary)', fontWeight: 600 }}>Invite Your Client</h2>
+                    <h2 style={{ fontSize: '1.5rem', margin: '0 0 8px 0', fontFamily: 'var(--font-serif)', color: 'var(--brand-primary)', fontWeight: 600 }}>Client Invite Tools</h2>
                     <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', margin: '0 0 24px 0', lineHeight: 1.5 }}>
-                        Have your client scan this code with their camera to link their CrownCare account directly to your stylist dashboard.
+                        Invite clients to connect with your CrownCare Pro dashboard so you can support their hair journey between appointments.
                     </p>
 
                     <div style={{ 
@@ -67,7 +67,7 @@ export default function InviteClientModal({ isOpen, onClose }) {
                         border: '2px solid rgba(15, 23, 42, 0.05)'
                     }}>
                         <QRCode 
-                            value={referralUrl}
+                            value={inviteUrl}
                             size={200}
                             bgColor="#FFFFFF"
                             fgColor="#0F172A"
@@ -77,7 +77,7 @@ export default function InviteClientModal({ isOpen, onClose }) {
 
                     <div style={{ background: 'var(--bg-secondary)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
                         <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.85rem', color: 'var(--text-tertiary)', textAlign: 'left', flex: 1 }}>
-                            {referralUrl}
+                            {inviteUrl}
                         </div>
                         <button 
                             onClick={handleCopy}

@@ -3,6 +3,7 @@
 	"appName": "CrownCare",
 	"webDir": "dist",
 	"packageClassList": [
+		"SpeechRecognition",
 		"AppPlugin",
 		"CAPCameraPlugin",
 		"PurchasesPlugin",

@@ -428,7 +428,7 @@ export default function Settings({ setCurrentView }) {
                 <button 
                     className="btn btn-outline" 
                     style={{ width: '100%', marginTop: 'var(--space-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }} 
-                    onClick={() => window.location.href = "mailto:support@crowncare.app"}
+                    onClick={() => window.location.href = "mailto:crown@crowncare.net"}
                 >
                     Email Developer Support
                 </button>
