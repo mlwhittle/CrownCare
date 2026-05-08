@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import { auth, db } from '../firebase';
 import { onAuthStateChanged, signInAnonymously, getRedirectResult } from 'firebase/auth';
 import { doc, getDoc, setDoc, onSnapshot, collection, query, where } from 'firebase/firestore';
-import { syncToCloud, restoreFromCloud, pushAllToCloud } from '../services/SyncService';
+import { syncToCloud, restoreFromCloud, pushAllToCloud, syncStylistConsentMirror } from '../services/SyncService';
 
 const AppContext = createContext();
 export const useApp = () => useContext(AppContext);
@@ -19,6 +19,10 @@ const STORAGE_KEYS = {
     badges: 'cc_badges',
     last_interaction: 'cc_last_int',
     appointments: 'cc_appointments',
+    consentStatus: 'cc_consent_status',
+    productScans: 'cc_product_scans',
+    sharedAudits: 'cc_shared_audits',
+    stylistMessages: 'cc_stylist_messages',
 };
 
 const load = (key, fallback) => {
@@ -35,6 +39,14 @@ const save = (key, val) => {
             alert("App storage limit reached! Your phone's local storage is full. Please delete some older progress photos to save new ones.");
         }
     }
+};
+
+const toIsoDate = (value) => {
+    if (!value) return new Date().toISOString();
+    if (typeof value === 'string') return value;
+    if (typeof value.toDate === 'function') return value.toDate().toISOString();
+    if (value.seconds) return new Date(value.seconds * 1000).toISOString();
+    return new Date(value).toISOString();
 };
 
 export const AppProvider = ({ children }) => {
@@ -104,9 +116,12 @@ export const AppProvider = ({ children }) => {
     const [prescribedTreatments, setPrescribedTreatments] = useState(() => load('cc_prescriptions', []));
     useEffect(() => { save('cc_prescriptions', prescribedTreatments); }, [prescribedTreatments]);
 
+    const [stylistMessages, setStylistMessages] = useState(() => load(STORAGE_KEYS.stylistMessages, []));
+    useEffect(() => { save(STORAGE_KEYS.stylistMessages, stylistMessages); }, [stylistMessages]);
+
     // B2B AI Audits
-    const [sharedAudits, setSharedAudits] = useState(() => load('cc_shared_audits', []));
-    useEffect(() => { save('cc_shared_audits', sharedAudits); }, [sharedAudits]);
+    const [sharedAudits, setSharedAudits] = useState(() => load(STORAGE_KEYS.sharedAudits, []));
+    useEffect(() => { save(STORAGE_KEYS.sharedAudits, sharedAudits); if (user) syncToCloud(user.uid, STORAGE_KEYS.sharedAudits, sharedAudits); }, [sharedAudits]);
 
     const shareAuditWithStylist = (auditResult, photoData) => {
         const newAudit = {
@@ -119,23 +134,6 @@ export const AppProvider = ({ children }) => {
         setSharedAudits(prev => [newAudit, ...prev]);
         return true;
     };
-
-    // Mock an instant fetch when the specific "Sarah" code is entered
-    useEffect(() => {
-        if (stylistCode && stylistCode.toUpperCase() === 'STYLIST-SARAH20') {
-            setPrescribedTreatments([
-                {
-                    id: 'mock-rx-1',
-                    name: "Protein Treatment - Aphogee Two-Step",
-                    frequency: "Every 6 weeks",
-                    notes: "Make sure you sit under a hooded dryer for at least 15 minutes with the protein treatment. Do not comb through until it is rinsed!",
-                    prescribedBy: "Sarah at Studio 54"
-                }
-            ]);
-        } else {
-            setPrescribedTreatments([]);
-        }
-    }, [stylistCode]);
 
     useEffect(() => {
         // If they have the VIP flag, grant instant premium
@@ -175,13 +173,19 @@ export const AppProvider = ({ children }) => {
                 setUnlockedBadges(load(STORAGE_KEYS.badges, []));
                 setAppointments(load(STORAGE_KEYS.appointments, []));
                 setArchivedNarratives(load('cc_archives', []));
+                setStylistCode(load('cc_stylist', ''));
+                setConsentStatus(load(STORAGE_KEYS.consentStatus, false));
+                setProductScans(load(STORAGE_KEYS.productScans, []));
+                setSharedAudits(load(STORAGE_KEYS.sharedAudits, []));
 
                 // Ensure the user document exists and permanently attach any client referrals
                 const userRef = doc(db, 'users', currentUser.uid);
                 const currentStylist = load('cc_stylist', null);
                 setDoc(userRef, { 
                     lastSeen: new Date().toISOString(),
-                    referredBy_StylistId: currentStylist || null
+                    referredBy_StylistId: currentStylist || null,
+                    stylistCode: currentStylist || null,
+                    consentStatus: load(STORAGE_KEYS.consentStatus, false) === true
                 }, { merge: true });
 
                 // STRIPE INTEGRATION: Listen for active apps subscriptions AND web bridge upgrades
@@ -475,6 +479,93 @@ export const AppProvider = ({ children }) => {
         setAppointments(prev => [{ id: Date.now().toString(), dateAdded: new Date().toISOString(), ...appt }, ...prev]);
     };
 
+    useEffect(() => {
+        if (!user) return undefined;
+
+        const messageQuery = query(collection(db, 'client_messages'), where('clientId', '==', user.uid));
+        const unsubscribe = onSnapshot(messageQuery, (snapshot) => {
+            const liveMessages = snapshot.docs
+                .map(docSnap => {
+                    const data = docSnap.data();
+                    return {
+                        id: docSnap.id,
+                        body: data.body || '',
+                        subject: data.subject || 'Stylist Message',
+                        stylistName: data.stylistName || 'Your Stylist',
+                        stylistCode: data.stylistCode || '',
+                        createdAt: toIsoDate(data.createdAt),
+                        status: data.status || 'sent',
+                    };
+                })
+                .filter(message => message.status !== 'archived')
+                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+            setStylistMessages(liveMessages);
+        }, (error) => {
+            console.error('Message listener error:', error);
+        });
+
+        return () => unsubscribe();
+    }, [user]);
+
+    useEffect(() => {
+        if (!user) return undefined;
+
+        const protocolQuery = query(collection(db, 'client_protocols'), where('clientId', '==', user.uid));
+        const unsubscribe = onSnapshot(protocolQuery, (snapshot) => {
+            const liveProtocols = snapshot.docs
+                .map(docSnap => {
+                    const data = docSnap.data();
+                    return {
+                        id: docSnap.id,
+                        name: data.title || data.name || 'Stylist Protocol',
+                        frequency: data.frequency || 'As directed',
+                        notes: data.notes || data.instructions || '',
+                        prescribedBy: data.stylistName || 'Your Stylist',
+                        status: data.status || 'active',
+                        createdAt: toIsoDate(data.createdAt),
+                    };
+                })
+                .filter(protocol => protocol.status !== 'archived')
+                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+            setPrescribedTreatments(liveProtocols);
+        }, (error) => {
+            console.error('Protocol listener error:', error);
+        });
+
+        return () => unsubscribe();
+    }, [user]);
+
+    useEffect(() => {
+        if (!user) return undefined;
+
+        const appointmentQuery = query(collection(db, 'client_appointments'), where('clientId', '==', user.uid));
+        const unsubscribe = onSnapshot(appointmentQuery, (snapshot) => {
+            const liveAppointments = snapshot.docs
+                .map(docSnap => {
+                    const data = docSnap.data();
+                    return {
+                        id: docSnap.id,
+                        date: data.date || toIsoDate(data.startsAt),
+                        status: data.status || 'scheduled',
+                        notes: data.notes || '',
+                        stylistName: data.stylistName || 'Your Stylist',
+                        stylistCode: data.stylistCode || '',
+                        createdAt: toIsoDate(data.createdAt),
+                    };
+                })
+                .filter(appt => appt.status !== 'cancelled')
+                .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+            setAppointments(liveAppointments);
+        }, (error) => {
+            console.error('Appointment listener error:', error);
+        });
+
+        return () => unsubscribe();
+    }, [user]);
+
     // Stylist Contact Info
     const [stylistContact, setStylistContact] = useState(() => {
         const saved = load('cc_stylist_contact', null);
@@ -511,7 +602,34 @@ export const AppProvider = ({ children }) => {
     const updateStylistDashboard = (updates) => {
         setStylistDashboardData(prev => ({ ...prev, ...updates }));
     };
-    const linkedClients = [];
+    const [linkedClients, setLinkedClients] = useState([]);
+
+    useEffect(() => {
+        if (isStylistAccount && stylistDashboardData?.inviteCode) {
+            import('../services/ClientService').then(({ fetchLinkedClients }) => {
+                fetchLinkedClients(stylistDashboardData.inviteCode).then(clients => {
+                    setLinkedClients(clients);
+                });
+            });
+        }
+    }, [isStylistAccount, stylistDashboardData?.inviteCode]);
+
+    // Data Pipeline & Storage (Stylist Parity)
+    const [consentStatus, setConsentStatus] = useState(() => load(STORAGE_KEYS.consentStatus, false));
+    useEffect(() => {
+        save(STORAGE_KEYS.consentStatus, consentStatus);
+        if (user) {
+            syncToCloud(user.uid, STORAGE_KEYS.consentStatus, consentStatus);
+            syncToCloud(user.uid, 'cc_stylist', stylistCode || '');
+            syncStylistConsentMirror(user.uid, stylistCode, consentStatus);
+        }
+    }, [user, stylistCode, consentStatus]);
+
+    const [productScans, setProductScans] = useState(() => load(STORAGE_KEYS.productScans, []));
+    useEffect(() => { save(STORAGE_KEYS.productScans, productScans); if (user) syncToCloud(user.uid, STORAGE_KEYS.productScans, productScans); }, [productScans]);
+
+    const addProductScan = (scan) => setProductScans(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), ...scan }, ...prev]);
+    const deleteProductScan = (id) => setProductScans(prev => prev.filter(s => s.id !== id));
 
     return (
         <AppContext.Provider value={{
@@ -533,7 +651,10 @@ export const AppProvider = ({ children }) => {
             isStylistAccount, setIsStylistAccount,
             stylistDashboardData, updateStylistDashboard, linkedClients,
             archivedNarratives, saveNarrativeArchive,
-            sharedAudits, shareAuditWithStylist
+            sharedAudits, shareAuditWithStylist,
+            stylistMessages,
+            consentStatus, setConsentStatus,
+            productScans, addProductScan, deleteProductScan
         }}>
             {children}
         </AppContext.Provider>

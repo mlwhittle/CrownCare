@@ -269,20 +269,82 @@ export default function StylistPortal() {
                     </div>
                 </div>
 
-                <div style={{ fontSize: '10px', color: 'var(--text-tertiary)', marginTop: 'var(--space-md)', paddingBottom: '2px', display: 'flex', alignItems: 'center', gap: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    <ChevronRight size={10} /> Swipe tabs to explore
-                </div>
+                {client.consentStatus ? (
+                    <>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: 'var(--space-md)', textAlign: 'center' }}>
+                            <div className="card-glass" style={{ padding: '8px', borderRadius: '12px' }}>
+                                <div style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Tracking</div>
+                                <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--brand-primary)' }}>{client.clinicalAnalytics?.totalTrackingDays || 0}d</div>
+                            </div>
+                            <div className="card-glass" style={{ padding: '8px', borderRadius: '12px' }}>
+                                <div style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Streak</div>
+                                <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--brand-primary)' }}>{client.clinicalAnalytics?.currentStreak || 0}</div>
+                            </div>
+                            <div className="card-glass" style={{ padding: '8px', borderRadius: '12px' }}>
+                                <div style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Routine</div>
+                                <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--brand-primary)' }}>{client.clinicalAnalytics?.routineCompliance || 0}%</div>
+                            </div>
+                            <div className="card-glass" style={{ padding: '8px', borderRadius: '12px' }}>
+                                <div style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Visuals</div>
+                                <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--brand-primary)' }}>{client.clinicalAnalytics?.progressPhotoVideoEngagement || 0}</div>
+                            </div>
+                            <div className="card-glass" style={{ padding: '12px', borderRadius: '12px', gridColumn: '1 / -1', textAlign: 'left', marginTop: '4px' }}>
+                                <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px' }}>Recent Engagement</div>
+                                <div style={{ fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span>Recent Treatments</span>
+                                        <strong>{client.clinicalAnalytics?.recentTreatments?.length || 0} logged</strong>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span>Latest Nutrition</span>
+                                        <strong>{client.clinicalAnalytics?.latestNutritionLog ? new Date(client.clinicalAnalytics.latestNutritionLog.date).toLocaleDateString() : 'None'}</strong>
+                                    </div>
+                                    {client.consentStatus && (
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span>Latest Journal</span>
+                                        <strong>{client.clinicalAnalytics?.latestJournalEntry ? new Date(client.clinicalAnalytics.latestJournalEntry.date).toLocaleDateString() : 'None'}</strong>
+                                    </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
 
-                <div className="tracker-tabs" style={{ width: '100%', display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', WebkitOverflowScrolling: 'touch', gap: '4px', marginBottom: 'var(--space-lg)', marginTop: 'var(--space-md)', paddingBottom: '4px' }}>
-                    <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'activity' ? 'active' : ''}`} onClick={() => setProfileTab('activity')}>Activity</button>
-                    <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'visuals' ? 'active' : ''}`} onClick={() => setProfileTab('visuals')}><Camera size={14} style={{ marginRight: '4px' }}/> Visuals</button>
-                    <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'audits' ? 'active' : ''}`} onClick={() => setProfileTab('audits')}><Sparkles size={14} style={{ marginRight: '4px' }}/> AI Scans</button>
-                    <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'reports' ? 'active' : ''}`} onClick={() => setProfileTab('reports')}>Reports</button>
-                    <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'narrative' ? 'active' : ''}`} onClick={() => setProfileTab('narrative')}>Narrative</button>
-                    <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'appointment' ? 'active' : ''}`} onClick={() => setProfileTab('appointment')}><Calendar size={14} style={{ marginRight: '4px' }}/> Appt</button>
-                    <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'contact' ? 'active' : ''}`} onClick={() => setProfileTab('contact')}><ClipboardList size={14} style={{ marginRight: '4px' }}/> Rolodex</button>
-                    <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${tab === 'pad' ? 'active' : ''}`} onClick={() => setTab('pad')}><PenTool size={14} style={{ marginRight: '4px' }}/> Protocol</button>
-                </div>
+                        <div style={{ fontSize: '10px', color: 'var(--text-tertiary)', marginTop: 'var(--space-md)', paddingBottom: '2px', display: 'flex', alignItems: 'center', gap: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            <ChevronRight size={10} /> Swipe tabs to explore
+                        </div>
+
+                        <div className="tracker-tabs" style={{ width: '100%', display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', WebkitOverflowScrolling: 'touch', gap: '4px', marginBottom: 'var(--space-lg)', marginTop: 'var(--space-xs)', paddingBottom: '4px' }}>
+                            <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'activity' ? 'active' : ''}`} onClick={() => setProfileTab('activity')}>Activity</button>
+                            <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'visuals' ? 'active' : ''}`} onClick={() => setProfileTab('visuals')}><Camera size={14} style={{ marginRight: '4px' }}/> Visuals</button>
+                            <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'audits' ? 'active' : ''}`} onClick={() => setProfileTab('audits')}><Sparkles size={14} style={{ marginRight: '4px' }}/> Scans</button>
+                            <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'products' ? 'active' : ''}`} onClick={() => setProfileTab('products')}>Products</button>
+                            <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'routines' ? 'active' : ''}`} onClick={() => setProfileTab('routines')}>Routines</button>
+                            <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'nutrition' ? 'active' : ''}`} onClick={() => setProfileTab('nutrition')}>Nutrition</button>
+                            <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'journal' ? 'active' : ''}`} onClick={() => setProfileTab('journal')}>Journal</button>
+                            <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'reports' ? 'active' : ''}`} onClick={() => setProfileTab('reports')}>Reports</button>
+                            <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'narrative' ? 'active' : ''}`} onClick={() => setProfileTab('narrative')}>Narrative</button>
+                            <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'appointment' ? 'active' : ''}`} onClick={() => setProfileTab('appointment')}><Calendar size={14} style={{ marginRight: '4px' }}/> Appt</button>
+                            <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'contact' ? 'active' : ''}`} onClick={() => setProfileTab('contact')}><ClipboardList size={14} style={{ marginRight: '4px' }}/> Rolodex</button>
+                            <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${tab === 'pad' ? 'active' : ''}`} onClick={() => setTab('pad')}><PenTool size={14} style={{ marginRight: '4px' }}/> Protocol</button>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <div className="card-glass" style={{ padding: 'var(--space-lg)', textAlign: 'center', marginTop: 'var(--space-md)', marginBottom: 'var(--space-md)', borderRadius: '16px', background: 'rgba(255, 255, 255, 0.5)', border: '1px solid rgba(0,0,0,0.05)' }}>
+                            <div style={{ fontSize: '32px', marginBottom: '8px' }}>🔒</div>
+                            <h3 style={{ margin: '0 0 8px 0', fontSize: '1.1rem' }}>Client Journey is Private</h3>
+                            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', margin: 0 }}>
+                                This client has not granted permission to share their CrownCare journey data. 
+                                You can still view basic connection or appointment information that does not expose private journey details.
+                            </p>
+                        </div>
+                        <div className="tracker-tabs" style={{ width: '100%', display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', WebkitOverflowScrolling: 'touch', gap: '4px', marginBottom: 'var(--space-lg)' }}>
+                            <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'appointment' ? 'active' : ''}`} onClick={() => setProfileTab('appointment')}><Calendar size={14} style={{ marginRight: '4px' }}/> Appt</button>
+                            <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'contact' ? 'active' : ''}`} onClick={() => setProfileTab('contact')}><ClipboardList size={14} style={{ marginRight: '4px' }}/> Rolodex</button>
+                            <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${tab === 'pad' ? 'active' : ''}`} onClick={() => setTab('pad')}><PenTool size={14} style={{ marginRight: '4px' }}/> Protocol</button>
+                        </div>
+                    </>
+                )}
 
                 {profileTab === 'activity' && (
                     <div className="card-glass" style={{ padding: '0', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', overflow: 'hidden' }}>
@@ -336,6 +398,12 @@ export default function StylistPortal() {
                                             <span>{photo.zone}</span>
                                             <span style={{ color: 'var(--gold-400)' }}>{new Date(photo.date).toLocaleDateString()}</span>
                                         </div>
+                                        {(photo.notes || photo.linkedAiResult) && (
+                                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.6)', padding: '6px', fontSize: '10px', color: 'white' }}>
+                                                {photo.notes && <div style={{ marginBottom: '2px', fontStyle: 'italic' }}>{photo.notes}</div>}
+                                                {photo.linkedAiResult && <div style={{ color: 'var(--gold-400)', fontWeight: 'bold' }}>✦ AI Scanned</div>}
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -367,9 +435,103 @@ export default function StylistPortal() {
                     </div>
                 )}
 
-                {profileTab === 'narrative' && (
+                {profileTab === 'narrative' && client.consentStatus && (
                     <div style={{ marginTop: 'var(--space-lg)' }}>
                         <MonthlyNarrative isStylistView={true} mockedClientData={client} />
+                    </div>
+                )}
+
+                {profileTab === 'products' && client.consentStatus && (
+                    <div style={{ marginTop: 'var(--space-lg)', animation: 'fadeIn 0.2s ease-out' }}>
+                        <h3 style={{ marginBottom: 'var(--space-md)' }}>Product Label Scans</h3>
+                        {client.productScans && client.productScans.length > 0 ? (
+                            client.productScans.map(scan => (
+                                <div key={scan.id} className="card-glass" style={{ padding: '16px', marginBottom: '12px', border: '1px solid var(--border-color)', borderRadius: '16px' }}>
+                                    <div style={{ fontWeight: 700 }}>{scan.productName || 'Unknown Product'}</div>
+                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{new Date(scan.date).toLocaleDateString()}</div>
+                                    <div style={{ marginTop: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>{scan.analysisResult || 'No analysis available.'}</div>
+                                </div>
+                            ))
+                        ) : (
+                            <div style={{ padding: 'var(--space-md)', textAlign: 'center', color: 'var(--text-muted)' }}>No product label scans have been saved yet.</div>
+                        )}
+                    </div>
+                )}
+
+                {profileTab === 'routines' && client.consentStatus && (
+                    <div style={{ marginTop: 'var(--space-lg)', animation: 'fadeIn 0.2s ease-out' }}>
+                        <h3 style={{ marginBottom: 'var(--space-md)' }}>Routine Logs</h3>
+                        {client.routines && client.routines.length > 0 ? (
+                            client.routines.map(routine => (
+                                <div key={routine.id} className="card-glass" style={{ padding: '16px', marginBottom: '12px', border: '1px solid var(--border-color)', borderRadius: '16px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                        <div style={{ fontWeight: 700 }}>{routine.name || routine.type || 'Routine Log'}</div>
+                                        <div style={{ fontSize: '11px', color: 'var(--brand-primary)', fontWeight: 700 }}>{new Date(routine.date).toLocaleDateString()}</div>
+                                    </div>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                                        {routine.greenhouseEffect && <span className="badge" style={{ fontSize: '10px', background: 'var(--success-light)', color: 'var(--success)' }}>Greenhouse Effect</span>}
+                                        {routine.inversionMethod && <span className="badge" style={{ fontSize: '10px', background: 'var(--brand-50)', color: 'var(--brand-600)' }}>Inversion Method</span>}
+                                        {routine.bedtimeRoutine && <span className="badge" style={{ fontSize: '10px', background: 'var(--gold-50)', color: 'var(--gold-600)' }}>Bedtime Prep</span>}
+                                        {routine.scalpMassage && <span className="badge" style={{ fontSize: '10px', background: '#F3E8FF', color: '#7E22CE' }}>Scalp Massage</span>}
+                                    </div>
+                                    {routine.notes && (
+                                        <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>"{routine.notes}"</div>
+                                    )}
+                                </div>
+                            ))
+                        ) : (
+                            <div style={{ padding: 'var(--space-md)', textAlign: 'center', color: 'var(--text-muted)' }}>No routine logs available.</div>
+                        )}
+                    </div>
+                )}
+
+                {profileTab === 'nutrition' && client.consentStatus && (
+                    <div style={{ marginTop: 'var(--space-lg)', animation: 'fadeIn 0.2s ease-out' }}>
+                        <h3 style={{ marginBottom: 'var(--space-md)' }}>Nutrition Logs</h3>
+                        {client.nutritionLogs && client.nutritionLogs.length > 0 ? (
+                            client.nutritionLogs.map(log => (
+                                <div key={log.id} className="card-glass" style={{ padding: '16px', marginBottom: '12px', border: '1px solid var(--border-color)', borderRadius: '16px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                        <div style={{ fontWeight: 700 }}>Daily Intake Log</div>
+                                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{new Date(log.date).toLocaleDateString()}</div>
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', fontSize: '12px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Protein:</span> <strong>{log.protein || 0}g</strong></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Water:</span> <strong>{log.water || 0}oz</strong></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Biotin:</span> <strong>{log.biotin ? 'Yes' : 'No'}</strong></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Omegas:</span> <strong>{log.omegas ? 'Yes' : 'No'}</strong></div>
+                                    </div>
+                                    {log.notes && (
+                                        <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--text-secondary)' }}>Notes: {log.notes}</div>
+                                    )}
+                                </div>
+                            ))
+                        ) : (
+                            <div style={{ padding: 'var(--space-md)', textAlign: 'center', color: 'var(--text-muted)' }}>No nutrition logs available.</div>
+                        )}
+                    </div>
+                )}
+
+                {profileTab === 'journal' && client.consentStatus && (
+                    <div style={{ marginTop: 'var(--space-lg)', animation: 'fadeIn 0.2s ease-out' }}>
+                        <h3 style={{ marginBottom: 'var(--space-md)' }}>Journal Entries</h3>
+                        {client.journalEntries && client.journalEntries.length > 0 ? (
+                            client.journalEntries.map(entry => (
+                                <div key={entry.id} className="card-glass" style={{ padding: '16px', marginBottom: '12px', border: '1px solid var(--border-color)', borderRadius: '16px' }}>
+                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px' }}>{new Date(entry.date).toLocaleDateString()}</div>
+                                    <div style={{ fontSize: '13px', color: 'var(--text-primary)' }}>"{entry.text}"</div>
+                                    {entry.tags && entry.tags.length > 0 && (
+                                        <div style={{ display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap' }}>
+                                            {entry.tags.map(tag => (
+                                                <span key={tag} style={{ fontSize: '10px', padding: '2px 8px', background: 'var(--bg-secondary)', color: 'var(--text-secondary)', borderRadius: '4px' }}>#{tag}</span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ))
+                        ) : (
+                            <div style={{ padding: 'var(--space-md)', textAlign: 'center', color: 'var(--text-muted)' }}>No journal entries available.</div>
+                        )}
                     </div>
                 )}
 
@@ -510,6 +672,153 @@ export default function StylistPortal() {
         </div>
     );
 
+    const renderGlobalReports = () => {
+        // Aggregation logic
+        let clientsImproved = 0;
+        let clientsAtRisk = 0;
+        let totalCompliance = 0;
+        let totalTrackingDays = 0;
+        let highestStreak = 0;
+        
+        let rebookingOpps = [];
+        let productOpps = [];
+        let aiScanAlerts = [];
+
+        linkedClients.forEach(client => {
+            const score = client.consistencyScore || 0;
+            if (score > 70) clientsImproved++;
+            else if (score < 40) clientsAtRisk++;
+
+            totalCompliance += score;
+            
+            const activity = client.activity || [];
+            totalTrackingDays += activity.length;
+            
+            // Calculate a mock streak based on recent activity frequency
+            const currentStreak = Math.floor(score / 10);
+            if (currentStreak > highestStreak) highestStreak = currentStreak;
+
+            // Rebooking Opportunity: No activity in last 14 days
+            if (activity.length === 0) {
+                rebookingOpps.push(client);
+            } else {
+                const lastDate = new Date(activity[0].date);
+                const diffDays = (new Date() - lastDate) / (1000 * 60 * 60 * 24);
+                if (diffDays > 14) rebookingOpps.push(client);
+            }
+
+            // Product Opportunity: Routines high, but no products tracked
+            const hasProducts = activity.some(a => a.type === 'product');
+            const hasRoutines = activity.some(a => a.type === 'routine');
+            if (hasRoutines && !hasProducts) productOpps.push(client);
+
+            // AI Scan Alerts: High Shedding or specific tags
+            if (client.consentStatus !== false) {
+                const scans = activity.filter(a => a.type === 'audit');
+                scans.forEach(scan => {
+                    if (scan.score < 60) {
+                        aiScanAlerts.push({ client, scan });
+                    }
+                });
+            }
+        });
+
+        const avgCompliance = linkedClients.length > 0 ? Math.round(totalCompliance / linkedClients.length) : 0;
+
+        return (
+            <div style={{ animation: 'fadeIn 0.2s ease-out' }}>
+                <h3 style={{ marginBottom: 'var(--space-md)' }}>Global Practice Reports</h3>
+                
+                {/* Top Metrics */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)', marginBottom: 'var(--space-lg)' }}>
+                    <div className="card-glass" style={{ padding: 'var(--space-md)', textAlign: 'center' }}>
+                        <TrendingUp size={24} style={{ color: 'var(--success)', margin: '0 auto var(--space-xs)' }} />
+                        <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>{clientsImproved}</div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Clients Improved</div>
+                    </div>
+                    <div className="card-glass" style={{ padding: 'var(--space-md)', textAlign: 'center' }}>
+                        <AlertCircle size={24} style={{ color: 'var(--error)', margin: '0 auto var(--space-xs)' }} />
+                        <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>{clientsAtRisk}</div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Clients At Risk</div>
+                    </div>
+                    <div className="card-glass" style={{ padding: 'var(--space-md)', textAlign: 'center' }}>
+                        <CheckCircle2 size={24} style={{ color: 'var(--brand-primary)', margin: '0 auto var(--space-xs)' }} />
+                        <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>{avgCompliance}%</div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Avg Compliance</div>
+                    </div>
+                    <div className="card-glass" style={{ padding: 'var(--space-md)', textAlign: 'center' }}>
+                        <Activity size={24} style={{ color: 'var(--gold-primary)', margin: '0 auto var(--space-xs)' }} />
+                        <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>{totalTrackingDays}</div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Total Tracking Days</div>
+                    </div>
+                </div>
+
+                <div className="card" style={{ marginBottom: 'var(--space-lg)' }}>
+                    <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-md)', color: 'var(--gold-700)' }}>
+                        <AlertCircle size={18} /> Rebooking Opportunities
+                    </h4>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 'var(--space-sm)' }}>
+                        Clients whose last tracked activity was over 14 days ago. Perfect time for a check-in!
+                    </p>
+                    {rebookingOpps.length > 0 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {rebookingOpps.map(c => (
+                                <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--bg-secondary)', borderRadius: '8px' }}>
+                                    <strong style={{ fontSize: '0.9rem' }}>{c.name}</strong>
+                                    <button className="btn btn-sm btn-outline" style={{ padding: '2px 8px', fontSize: '0.75rem' }} onClick={() => { setSelectedClient(c.id); setTab('profile'); }}>View Profile</button>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div style={{ padding: '8px', fontStyle: 'italic', color: 'var(--text-muted)', fontSize: '0.85rem' }}>All clients are highly engaged!</div>
+                    )}
+                </div>
+
+                <div className="card" style={{ marginBottom: 'var(--space-lg)' }}>
+                    <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-md)', color: 'var(--brand-600)' }}>
+                        <Sparkles size={18} /> Product Opportunities
+                    </h4>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 'var(--space-sm)' }}>
+                        Clients logging routines but missing product tracking. Great opportunity to prescribe salon products via Protocol Pad.
+                    </p>
+                    {productOpps.length > 0 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {productOpps.map(c => (
+                                <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--bg-secondary)', borderRadius: '8px' }}>
+                                    <strong style={{ fontSize: '0.9rem' }}>{c.name}</strong>
+                                    <button className="btn btn-sm btn-outline" style={{ padding: '2px 8px', fontSize: '0.75rem' }} onClick={() => { setSelectedClient(c.id); setTab('pad'); setRxProduct('Recommended Product'); }}>Prescribe</button>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div style={{ padding: '8px', fontStyle: 'italic', color: 'var(--text-muted)', fontSize: '0.85rem' }}>No current product opportunities.</div>
+                    )}
+                </div>
+
+                <div className="card" style={{ borderLeft: '4px solid var(--error)' }}>
+                    <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-md)', color: 'var(--error)' }}>
+                        <Activity size={18} /> AI Scan Alerts
+                    </h4>
+                    {aiScanAlerts.length > 0 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {aiScanAlerts.map((alert, idx) => (
+                                <div key={idx} style={{ padding: '8px 12px', background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '8px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                        <strong style={{ fontSize: '0.9rem' }}>{alert.client.name}</strong>
+                                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--error)' }}>Score: {alert.scan.score}</span>
+                                    </div>
+                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{alert.scan.description}</div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div style={{ padding: '8px', fontStyle: 'italic', color: 'var(--text-muted)', fontSize: '0.85rem' }}>No critical clinical alerts across roster.</div>
+                    )}
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="stylist-portal" style={{ maxWidth: '100%', overflowX: 'hidden' }}>
             <h2 className="gradient-text mb-sm" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -526,6 +835,7 @@ export default function StylistPortal() {
                 <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '12px 16px' }} className={`tt ${tab === 'calendar' ? 'active' : ''}`} onClick={() => setTab('calendar')}><Calendar size={16} /> Calendar</button>
                 <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '12px 16px' }} className={`tt ${tab === 'roster' ? 'active' : ''}`} onClick={() => setTab('roster')}><Users size={16} /> Client Roster</button>
                 <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '12px 16px' }} className={`tt ${tab === 'pad' ? 'active' : ''}`} onClick={() => setTab('pad')}><PenTool size={16} /> Protocol Pad</button>
+                <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '12px 16px' }} className={`tt ${tab === 'reports' ? 'active' : ''}`} onClick={() => setTab('reports')}><BarChart3 size={16} /> Reports</button>
             </div>
 
             {tab === 'hub' && renderHub()}
@@ -533,6 +843,7 @@ export default function StylistPortal() {
             {tab === 'roster' && renderRoster()}
             {tab === 'profile' && renderClientProfile()}
             {tab === 'pad' && renderPad()}
+            {tab === 'reports' && renderGlobalReports()}
             <InviteClientModal isOpen={showInviteModal} onClose={() => setShowInviteModal(false)} />
         </div>
     );

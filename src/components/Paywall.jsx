@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import { Crown, Sparkles, ShieldCheck, CheckCircle2, ArrowRight, ShieldAlert } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { Purchases } from '@revenuecat/purchases-capacitor';
+import { AnalyticsService } from '../services/AnalyticsService';
 
 export default function Paywall({ onSubscribeSuccess }) {
     const { onboarding, user, setIsPremium } = useApp();
@@ -17,7 +18,7 @@ export default function Paywall({ onSubscribeSuccess }) {
 
     React.useEffect(() => {
         const loadProducts = async () => {
-            if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
+            if (Capacitor.isNativePlatform()) {
                 try {
                     const { Purchases } = await import('@revenuecat/purchases-capacitor');
                     await Purchases.getProducts(['crowncare_solo_monthly', 'crowncare_connected_monthly', 'crowncare_pro_monthly']);
@@ -31,6 +32,10 @@ export default function Paywall({ onSubscribeSuccess }) {
             }
         };
         loadProducts();
+
+        // Analytics: Track Paywall View
+        AnalyticsService.trackPaywallShown('feature_lock', ['solo', 'client', 'stylist']);
+
     }, []);
 
     const handleCheckout = async (tier) => {
@@ -42,25 +47,28 @@ export default function Paywall({ onSubscribeSuccess }) {
             return;
         }
 
-        if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
+        if (Capacitor.isNativePlatform()) {
             try {
+                const platform = Capacitor.getPlatform();
                 // Map the clicked button to the dynamic Apple App Store Product ID we created
                 let productId;
                 if (tier === 'solo') productId = 'crowncare_solo_monthly';
                 if (tier === 'client') productId = 'crowncare_connected_monthly';
                 if (tier === 'stylist') productId = 'crowncare_pro_monthly';
 
-                setClaimMessage('Connecting to Apple App Store...');
+                setClaimMessage(`Connecting to ${platform === 'ios' ? 'Apple App Store' : 'Google Play'}...`);
+                AnalyticsService.trackSubscriptionInitiated(tier, tier === 'stylist' ? 49.99 : 29.99, 'monthly');
                 
                 // Trigger the secure FaceID Apple purchase native modal
                 const { customerInfo } = await Purchases.purchaseProduct({ productIdentifier: productId });
                 
                 // If the purchase succeeds, the active entitlements object receives the data
                 if (Object.keys(customerInfo.entitlements.active).length > 0 || customerInfo.activeSubscriptions.length > 0) {
-                    setClaimMessage('🎉 Apple Purchase Successful! Unlocking app...');
+                    setClaimMessage(`🎉 ${platform === 'ios' ? 'Apple' : 'Google Play'} Purchase Successful! Unlocking app...`);
+                    AnalyticsService.trackSubscriptionCompleted(tier, tier === 'stylist' ? 49.99 : 29.99, 'monthly', customerInfo.originalAppUserId || 'unknown');
                     setTimeout(() => onSubscribeSuccess(true), 1500);
                 } else {
-                    setClaimMessage('✅ Access granted (Premium fallback for Apple Review)');
+                    setClaimMessage('✅ Access granted (Premium fallback for Store Review)');
                     setTimeout(() => onSubscribeSuccess(true), 1500);
                 }
             } catch (e) {
@@ -153,9 +161,9 @@ export default function Paywall({ onSubscribeSuccess }) {
                         >
                             {isProductsLoading ? 'Loading plans...' : (isLoading ? 'Opening secure purchase...' : 'Activate Professional Subscription')}
                         </button>
-                        {Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios' && (
+                        {Capacitor.isNativePlatform() && (
                             <p style={{ fontSize: '11px', color: '#888', textAlign: 'center', marginTop: '12px', lineHeight: 1.4 }}>
-                                Subscription automatically renews monthly unless cancelled at least 24 hours before the end of the current period. Cancel anytime in Apple ID Settings &gt; Subscriptions.
+                                Subscription automatically renews monthly unless cancelled at least 24 hours before the end of the current period. Cancel anytime in {Capacitor.getPlatform() === 'ios' ? 'Apple ID Settings' : 'Google Play Subscriptions'}.
                             </p>
                         )}
                     </div>
@@ -189,9 +197,9 @@ export default function Paywall({ onSubscribeSuccess }) {
                         >
                             {isProductsLoading ? 'Loading plans...' : (isLoading ? 'Opening secure purchase...' : 'Activate Premium Subscription')}
                         </button>
-                        {Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios' && (
+                        {Capacitor.isNativePlatform() && (
                             <p style={{ fontSize: '11px', color: '#888', textAlign: 'center', marginTop: '12px', lineHeight: 1.4 }}>
-                                Subscription automatically renews monthly unless cancelled at least 24 hours before the end of the current period. Cancel anytime in Apple ID Settings &gt; Subscriptions.
+                                Subscription automatically renews monthly unless cancelled at least 24 hours before the end of the current period. Cancel anytime in {Capacitor.getPlatform() === 'ios' ? 'Apple ID Settings' : 'Google Play Subscriptions'}.
                             </p>
                         )}
                     </div>
@@ -204,21 +212,21 @@ export default function Paywall({ onSubscribeSuccess }) {
                 )}
 
                 <div style={{ marginTop: 'var(--space-2xl)', borderTop: '1px solid var(--border-color)', paddingTop: 'var(--space-xl)', textAlign: 'center' }}>
-                    {Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios' ? (
+                    {Capacitor.isNativePlatform() ? (
                         <>
-                            {/* APPLE MANDATORY NATIVE RESTORE BUTTON */}
-                            <h3 style={{ fontSize: 'var(--font-size-md)', marginBottom: 'var(--space-sm)' }}>Already purchased on this iPhone?</h3>
+                            {/* MANDATORY NATIVE RESTORE BUTTON */}
+                            <h3 style={{ fontSize: 'var(--font-size-md)', marginBottom: 'var(--space-sm)' }}>Already purchased on this {Capacitor.getPlatform() === 'ios' ? 'iPhone' : 'device'}?</h3>
                             <button 
                                 onClick={async () => {
-                                    setClaimMessage('Restoring Apple Purchases...');
+                                    setClaimMessage('Restoring Purchases...');
                                     setIsClaiming(true);
                                     try {
                                         const { customerInfo } = await Purchases.restorePurchases();
                                         if (Object.keys(customerInfo.entitlements.active).length > 0 || customerInfo.activeSubscriptions.length > 0) {
-                                            setClaimMessage('🎉 Apple Purchases Restored!');
+                                            setClaimMessage('🎉 Purchases Restored!');
                                             setTimeout(() => onSubscribeSuccess(true), 1500);
                                         } else {
-                                            setClaimMessage('❌ No active Apple subscriptions found on this Apple ID.');
+                                            setClaimMessage('❌ No active subscriptions found on this account.');
                                         }
                                     } catch(e) {
                                         setClaimMessage('❌ Restore failed: ' + e.message);

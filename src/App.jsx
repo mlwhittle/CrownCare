@@ -25,6 +25,7 @@ import VisualDiary from './components/VisualDiary';
 import Menu from './components/Menu';
 import AuthModal from './components/AuthModal';
 import { Sparkles } from 'lucide-react';
+import { AnalyticsService } from './services/AnalyticsService';
 
 const MAIN_TABS = ['home', 'treatments', 'diary', 'nutrition', 'routines', 'stylist-portal', 'reports', 'settings'];
 const SUB_PAGES = ['journal', 'narrative', 'menu', 'results', 'privacy', 'delete-account']; // Pages that don't slide back through tabs
@@ -33,16 +34,22 @@ function AppInner() {
     const { onboarding, completeOnboarding, isPremium, isTrialExpired, redeemVipCode, user } = useApp();
     const [showAuthModal, setShowAuthModal] = useState(true);
 
-    // Initialize RevenueCat for iOS Apple App Store native payments
+    // Initialize RevenueCat for iOS and Android native payments
     useEffect(() => {
         const initRC = async () => {
-            if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== 'ios') return;
+            if (!Capacitor.isNativePlatform()) return;
+            const platform = Capacitor.getPlatform();
+            if (platform !== 'ios' && platform !== 'android') return;
+            
             try {
-                const rcKey = import.meta.env.VITE_REVENUECAT_IOS_KEY;
+                const rcKey = platform === 'ios' 
+                    ? import.meta.env.VITE_REVENUECAT_IOS_KEY 
+                    : import.meta.env.VITE_REVENUECAT_ANDROID_KEY;
+                
                 if (rcKey) {
                     await Purchases.configure({ apiKey: rcKey });
                 } else {
-                    console.warn("Missing VITE_REVENUECAT_IOS_KEY in environment variables.");
+                    console.warn(`Missing VITE_REVENUECAT_${platform.toUpperCase()}_KEY in environment variables.`);
                 }
             } catch (error) {
                 console.error("Failed to initialize RevenueCat:", error);
@@ -51,12 +58,22 @@ function AppInner() {
         initRC();
     }, []);
 
-    // Auto-Reset Legacy Saves: If the onboarding save doesn't have the new 'userType', wipe it so they see the new flow.
     if (onboarding && !onboarding.userType) {
         localStorage.removeItem('cc_onboarding');
         localStorage.removeItem('cc_vip');
         window.location.reload();
     }
+
+    // Analytics Init & App Open Tracking
+    useEffect(() => {
+        if (user && user.uid) {
+            AnalyticsService.setIdentifiedUserId(user.uid);
+        }
+    }, [user]);
+
+    useEffect(() => {
+        AnalyticsService.trackAppOpen();
+    }, []);
 
     if (window.location.search.includes('reset=true')) {
         localStorage.clear();
@@ -85,6 +102,7 @@ function AppInner() {
         }
         setCurrentView(newView);
         setNavHistory([...navHistory, newView]);
+        AnalyticsService.trackFeatureView(newView);
     };
 
     // Go back to previous view

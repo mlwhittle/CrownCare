@@ -33,7 +33,7 @@ const SCALP_ACTIVES = [
 ];
 
 export default function TreatmentTracker({ openAI }) {
-    const { treatments, addTreatment, deleteTreatment, toggleTreatmentDone, setCustomEvaluationPrompt, stylistCode, setStylistCode, prescribedTreatments, appointments, stylistContact, onboarding, isStylistAccount } = useApp();
+    const { treatments, addTreatment, deleteTreatment, toggleTreatmentDone, setCustomEvaluationPrompt, stylistCode, setStylistCode, prescribedTreatments, stylistMessages, appointments, stylistContact, onboarding, isStylistAccount } = useApp();
     const [tab, setTab] = useState('clinical');
     const [showAdd, setShowAdd] = useState(false);
     const [newType, setNewType] = useState('');
@@ -357,6 +357,21 @@ export default function TreatmentTracker({ openAI }) {
                         </div>
                     ) : (
                         <div style={{ padding: 'var(--space-sm)' }}>
+                            {stylistMessages && stylistMessages.length > 0 && (
+                                <div style={{ background: 'var(--bg-primary)', padding: 'var(--space-md)', borderRadius: 'var(--radius-md)', border: '1px solid var(--brand-200)', marginBottom: 'var(--space-md)' }}>
+                                    <h4 style={{ color: 'var(--brand-800)', margin: '0 0 8px 0' }}>Latest Stylist Messages</h4>
+                                    {stylistMessages.slice(0, 3).map(message => (
+                                        <div key={message.id} style={{ padding: '10px 0', borderTop: '1px solid var(--border-color)' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', marginBottom: '4px' }}>
+                                                <strong style={{ fontSize: '0.9rem' }}>{message.subject}</strong>
+                                                <span className="text-xs text-muted">{new Date(message.createdAt).toLocaleDateString()}</span>
+                                            </div>
+                                            <p className="text-sm" style={{ margin: 0, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{message.body}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
                                 <div>
                                     <h4 style={{ color: 'var(--brand-800)', margin: 0 }}>Your Recommended Regimen</h4>

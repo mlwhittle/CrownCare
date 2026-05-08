@@ -1,26 +1,155 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
 
-    // User private data sync — read/write only by the owner
+    function isOwner(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return signedIn() && request.auth.token.admin == true;
+    }
+
+    function stylistProfile() {
+      return get(/databases/$(database)/documents/stylists/$(request.auth.uid)).data;
+    }
+
+    function isActiveStylist() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/stylists/$(request.auth.uid))
+        && (!('accessRevoked' in stylistProfile()) || stylistProfile().accessRevoked != true)
+        && ('subscriptionStatus' in stylistProfile())
+        && stylistProfile().subscriptionStatus in ['beta_active', 'active']
+        && ('stylistCode' in stylistProfile())
+        && stylistProfile().stylistCode is string;
+    }
+
+    function clientConsentMirror(userId) {
+      return get(/databases/$(database)/documents/users/$(userId)).data;
+    }
+
+    function clientSharedWithActiveStylist(userId) {
+      return isActiveStylist()
+        && clientConsentMirror(userId).consentStatus == true
+        && clientConsentMirror(userId).stylistCode == stylistProfile().stylistCode;
+    }
+
+    // Consumer app data backup. Clients can manage their own data.
+    // Active beta/pro stylists can read only connected, consenting clients.
     match /user_data/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if isOwner(userId) || clientSharedWithActiveStylist(userId) || isAdmin();
+      allow write: if isOwner(userId) || isAdmin();
     }
 
-    // User profile — read/write only by the owner
+    // User profile and consent mirror. Clients can write their own mirror fields.
+    // Active beta/pro stylists can query only clients sharing with their stylist code.
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if isOwner(userId)
+        || (
+          isActiveStylist()
+          && resource.data.consentStatus == true
+          && resource.data.stylistCode == stylistProfile().stylistCode
+        )
+        || isAdmin();
+      allow write: if isOwner(userId) || isAdmin();
     }
 
-    // Stripe subscriptions — read only by the owner, no client writes
+    // CrownCare Pro stylist profiles. Admins manage access; stylists read their own status.
+    // CrownCare Pro stylist profiles. Stylists manage their own profile.
+    match /stylists/{stylistId} {
+      allow read: if isOwner(stylistId) || isAdmin();
+      allow write: if isOwner(stylistId) || isAdmin();
+    }
+
+    // Live stylist-to-client protocols. Stylists can create protocols only for
+    // connected, consenting clients. Clients can read what was sent to them.
+    match /client_protocols/{protocolId} {
+      allow create: if isActiveStylist()
+        && request.resource.data.clientId is string
+        && request.resource.data.stylistId == request.auth.uid
+        && request.resource.data.stylistCode == stylistProfile().stylistCode
+        && clientSharedWithActiveStylist(request.resource.data.clientId);
+      allow read: if isAdmin()
+        || (signedIn() && resource.data.clientId == request.auth.uid)
+        || (
+          isActiveStylist()
+          && resource.data.stylistId == request.auth.uid
+          && resource.data.stylistCode == stylistProfile().stylistCode
+        );
+      allow update: if isAdmin()
+        || (
+          isActiveStylist()
+          && resource.data.stylistId == request.auth.uid
+          && request.resource.data.stylistId == resource.data.stylistId
+          && request.resource.data.clientId == resource.data.clientId
+          && request.resource.data.stylistCode == resource.data.stylistCode
+        );
+      allow delete: if isAdmin();
+    }
+
+    // Live stylist scheduled appointments. Same privacy model as protocols.
+    match /client_appointments/{appointmentId} {
+      allow create: if isActiveStylist()
+        && request.resource.data.clientId is string
+        && request.resource.data.stylistId == request.auth.uid
+        && request.resource.data.stylistCode == stylistProfile().stylistCode
+        && clientSharedWithActiveStylist(request.resource.data.clientId);
+      allow read: if isAdmin()
+        || (signedIn() && resource.data.clientId == request.auth.uid)
+        || (
+          isActiveStylist()
+          && resource.data.stylistId == request.auth.uid
+          && resource.data.stylistCode == stylistProfile().stylistCode
+        );
+      allow update: if isAdmin()
+        || (
+          isActiveStylist()
+          && resource.data.stylistId == request.auth.uid
+          && request.resource.data.stylistId == resource.data.stylistId
+          && request.resource.data.clientId == resource.data.clientId
+          && request.resource.data.stylistCode == resource.data.stylistCode
+        );
+      allow delete: if isAdmin();
+    }
+
+    // Live stylist-to-client messages. Clients read their inbox; active stylists
+    // can create/read only for connected, consenting clients.
+    match /client_messages/{messageId} {
+      allow create: if isActiveStylist()
+        && request.resource.data.clientId is string
+        && request.resource.data.stylistId == request.auth.uid
+        && request.resource.data.stylistCode == stylistProfile().stylistCode
+        && clientSharedWithActiveStylist(request.resource.data.clientId);
+      allow read: if isAdmin()
+        || (signedIn() && resource.data.clientId == request.auth.uid)
+        || (
+          isActiveStylist()
+          && resource.data.stylistId == request.auth.uid
+          && resource.data.stylistCode == stylistProfile().stylistCode
+        );
+      allow update: if isAdmin()
+        || (
+          isActiveStylist()
+          && resource.data.stylistId == request.auth.uid
+          && request.resource.data.stylistId == resource.data.stylistId
+          && request.resource.data.clientId == resource.data.clientId
+          && request.resource.data.stylistCode == resource.data.stylistCode
+        );
+      allow delete: if isAdmin();
+    }
+
+    // Stripe subscriptions: read only by the owner, no client writes.
     match /customers/{userId}/subscriptions/{subId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
+      allow read: if isOwner(userId);
       allow write: if false;
     }
 
-    // Web subscription records — read by any authenticated user, no client writes
+    // Web subscription records: read by authenticated users, no client writes.
     match /web_subscriptions/{email} {
-      allow read: if request.auth != null;
+      allow read: if signedIn();
       allow write: if false;
     }
   }

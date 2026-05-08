@@ -14,7 +14,7 @@ import Upgrade from './Upgrade';
 import './Settings.css';
 
 export default function Settings({ setCurrentView }) {
-    const { theme, toggleTheme, onboarding, completeOnboarding, user, isPremium, isVIP, redeemVipCode, isStylistAccount, setIsStylistAccount, stylistCode, setStylistCode } = useApp();
+    const { theme, toggleTheme, onboarding, completeOnboarding, user, isPremium, isVIP, redeemVipCode, isStylistAccount, setIsStylistAccount, stylistCode, setStylistCode, consentStatus, setConsentStatus } = useApp();
     const [showManual, setShowManual] = useState(false);
     const [showScaleBusiness, setShowScaleBusiness] = useState(false);
     const [showDeleteAccount, setShowDeleteAccount] = useState(false);
@@ -23,6 +23,8 @@ export default function Settings({ setCurrentView }) {
     const [isUpgrading, setIsUpgrading] = useState(false);
     const [vipInput, setVipInput] = useState('');
     const [newStylistCode, setNewStylistCode] = useState('');
+    const [pendingStylistCode, setPendingStylistCode] = useState(null);
+    const [isTransferring, setIsTransferring] = useState(false);
 
     const [healthConnected, setHealthConnected] = useState(() => localStorage.getItem('cc_health') === 'true');
     const toggleHealthSync = () => {
@@ -160,6 +162,60 @@ export default function Settings({ setCurrentView }) {
         }} />;
     }
 
+    if (pendingStylistCode) {
+        return (
+            <div className="settings" style={{ padding: 'var(--space-xl) var(--space-md)' }}>
+                <div style={{ textAlign: 'center', marginBottom: 'var(--space-lg)' }}>
+                    <Scissors size={48} style={{ color: 'var(--brand-primary)', margin: '0 auto var(--space-md)' }} />
+                    <h2 style={{ fontSize: '1.5rem', marginBottom: 'var(--space-md)' }}>Share My CrownCare Journey With My Connected Stylist</h2>
+                </div>
+                
+                <div className="card-glass" style={{ padding: 'var(--space-lg)', marginBottom: 'var(--space-xl)', textAlign: 'left' }}>
+                    <p style={{ fontSize: '1rem', lineHeight: 1.6, marginBottom: 'var(--space-md)' }}>
+                        By connecting with a stylist, I agree to share my CrownCare journey data with that stylist so they can better support my hair care between appointments.
+                    </p>
+                    <p style={{ fontSize: '1rem', lineHeight: 1.6, marginBottom: 'var(--space-md)' }}>
+                        This may include my hair profile, visual diary photos, AI scan results, routines, treatments, product scans, nutrition logs, journal entries, progress reports, and app activity related to my hair care journey.
+                    </p>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>
+                        I understand I can disconnect my stylist or turn off sharing later in Settings.
+                    </p>
+                </div>
+
+                <button 
+                    className="btn btn-primary" 
+                    style={{ width: '100%', marginBottom: 'var(--space-md)', padding: '16px', fontSize: '1.1rem' }}
+                    onClick={() => {
+                        setConsentStatus(true);
+                        
+                        if (isTransferring || isVIP) {
+                            setStylistCode(pendingStylistCode);
+                            setPendingStylistCode(null);
+                            setIsTransferring(false);
+                            alert(isTransferring ? 'Stylist updated successfully. Active Sponsor transferred.' : 'Successfully connected to Styling Portal! As a Lifetime VIP, your Stylist Connection is included for free.');
+                        } else {
+                            handleConnectedTierUpgrade(pendingStylistCode);
+                            setPendingStylistCode(null);
+                        }
+                    }}
+                >
+                    I Agree and Connect My Stylist
+                </button>
+                
+                <button 
+                    className="btn btn-outline" 
+                    style={{ width: '100%', padding: '16px', fontSize: '1.1rem' }}
+                    onClick={() => {
+                        setPendingStylistCode(null);
+                        setIsTransferring(false);
+                    }}
+                >
+                    Not Now
+                </button>
+            </div>
+        );
+    }
+
     return (
         <div className="settings">
             <img src={settingsImg} alt="Settings" className="page-header-img" />
@@ -257,6 +313,25 @@ export default function Settings({ setCurrentView }) {
                             This stylist has clinical access to your tracker to assign custom regimens and monitor your porosity progress.
                         </p>
                         
+                        <div style={{ padding: 'var(--space-md)', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', marginBottom: 'var(--space-md)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div>
+                                    <strong style={{ display: 'block', fontSize: 'var(--font-size-sm)' }}>Share Journey Data</strong>
+                                    <p className="text-muted text-xs" style={{ margin: '4px 0 0 0', lineHeight: 1.4 }}>
+                                        Allow this stylist to view your Visual Diary, AI Scans, Routines, and Nutrition logs.
+                                    </p>
+                                </div>
+                                <label className="switch">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={consentStatus} 
+                                        onChange={() => setConsentStatus(!consentStatus)} 
+                                    />
+                                    <span className="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
                         <div style={{ marginTop: 'var(--space-md)', paddingTop: 'var(--space-md)', borderTop: '1px solid var(--border-color)' }}>
                             <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-primary)', marginBottom: '8px', fontWeight: 600 }}>Transfer Sponsor</p>
                             <div style={{ display: 'flex', gap: '8px', marginBottom: 'var(--space-md)' }}>
@@ -281,9 +356,9 @@ export default function Settings({ setCurrentView }) {
                                         }
 
                                         if (confirm('Warning: This will immediately transfer your clinical connection to the new Stylist. Your current Stylist will lose all access. Proceed?')) {
-                                            setStylistCode(code);
+                                            setPendingStylistCode(code);
+                                            setIsTransferring(true);
                                             setNewStylistCode('');
-                                            alert('Stylist updated successfully. Active Sponsor transferred.');
                                         }
                                     }}
                                 >
@@ -297,6 +372,7 @@ export default function Settings({ setCurrentView }) {
                             style={{ width: '100%', borderColor: 'var(--error)', color: 'var(--error)' }}
                             onClick={() => {
                                 if (confirm('Are you sure you want to completely disconnect? Your stylist will lose access to your data and your custom protocols will be cleared.')) {
+                                    setConsentStatus(false);
                                     setStylistCode('');
                                     alert('Disconnected from stylist.');
                                 }
@@ -334,15 +410,15 @@ export default function Settings({ setCurrentView }) {
 
                                     // Founders VIP Offer Bypass
                                     if (isVIP) {
-                                        setStylistCode(code);
+                                        setPendingStylistCode(code);
                                         setNewStylistCode('');
-                                        alert('Successfully connected to Styling Portal! As a Lifetime VIP, your Stylist Connection is included for free.');
                                         return;
                                     }
 
                                     // Normally we would check if they already have an active $29.99 connected tier subscription in standard logic.
                                     if(confirm(`Connecting with a professional stylist requires an active CrownCare subscription.`)) {
-                                        handleConnectedTierUpgrade(code);
+                                        setPendingStylistCode(code);
+                                        setNewStylistCode('');
                                     }
                                 }}
                             >

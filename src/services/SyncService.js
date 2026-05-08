@@ -4,6 +4,14 @@ import { doc, setDoc, getDoc } from 'firebase/firestore';
 // Debounce timers keyed by uid+key
 const debounceTimers = {};
 
+const safeParse = (value, fallback = null) => {
+    try {
+        return value ? JSON.parse(value) : fallback;
+    } catch {
+        return fallback;
+    }
+};
+
 /**
  * Debounced cloud sync — saves a single key/value to Firestore user_data/{uid}.
  * Debounced by 2 seconds to avoid excessive writes.
@@ -24,6 +32,32 @@ export function syncToCloud(uid, key, value) {
             console.error(`SyncService - syncToCloud error for key "${key}":`, error);
         }
     }, 2000);
+}
+
+/**
+ * Mirrors client-to-stylist access controls into users/{uid} as native fields.
+ * Firestore Security Rules can evaluate these fields reliably, unlike the
+ * JSON-stringified cc_* backup values stored in user_data/{uid}.
+ */
+export async function syncStylistConsentMirror(uid, stylistCode, consentStatus) {
+    if (!uid) return;
+
+    const normalizedStylistCode = typeof stylistCode === 'string' && stylistCode.trim()
+        ? stylistCode.trim().toUpperCase()
+        : null;
+
+    try {
+        const userRef = doc(db, 'users', uid);
+        await setDoc(userRef, {
+            stylistCode: normalizedStylistCode,
+            referredBy_StylistId: normalizedStylistCode,
+            consentStatus: consentStatus === true,
+            consentUpdatedAt: new Date().toISOString(),
+            stylistMirrorUpdatedAt: new Date().toISOString()
+        }, { merge: true });
+    } catch (error) {
+        console.error('SyncService - syncStylistConsentMirror error:', error);
+    }
 }
 
 /**
@@ -70,6 +104,10 @@ export async function pushAllToCloud(uid) {
         if (Object.keys(payload).length > 0) {
             const userDataRef = doc(db, 'user_data', uid);
             await setDoc(userDataRef, payload, { merge: true });
+
+            const stylistCode = safeParse(payload.cc_stylist, null);
+            const consentStatus = safeParse(payload.cc_consent_status, false);
+            await syncStylistConsentMirror(uid, stylistCode, consentStatus);
         }
     } catch (error) {
         console.error('SyncService - pushAllToCloud error:', error);
