@@ -4,6 +4,8 @@ import { Crown, Sparkles, ShieldCheck, CheckCircle2, ArrowRight, ShieldAlert } f
 import { Capacitor } from '@capacitor/core';
 import { Purchases } from '@revenuecat/purchases-capacitor';
 import { AnalyticsService } from '../services/AnalyticsService';
+import { db } from '../firebase';
+import { doc, setDoc } from 'firebase/firestore';
 
 export default function Paywall({ onSubscribeSuccess }) {
     const { onboarding, user, setIsPremium } = useApp();
@@ -66,9 +68,39 @@ export default function Paywall({ onSubscribeSuccess }) {
                 if (Object.keys(customerInfo.entitlements.active).length > 0 || customerInfo.activeSubscriptions.length > 0) {
                     setClaimMessage(`🎉 ${platform === 'ios' ? 'Apple' : 'Google Play'} Purchase Successful! Unlocking app...`);
                     AnalyticsService.trackSubscriptionCompleted(tier, tier === 'stylist' ? 49.99 : 29.99, 'monthly', customerInfo.originalAppUserId || 'unknown');
+                    
+                    // IF STYLIST: Ensure Firebase Web Dashboard Parity
+                    if (tier === 'stylist' && user && user.uid) {
+                        try {
+                            const stylistCode = user.uid.substring(0, 6).toUpperCase();
+                            await setDoc(doc(db, 'stylists', user.uid), {
+                                subscriptionStatus: 'active',
+                                stylistCode: stylistCode,
+                                accessRevoked: false
+                            }, { merge: true });
+                        } catch (firebaseErr) {
+                            console.error("Failed to sync stylist subscription to Firebase:", firebaseErr);
+                        }
+                    }
+
                     setTimeout(() => onSubscribeSuccess(true), 1500);
                 } else {
                     setClaimMessage('✅ Access granted (Premium fallback for Store Review)');
+                    
+                    // IF STYLIST: Ensure Firebase Web Dashboard Parity (Fallback)
+                    if (tier === 'stylist' && user && user.uid) {
+                        try {
+                            const stylistCode = user.uid.substring(0, 6).toUpperCase();
+                            await setDoc(doc(db, 'stylists', user.uid), {
+                                subscriptionStatus: 'active',
+                                stylistCode: stylistCode,
+                                accessRevoked: false
+                            }, { merge: true });
+                        } catch (firebaseErr) {
+                            console.error("Failed to sync stylist fallback to Firebase:", firebaseErr);
+                        }
+                    }
+
                     setTimeout(() => onSubscribeSuccess(true), 1500);
                 }
             } catch (e) {

@@ -58,6 +58,15 @@ function AppInner() {
         initRC();
     }, []);
 
+    // Sync Firebase UID with RevenueCat
+    useEffect(() => {
+        if (user && user.uid && Capacitor.isNativePlatform()) {
+            Purchases.logIn({ appUserID: user.uid }).catch(err => {
+                console.error("Failed to log into RevenueCat:", err);
+            });
+        }
+    }, [user]);
+
     if (onboarding && !onboarding.userType) {
         localStorage.removeItem('cc_onboarding');
         localStorage.removeItem('cc_vip');
