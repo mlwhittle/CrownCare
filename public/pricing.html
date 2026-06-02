@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrownCare — Subscription & Pricing Information</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy-deep: #001F3F;
+            --navy-medium: #003366;
+            --gold-primary: #D4AF37;
+            --gold-light: #F9F1D8;
+            --bg-dark: #001122;
+            --text-white: #FFFFFF;
+            --text-muted: #E9ECEF;
+            --border-color: rgba(212, 175, 55, 0.2);
+            --shadow: 0 15px 35px rgba(0, 31, 63, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-white);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Navigation Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 8%;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(0, 17, 34, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-white);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: var(--gold-primary);
+        }
+
+        nav {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--gold-primary);
+        }
+
+        .btn-launch {
+            background: linear-gradient(135deg, var(--gold-primary) 0%, #B8962E 100%);
+            color: var(--navy-deep) !important;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);
+        }
+
+        .btn-launch:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            padding: 80px 8%;
+            text-align: center;
+            background: radial-gradient(circle at top, rgba(212, 175, 55, 0.05), transparent 70%);
+        }
+
+        .pricing-section h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            margin-bottom: 12px;
+        }
+
+        .pricing-section p.subtitle {
+            color: var(--gold-primary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .price-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: left;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .price-card.featured {
+            border: 2px solid var(--gold-primary);
+            background: radial-gradient(circle at top left, rgba(212, 175, 55, 0.08), transparent 70%);
+            box-shadow: var(--shadow);
+        }
+
+        .card-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: var(--gold-primary);
+            color: var(--navy-deep);
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .price-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .price-card .plan-desc {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 24px;
+        }
+
+        .price-card .cost {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-white);
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 16px;
+        }
+
+        .price-card .cost span {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 400;
+        }
+
+        .benefit-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 30px;
+            flex: 1;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .benefit-icon {
+            color: var(--gold-primary);
+            font-weight: 700;
+        }
+
+        .notice-box {
+            margin-top: 50px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            border-radius: 12px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        .notice-box strong {
+            color: var(--gold-primary);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 40px 8%;
+            text-align: center;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 60px;
+        }
+
+        footer a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            margin: 0 12px;
+        }
+
+        footer a:hover {
+            color: var(--gold-primary);
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 16px;
+                padding: 16px;
+            }
+            .pricing-section {
+                padding: 40px 16px;
+            }
+            .pricing-section h1 {
+                font-size: 2rem;
+            }
+            nav {
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/home.html" class="logo">CrownCare<span>.</span></a>
+        <nav>
+            <a href="/home.html">Overview</a>
+            <a href="/pricing.html" class="active">Pricing</a>
+            <a href="/professionals.html">For Professionals</a>
+            <a href="/media.html">Media & Guides</a>
+        </nav>
+    </header>
+
+    <section class="pricing-section">
+        <h1>CrownCare Subscription Pricing</h1>
+        <p class="subtitle">Transparent, native app billing with no hidden fees</p>
+
+        <div class="pricing-grid">
+            <!-- Solo Client -->
+            <div class="price-card">
+                <h3>Solo Client</h3>
+                <p class="plan-desc">For individuals tracking their hair growth independently.</p>
+                <div class="cost">$19.99<span>/mo</span></div>
+                <ul class="benefit-list">
+                    <li class="benefit-item"><span class="benefit-icon">✓</span> AI Trichologist Companion</li>
+                    <li class="benefit-item"><span class="benefit-icon">✓</span> Visual Diary & Ghost Camera overlays</li>
+                    <li class="benefit-item"><span class="benefit-icon">✓</span> Smart treatment & wash day logs</li>
+                </ul>
+            </div>
+
+            <!-- Connected Client -->
+            <div class="price-card featured">
+                <div class="card-badge">Recommended</div>
+                <h3>Connected Client</h3>
+                <p class="plan-desc">For clients connected to a licensed salon stylist portal.</p>
+                <div class="cost">$29.99<span>/mo</span></div>
+                <ul class="benefit-list">
+                    <li class="benefit-item"><span class="benefit-icon">✓</span> <strong>Everything in Solo Client</strong></li>
+                    <li class="benefit-item"><span class="benefit-icon">✓</span> Real-time data sync to your stylist</li>
+                    <li class="benefit-item"><span class="benefit-icon">✓</span> Receive custom care protocols from your chair</li>
+                </ul>
+            </div>
+
+            <!-- Stylist Pro -->
+            <div class="price-card">
+                <h3>Stylist Pro</h3>
+                <p class="plan-desc">For licensed cosmetologists managing hair health rosters.</p>
+                <div class="cost">$49.99<span>/mo</span></div>
+                <ul class="benefit-list">
+                    <li class="benefit-item"><span class="benefit-icon">✓</span> Full B2B Desktop Salon Dashboard</li>
+                    <li class="benefit-item"><span class="benefit-icon">✓</span> Track client visual history & follicle snapshots</li>
+                    <li class="benefit-item"><span class="benefit-icon">✓</span> Prescribe custom homecare routines</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="notice-box">
+            <p>
+                <strong>Secure Store Billing:</strong> Subscriptions are processed and billed natively through your mobile device's app store (Apple App Store or Google Play Store). You can review, update, or cancel your active subscription tier at any time inside your phone's subscription settings.
+            </p>
+        </div>
+    </section>
+
+    <!-- BOTTOM CTA SECTION -->
+    <section style="padding: 60px 8%; text-align: center; background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%); border-top: 1px solid var(--border-color);">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--gold-primary); margin-bottom: 12px;">Join the Founders Program</h3>
+            <p style="font-size: 0.95rem; color: var(--text-white); opacity: 0.8; margin-bottom: 24px;">Qualify for our 90-day extended trials and receive our free clinical hair playbook.</p>
+            <a href="/founders.html" style="background: linear-gradient(135deg, var(--gold-primary) 0%, #B8962E 100%); color: var(--navy-deep); font-weight: bold; padding: 12px 30px; border-radius: 99px; text-decoration: none; display: inline-block; box-shadow: 0 4px 15px rgba(212,175,55,0.35);">Join Founders Club Now</a>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 CrownCare Inc. All rights reserved.</p>
+        <div style="margin-top: 10px;">
+            <a href="/home.html">Home</a> | 
+            <a href="/privacy.html">Privacy Policy</a> | 
+            <a href="/support.html">Help & FAQs</a> | 
+            <a href="/?reset=true" style="color: #f87171;">Sign Out / Reset App</a>
+        </div>
+    </footer>
+
+</body>
+</html>

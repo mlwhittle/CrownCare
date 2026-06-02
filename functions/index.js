@@ -233,3 +233,114 @@ exports.trackEmailClick = onRequest((req, res) => {
         res.redirect(302, targetUrl);
     });
 });
+
+// ==========================================
+// GEMINI AI BACKEND FUNCTIONS
+// ==========================================
+const gemini = require('./gemini');
+exports.askGemini = gemini.askGemini;
+exports.generateMonthlyNarrative = gemini.generateMonthlyNarrative;
+exports.scanIngredientsWithGemini = gemini.scanIngredientsWithGemini;
+exports.matchProductLabelWithGemini = gemini.matchProductLabelWithGemini;
+exports.analyzeScalpPhotoWithGemini = gemini.analyzeScalpPhotoWithGemini;
+exports.scanMealWithGemini = gemini.scanMealWithGemini;
+exports.generateEmpatheticResponse = gemini.generateEmpatheticResponse;
+exports.generateTikTokScripts = gemini.generateTikTokScripts;
+exports.generateSEOBlog = gemini.generateSEOBlog;
+exports.generateNewsletter = gemini.generateNewsletter;
+
+// ==========================================
+// AUTO-NOTIFICATION FOR NEW FOUNDER LEADS
+// ==========================================
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const nodemailer = require("nodemailer");
+
+// SMTP Transporter configuration using SendGrid
+const transporter = nodemailer.createTransport({
+    host: 'smtp.sendgrid.net',
+    port: 465,
+    secure: true,
+    auth: {
+        user: 'apikey', // This must be the exact literal string 'apikey'
+        pass: process.env.SENDGRID_API_KEY
+    }
+});
+
+exports.onFoundersLeadCreated = onDocumentCreated("founders_leads/{leadId}", async (event) => {
+    const snap = event.data;
+    if (!snap) {
+        logger.error("No snapshot data found for trigger event");
+        return;
+    }
+    
+    const lead = snap.data();
+    const { name, email, salon } = lead;
+
+    logger.info(`Processing new lead document: ${email} (${name})`);
+
+    // 1. Send Alert Email to Admin (crowncare@crowncare.net)
+    const adminMailOptions = {
+        from: '"CrownCare Lead Alerts" <crowncare@crowncare.net>',
+        to: 'crowncare@crowncare.net',
+        subject: `New Stylist Lead: ${name} (${salon})`,
+        text: `A new stylist has registered for the Founders Program!\n\nName: ${name}\nEmail: ${email}\nSalon: ${salon}\nTimestamp: ${new Date().toISOString()}`
+    };
+
+    // 2. Send Welcome Email & Guide to the Stylist
+    const welcomeMailOptions = {
+        from: '"Melvin Whittle | CrownCare Pro" <crowncare@crowncare.net>',
+        to: email,
+        subject: 'Welcome to the CrownCare Pro Stylist Founders Program!',
+        html: `
+            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; padding: 30px;">
+                <h2 style="color: #001F3F; font-family: Georgia, serif;">Welcome to the Family, ${name}!</h2>
+                <p>We are thrilled to welcome you and <strong>${salon}</strong> to our exclusive 2026 Founders Program launch cohort.</p>
+                
+                <p>Here are the details to activate your 90-day free partnership and access your free B2B resources:</p>
+                
+                <div style="background-color: #f7fafc; border-left: 4px solid #D4AF37; padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+                    <p style="margin: 0; font-size: 14px; font-weight: bold; color: #001F3F;">Your 90-Day Activation Code:</p>
+                    <p style="margin: 5px 0 0 0; font-size: 20px; font-family: monospace; font-weight: bold; color: #D4AF37; letter-spacing: 2px;">STYLIST-FOUNDERS</p>
+                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Enter this code during checkout inside the mobile app to activate your trial.</p>
+                </div>
+
+                <h3 style="color: #001F3F; font-family: Georgia, serif;">Next Steps:</h3>
+                <ol>
+                    <li>
+                        <strong>Download the Mobile App:</strong>
+                        <br>
+                        <a href="https://apps.apple.com/us/app/crowncare-ai/id6502206775" target="_blank" style="color: #003366; text-decoration: underline;">Download for iPhone</a> | 
+                        <a href="https://play.google.com/store/apps/details?id=net.crowncare.app" target="_blank" style="color: #003366; text-decoration: underline;">Download for Android</a>
+                    </li>
+                    <li style="margin-top: 10px;">
+                        <strong>Access Your Pro Web Dashboard:</strong>
+                        <br>
+                        Visit <a href="https://pro.crowncare.net" target="_blank" style="color: #003366; text-decoration: underline;">pro.crowncare.net</a> from your desktop computer using your login credentials.
+                    </li>
+                    <li style="margin-top: 10px;">
+                        <strong>Read Your Free Playbook:</strong>
+                        <br>
+                        Review your guide on increasing ticket prices by 25% using porosity tracking:
+                        <a href="https://crowncare-116e4.web.app/clinical_hair_guide.html" target="_blank" style="color: #D4AF37; font-weight: bold; text-decoration: underline;">Open My Business Guide</a>
+                    </li>
+                </ol>
+
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 30px 0;">
+                <p style="font-size: 13px; color: #666; margin-bottom: 0;">
+                    If you have any questions or need onboarding support, contact us directly at <a href="mailto:crowncare@crowncare.net" style="color: #003366;">crowncare@crowncare.net</a>.
+                </p>
+            </div>
+        `
+    };
+
+    try {
+        await Promise.all([
+            transporter.sendMail(adminMailOptions),
+            transporter.sendMail(welcomeMailOptions)
+        ]);
+        logger.info(`Emails successfully sent for lead: ${email}`);
+    } catch (err) {
+        logger.error(`Error sending emails for lead ${email}:`, err);
+    }
+});
+

@@ -152,5 +152,12 @@ service cloud.firestore {
       allow read: if signedIn();
       allow write: if false;
     }
+
+    // Founders Program lead submissions: public can create, only admin can read/modify.
+    match /founders_leads/{leadId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
   }
 }
+

@@ -39,29 +39,9 @@ export default function ScaleYourBusiness({ onClose }) {
                         <span style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 900, color: '#d4af37' }}>$69.99</span>
                         <span style={{ fontSize: 'var(--font-size-xs)', color: 'rgba(255,255,255,0.5)', marginLeft: '6px' }}>one-time</span>
                     </div>
-                    {Capacitor.isNativePlatform() ? (
-                        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}>Professional growth tools are coming soon.</p>
-                    ) : (
-                        <button
-                            onClick={() => window.open('https://buy.stripe.com/8x228sfZl2Ci4Kn07kfUQ09', '_blank')}
-                            style={{
-                                background: 'linear-gradient(135deg, #d4af37, #f5e6a3)',
-                                color: '#1a1a2e',
-                                border: 'none',
-                                borderRadius: '12px',
-                                padding: '12px 24px',
-                                fontSize: 'var(--font-size-sm)',
-                                fontWeight: 800,
-                                cursor: 'pointer',
-                                letterSpacing: '0.5px',
-                                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                            }}
-                            onMouseEnter={(e) => { e.target.style.transform = 'scale(1.05)'; e.target.style.boxShadow = '0 4px 20px rgba(212,175,55,0.4)'; }}
-                            onMouseLeave={(e) => { e.target.style.transform = 'scale(1)'; e.target.style.boxShadow = 'none'; }}
-                        >
-                            Get the Kit →
-                        </button>
-                    )}
+                    <p style={{ fontSize: 'var(--font-size-sm)', color: 'rgba(255,255,255,0.7)', fontStyle: 'italic' }}>
+                        Professional growth tools are managed directly within the CrownCare Pro mobile app.
+                    </p>
                 </div>
             </div>
 

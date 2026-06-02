@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrownCare Professional | Your Clients. In Your Hands. 24/7.</title>
+    <meta name="description" content="The ultimate retention and management tool for elite hairstylists. Keep your clients connected.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Color Palette: CrownCare Blue, Gold, White */
+            --primary: #1e40af; /* Rich Blue */
+            --primary-dark: #1e3a8a; /* Deep Navy Blue */
+            --primary-light: #eff6ff; /* Very Light Blue */
+
+            --accent: #D4AF37; /* CrownCare Gold */
+            --accent-hover: #b5932a; /* Darker Gold */
+
+            --bg-base: #0a0a0f; /* Off-black */
+            --bg-alt: #12121a; /* Pure White */
+            --bg-dark: #1A1C29; /* Very Dark Navy (CrownCare Dark) */
+
+            --text-main: #ffffff; /* Slate 900 */
+            --text-muted: rgba(255, 255, 255, 0.7); /* Slate 600 */
+            --text-light: #ffffff;
+
+            --border: rgba(255, 255, 255, 0.08);
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-float: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-main); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        img { max-width: 100%; height: auto; display: block; border-radius: 12px; }
+
+        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+        h1, h2, h3, h4 { font-weight: 600; line-height: 1.2; color: var(--text-main); }
+        h1 { font-size: clamp(2.5rem, 5vw, 4rem); letter-spacing: -0.02em; margin-bottom: 24px; }
+        h2 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.01em; margin-bottom: 20px; }
+        h3 { font-size: 1.5rem; margin-bottom: 12px; color: var(--accent); }
+        h4 { font-size: 1.25rem; margin-bottom: 12px; }
+        p { font-size: 1.125rem; color: var(--text-muted); margin-bottom: 24px; }
+        ul { margin-bottom: 24px; padding-left: 24px; color: var(--text-muted); font-size: 1.125rem; }
+        li { margin-bottom: 12px; }
+        strong { color: var(--text-light); }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 16px 32px; font-size: 1.125rem; font-weight: 500; border-radius: 9999px; text-decoration: none; transition: var(--transition); cursor: pointer; border: none; }
+        .btn-primary { background-color: var(--primary); color: white; box-shadow: var(--shadow-md); }
+        .btn-primary:hover { background-color: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .btn-accent { background-color: var(--accent); color: #1A1C29; box-shadow: var(--shadow-md); font-weight: bold; }
+        .btn-accent:hover { background-color: var(--accent-hover); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+        section { padding: 96px 0; }
+
+        /* Header */
+        header { 
+            padding: 24px 0; 
+            background: rgba(10, 10, 15, 0.9); 
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border); 
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        header nav a:hover {
+            color: var(--accent) !important;
+        }
+
+        /* Hero */
+        .hero { padding: 80px 0; background: linear-gradient(135deg, var(--bg-base) 0%, #12121a 100%); }
+        .hero .container { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+        .hero-content { min-width: 0; }
+        .hero-image { display: flex; justify-content: flex-end; min-width: 0; }
+        .hero-image img { box-shadow: var(--shadow-float); border-radius: 24px; border: 1px solid var(--border); }
+
+        /* Split Sections */
+        .split-section { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; margin-bottom: 64px; }
+        .split-section.reverse { direction: rtl; }
+        .split-section.reverse > * { direction: ltr; }
+        .split-image img { box-shadow: var(--shadow-lg); border-radius: 20px; border: 1px solid var(--border); }
+
+        /* Grid Lists */
+        .grid-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-top: 48px; }
+        .grid-item { background: var(--bg-alt); padding: 32px; border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+
+        /* ROI Section */
+        .roi { background-color: var(--bg-dark); color: var(--text-light); }
+        .roi h2, .roi h3, .roi strong { color: white; }
+        .roi p, .roi li { color: var(--text-muted); }
+        .roi .grid-item { background: rgba(255, 255, 255, 0.03); border-color: rgba(255, 255, 255, 0.08); }
+
+        /* Pricing Box */
+        .pricing-box { background: var(--bg-alt); border: 2px solid var(--border); padding: 48px; border-radius: 24px; max-width: 600px; margin: 0 auto 48px; text-align: center; }
+        .price-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+        .price-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .price-label { font-size: 1.25rem; font-weight: 600; text-align: left; }
+        .price-sub { display: block; font-size: 0.875rem; color: var(--text-muted); font-weight: 400; }
+        .price-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+
+        /* Founder Credibility Section */
+        .founder-credibility { background: var(--bg-alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .founder-box { max-width: 800px; margin: 0 auto; background: var(--bg-base); padding: 40px; border-radius: 16px; box-shadow: var(--shadow-md); border: 1px solid var(--border); }
+        .founder-box h3 { color: var(--accent); margin-bottom: 16px; }
+
+        /* CTA */
+        .cta-section { background-color: #12121a; color: white; text-align: center; border-top: 1px solid var(--border); }
+        .cta-section h2 { color: white; }
+        .cta-section p { color: var(--text-muted); max-width: 600px; margin: 0 auto 40px; }
+
+        footer { background-color: var(--bg-base); color: var(--text-muted); text-align: center; padding: 48px 0; border-top: 1px solid var(--border); }
+        footer a { color: var(--accent); text-decoration: none; }
+
+        /* Signup Form Styles */
+        .signup-section {
+            background: #12121a;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 96px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .form-container {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin: 0 auto;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-header h2 {
+            font-size: 1.8rem;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .form-header p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.75);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent) 0%, #b5932a 100%);
+            color: #1A1C29;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .disclaimer {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            text-align: center;
+            margin-top: 20px;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
+            .hero .container, .split-section { grid-template-columns: 1fr; text-align: center; gap: 40px; }
+            .hero-content, .split-content { text-align: center; }
+            .hero-image, .split-image { justify-content: center; }
+            .split-section.reverse { direction: ltr; }
+            ul { text-align: left; }
+            .price-row { flex-direction: column; gap: 8px; text-align: center; }
+            .price-label { text-align: center; }
+            header {
+                padding: 16px 0;
+            }
+            header .container {
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+
+        /* Two-column Founders Section Styling */
+        .founders-two-col {
+            max-width: 900px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 31, 63, 0.25);
+            margin: 0 auto;
+        }
+
+        .promo-side {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            background: radial-gradient(circle at top left, rgba(212, 175, 55, 0.05), transparent 70%);
+            text-align: left;
+        }
+
+        .badge-limited {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            align-self: flex-start;
+        }
+
+        .promo-side h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            color: #FFFFFF;
+            text-align: left;
+        }
+
+        .promo-side h2 span {
+            color: var(--accent);
+        }
+
+        .pitch-text {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .benefit-list-two {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-left: 0;
+        }
+
+        .benefit-item-two {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0;
+        }
+
+        .benefit-icon-two {
+            color: var(--accent);
+            font-weight: 900;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+        }
+
+        .form-side {
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .founders-two-col {
+                grid-template-columns: 1fr;
+            }
+            .promo-side {
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="/home.html" style="font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--text-light); text-decoration: none; letter-spacing: 1px;">CrownCare<span style="color: var(--accent);">.</span></a>
+            <nav style="display: flex; gap: 32px; align-items: center;">
+                <a href="/home.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s ease;">Overview</a>
+                <a href="/pricing.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s ease;">Pricing</a>
+                <a href="/professionals.html" style="color: var(--accent); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s ease;">For Professionals</a>
+                <a href="/media.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s ease;">Media & Guides</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Your Clients. In Your Hands. 24/7.</h1>
+                <p>Keep them connected between appointments. Catch hair problems before they become disasters. Get paid for the care you already give.</p>
+                <a href="/founders.html" class="btn btn-accent">Become a Founding Member &mdash; 90 Days Free</a>
+            </div>
+            <div class="hero-image">
+                <img src="inclusive_hero.png" alt="CrownCare Professional Hero Image" style="width: 100%; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);" />
+            </div>
+        </div>
+    </section>
+
+    <section class="container">
+        <div class="split-section">
+            <div class="split-content">
+                <h2>The Problem You Already Know</h2>
+                <p>A client walks out of your chair looking amazing. You've spent an hour, maybe two, creating something beautiful. You know exactly how to maintain it. You care about the outcome.</p>
+                <p>Then they get home. And you have no idea what happens next.</p>
+                <p>They might follow your advice perfectly. They might completely butcher it. They might switch to a box braid stylist next week because they got impatient. They might not come back until 8 weeks have passed&mdash;by which time their hair has suffered and so has your income.</p>
+                <strong>The real cost of losing that connection after they walk out the door:</strong>
+                <ul style="margin-top: 12px;">
+                    <li>Clients you worked with for years go to someone else</li>
+                    <li>No-shows that cost you $100-300 in lost revenue</li>
+                    <li>Problems that could've been fixed in a quick $50 touch-up become $200 damage control</li>
+                    <li>You never know if they're using the right products, the right technique, or any technique at all</li>
+                </ul>
+            </div>
+            <div class="split-image">
+                <img src="salon_client.jpg" alt="Stylist with happy client in salon chair" />
+            </div>
+        </div>
+    </section>
+
+    <section class="container" style="padding-top: 0; padding-bottom: 48px;">
+        <div class="split-section" style="margin-bottom: 0;">
+            <div class="split-content">
+                <h2>This Isn't Just Software</h2>
+                <p style="font-size: 1.1rem; margin-bottom: 16px;">We're not teaching you how to do hair. We're not replacing you with AI.</p>
+                <p style="font-size: 1.1rem; margin-bottom: 16px;">We're giving you the technology to do what you already do best&mdash;care for your clients&mdash;without the gap that happens when they walk out the door.</p>
+                <p style="font-size: 1.1rem; font-weight: 600; color: var(--accent); margin-bottom: 0;">You're the expert. CrownCare is the tool that lets you show it, every single day.</p>
+            </div>
+            <div class="split-image" style="display: flex; justify-content: center; align-items: center;">
+                <video src="professionals_video.mp4" controls playsinline preload="metadata" poster="salon_client.jpg" style="width: 100%; border-radius: 20px; box-shadow: var(--shadow-lg); border: 1px solid var(--border); background: #000; max-height: 480px;"></video>
+            </div>
+        </div>
+    </section>
+
+    <section style="background-color: var(--bg-alt);">
+        <div class="container">
+            <div class="split-section reverse">
+                <div class="split-content">
+                    <h2>The Real Solution</h2>
+                    <p><strong>CrownCare keeps you connected to your clients the moment they leave your chair.</strong></p>
+                    <p>This isn't about surveillance. It's about care. It's about being the stylist who actually <em>sees</em> what's happening to their hair between appointments and steps in when something goes wrong.</p>
+                    <p>Your clients log their routine&mdash;photos, what they're eating, how they're caring for their hair. The app gives you real visibility into their journey. You see early warning signs before disaster hits. You catch problems when they're small and fixable.</p>
+                    <p><strong>And you get paid for it.</strong></p>
+                </div>
+                <div class="split-image">
+                    <img src="product_efficacy.png" alt="CrownCare Monthly Growth Report" style="max-width: 420px; margin: 0 auto; width: 100%; border: 1px solid var(--border);" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container">
+        <h2 style="text-align: center; max-width: 800px; margin: 0 auto;">How It Works For Your Clients</h2>
+        <p style="text-align: center; max-width: 800px; margin: 0 auto 48px; font-size: 1.25rem;">Clients get an "elite salon in your pocket" &mdash; tools that track their progress, guide their routine, and prove your regimen works.</p>
+
+        <div class="grid-list">
+            <div class="grid-item">
+                <h3>Daily Diary</h3>
+                <p>Pattern recognition learns when their hair thrives with hydration vs. protein.</p>
+            </div>
+            <div class="grid-item">
+                <h3>Ghost Overlay Camera</h3>
+                <p>Perfect-aligned photos track millimeter-level growth with visual proof.</p>
+            </div>
+            <div class="grid-item">
+                <h3>AI Scalp Audit</h3>
+                <p>Instant analysis flags redness, tension bumps, scalp issues early.</p>
+            </div>
+            <div class="grid-item">
+                <h3>Smart Label Matcher</h3>
+                <p>Snap product labels. AI checks ingredients against their hair porosity.</p>
+            </div>
+            <div class="grid-item">
+                <h3>AI Meal Scanner</h3>
+                <p>Quantifies Biotin, Iron, Keratin. Suggests diet shifts to stop shedding.</p>
+            </div>
+            <div class="grid-item">
+                <h3>Biometric Sync</h3>
+                <p>Apple Watch integration tracks sleep & stress triggers for shedding.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Power of CrownCare Section -->
+    <section class="container" style="padding-bottom: 96px;">
+        <h2 style="text-align: center; margin-bottom: 48px; font-size: clamp(2.5rem, 5vw, 3.5rem);">This is the Power of CrownCare</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 40px;">
+            <img src="power_feature_1.png" alt="Built for iPad" style="width: 100%; border-radius: 24px; box-shadow: var(--shadow-lg); border: 1px solid var(--border);" />
+            <img src="power_feature_2.png" alt="Your AI Trichologist" style="width: 100%; border-radius: 24px; box-shadow: var(--shadow-lg); border: 1px solid var(--border);" />
+            <img src="power_feature_3.png" alt="Clinical Hair Dashboard" style="width: 100%; border-radius: 24px; box-shadow: var(--shadow-lg); border: 1px solid var(--border);" />
+            <img src="power_feature_4.png" alt="Stylist B2B Portal" style="width: 100%; border-radius: 24px; box-shadow: var(--shadow-lg); border: 1px solid var(--border);" />
+        </div>
+    </section>
+
+    <!-- FOUNDERS CLUB BLOCK -->
+    <section class="section-padding" style="background: radial-gradient(circle at center, rgba(212, 175, 55, 0.08) 0%, rgba(10, 10, 15, 0) 70%); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 96px 0;">
+        <div class="container" style="max-width: 900px; text-align: center;">
+            <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(212, 175, 55, 0.15); border: 1px solid var(--accent); color: var(--accent); padding: 6px 16px; border-radius: 100px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 24px;">
+                ✦ CrownCare Founders Club
+            </div>
+            <h2 style="border: none; margin-bottom: 20px; font-size: clamp(2rem, 4vw, 3rem); text-align: center;">Why Partner With Us Today?</h2>
+            <p style="max-width: 800px; margin: 0 auto 40px auto; font-size: 1.15rem; line-height: 1.8; color: var(--text-muted);">
+                CrownCare is launching a limited-seat <strong>Founders Cohort</strong> for elite cosmetologists and hair wellness enthusiasts. This is the absolute best window to secure early partnership privileges, influence the AI's product recommendation engine, and unlock extended risk-free trials.
+            </p>
+            <div class="grid-list" style="margin-bottom: 40px; text-align: left; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+                <div class="grid-item" style="background: rgba(18, 18, 26, 0.7); backdrop-filter: blur(10px);">
+                    <h3 style="color: var(--accent); font-size: 1.25rem;">Co-Design the Platform</h3>
+                    <p style="font-size: 0.95rem; line-height: 1.5; color: var(--text-muted);">Founding members work directly with our engineering team to shape diagnostic tools, client reporting templates, and custom aftercare protocol pads.</p>
+                </div>
+                <div class="grid-item" style="background: rgba(18, 18, 26, 0.7); backdrop-filter: blur(10px);">
+                    <h3 style="color: var(--accent); font-size: 1.25rem;">Extended Free Access</h3>
+                    <p style="font-size: 0.95rem; line-height: 1.5; color: var(--text-muted);">Get an unprecedented 90 days of free stylist Pro dashboard features, plus 30-day extended trials for every client you invite.</p>
+                </div>
+            </div>
+            <a href="/founders.html" class="btn btn-accent" style="padding: 14px 36px; display: inline-block; border-radius: 9999px;">Become a Founding Partner Now</a>
+        </div>
+    </section>
+
+    <section class="roi">
+        <div class="container">
+            <h2 style="text-align: center; max-width: 800px; margin: 0 auto;">Why This Makes You More Money<br><span style="font-size: 1.5rem; color: var(--text-muted);">(And It Actually Does)</span></h2>
+
+            <div class="grid-list">
+                <div class="grid-item">
+                    <h3>You Keep Clients Longer</h3>
+                    <p>Clients who feel cared for don't leave. The industry standard is losing 30-40% of clients annually due to gaps in connection. CrownCare eliminates that gap because your clients feel your presence between appointments.</p>
+                </div>
+                <div class="grid-item">
+                    <h3>You Get More Appointments</h3>
+                    <p>Early interventions = extra appointments. When you catch moisture loss early, they book a mid-cycle touch-up. When you notice shedding patterns, they book a consultation. That's $200-400 in extra revenue per month from clients you already have.</p>
+                </div>
+                <div class="grid-item">
+                    <h3>You Can Charge More</h3>
+                    <p>Premium pricing justifies itself. Stylists offering concierge, tech-enabled care command premium rates. Your clients get expert monitoring and AI coaching between appointments—that's worth significantly more than standard service.</p>
+                </div>
+                <div class="grid-item">
+                    <h3>You Prevent the No-Show Nightmare</h3>
+                    <p>Smart reminders based on hair cycle timing keep your chair full. No-shows drop dramatically. Your income becomes predictable because your schedule stays booked.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container">
+        <h2 style="text-align: center;">What You Actually Get</h2>
+        <p style="text-align: center; max-width: 600px; margin: 0 auto 48px;">Everything you need to manage your business from your phone or tablet.</p>
+
+        <div class="grid-list">
+            <div class="grid-item">
+                <h3>Your Professional Dashboard</h3>
+                <p>See all your clients in one place. View their photos, diary entries, and progress reports. Know exactly who needs a check-in and when.</p>
+            </div>
+            <div class="grid-item">
+                <h3>Real-Time Insights</h3>
+                <p>The app alerts you to problems—shedding spikes, moisture dropping, stress affecting their hair. You reach out first. You're the hero.</p>
+            </div>
+            <div class="grid-item">
+                <h3>Digital Protocol Assignment</h3>
+                <p>Instead of texting random product lists, you assign exact regimens. They appear on their home screen. No confusion. Complete compliance.</p>
+            </div>
+            <div class="grid-item">
+                <h3>Monthly Growth Reports</h3>
+                <p>Share professional-grade analytics with your clients. Show them the results of your work. Make them feel like VIPs. Because they are.</p>
+            </div>
+            <div class="grid-item">
+                <h3>Centralized Scheduling</h3>
+                <p>Manage your whole book in one place. Set appointments, get reminders, catch patterns. Your schedule stays full and organized.</p>
+            </div>
+        </div>
+    </section>
+
+    <section style="background-color: var(--bg-alt);">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 48px;">The Numbers That Matter</h2>
+
+            <div class="pricing-box">
+                <div class="price-row">
+                    <div class="price-label">Your Pro Subscription<span class="price-sub">(Unlimited clients, all features included)</span></div>
+                    <div class="price-value">$49.99<span style="font-size: 1rem; color: var(--text-muted);">/mo</span></div>
+                </div>
+                <div class="price-row">
+                    <div class="price-label">Your Client Cost<span class="price-sub">(Optional add-on for your clients' journey tracking)</span></div>
+                    <div class="price-value">$29.99<span style="font-size: 1rem; color: var(--text-muted);">/mo</span></div>
+                </div>
+                <div style="padding-top: 16px; border-top: 1px solid var(--border); margin-top: 16px; font-size: 0.875rem; color: var(--text-muted);">
+                    <strong>All stylists start free for 90 days during the launch.</strong> Pause or cancel anytime.
+                </div>
+            </div>
+
+            <div style="max-width: 800px; margin: 0 auto; background: var(--bg-base); border: 1px solid var(--border); padding: 40px; border-radius: 16px; box-shadow: var(--shadow-md);">
+                <h3 style="text-align: center; margin-bottom: 24px;">Your Real ROI</h3>
+                <ul style="margin-bottom: 32px;">
+                    <li><strong>Prevent 1 client from leaving:</strong> That's $1,500-3,000 in annual revenue saved</li>
+                    <li><strong>Get 1 extra appointment per client per quarter:</strong> That's $200-400 extra per month</li>
+                    <li><strong>Reduce no-shows by 50%:</strong> That's $500+ recovered per month</li>
+                    <li><strong>Charge 15% more because you offer premium care:</strong> That's hundreds more per service</li>
+                </ul>
+                <div style="text-align: center; font-size: 1.25rem; font-weight: 700; color: var(--accent);">
+                    Your monthly investment of $49.99 comes back in the first week. <span style="font-weight: 400; color: var(--text-muted);">And that's being conservative.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Founder Credibility Section -->
+    <section class="founder-credibility">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 48px;">Built By Someone Who Understands Business Growth</h2>
+
+            <div class="founder-box">
+                <h3 style="text-align: center; color: var(--accent); margin-bottom: 20px;">Why CrownCare?</h3>
+                <p style="text-align: center; margin-bottom: 24px; font-size: 1.125rem; color: var(--text-muted); line-height: 1.8;">
+                    Pastor Melvin Whittle spent 40 years building communities and helping people reach their full potential.
+                    When he looked at the beauty industry, he saw the same pattern: <strong>talented artists buried in admin work instead of growing their business.</strong>
+                </p>
+                <p style="text-align: center; margin-bottom: 24px; font-size: 1.125rem; color: var(--text-muted); line-height: 1.8;">
+                    He built CrownCare because he understands one thing: <strong>when you give people the right systems and tools, their business explodes.</strong>
+                    This isn't about technology. It's about giving you back your time so you can focus on what makes you money: your clients.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="signup-section" id="founders-form-section" style="background: none; border: none; padding: 60px 0;">
+        <div class="founders-two-col">
+            <!-- Left Side: Copy & Incentive -->
+            <div class="promo-side">
+                <div class="badge-limited">✦ Limited Cohort Invitation</div>
+                <h2>Claim Your <span>90-Day Free</span> Pro Stylist Partnership</h2>
+                <p class="pitch-text">
+                    Join our exclusive 2026 Founders Program launch. Eliminate client breakage, boost retention, and unlock premium tools for your salon.
+                </p>
+                
+                <ul class="benefit-list-two">
+                    <li class="benefit-item-two">
+                        <span class="benefit-icon-two">✓</span>
+                        <span><strong>90-Day Free Pro Access:</strong> Try the entire CrownCare app & desktop Pro Dashboard free (Standard price: $49.99/mo).</span>
+                    </li>
+                    <li class="benefit-item-two">
+                        <span class="benefit-icon-two">✓</span>
+                        <span><strong>30-Day Free Client Trials:</strong> Give every client you connect a full 30 days of free app tracking (Standard price: $29.99/mo).</span>
+                    </li>
+                    <li class="benefit-item-two">
+                        <span class="benefit-icon-two">✓</span>
+                        <span><strong>Follicle-First Business Guide (Free Gift):</strong> Submit your email to instantly receive our downloadable handbook: <em>"How to Increase Ticket Prices by 25% Using Clinical Hair & Porosity Tracking."</em></span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Right Side: Form Card -->
+            <div class="form-side">
+                <div class="form-header">
+                    <h2>Join the Program</h2>
+                    <p>Verify your stylist status to claim your guide & activation code.</p>
+                </div>
+
+                <form id="pro-founders-form">
+                    <div class="form-group">
+                        <label class="form-label" for="stylist-name">Full Name</label>
+                        <input class="form-input" type="text" id="stylist-name" required placeholder="e.g. Sarah Jenkins">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="stylist-email">Email Address</label>
+                        <input class="form-input" type="email" id="stylist-email" required placeholder="e.g. sarah@salon.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="salon-name">Salon / Business Name</label>
+                        <input class="form-input" type="text" id="salon-name" required placeholder="e.g. Studio 54 Hair">
+                    </div>
+
+                    <button class="btn-submit" type="submit" id="submit-btn">
+                        Get Free Business Guide & Code
+                    </button>
+                </form>
+
+                <p class="disclaimer">
+                    By clicking above, you agree to receive the downloadable business guide and Founders launch updates. You may opt-out at any time.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <h3 style="color: white; margin-bottom: 8px;">Questions?</h3>
+            <p style="margin-bottom: 8px;">CrownCare is built <em>by</em> someone who understands business growth <em>for</em> stylists who want theirs to explode.</p>
+            <p style="margin-bottom: 24px;">Contact us: <a href="mailto:hello@crowncare.net">hello@crowncare.net</a> | <a href="/?reset=true" style="color: #f87171; text-decoration: none;">Sign Out / Reset App</a></p>
+            <p style="margin-bottom: 16px;"><em>CrownCare Professional. Keeping your clients connected. Keeping your business thriving.</em></p>
+        </div>
+    </footer>
+
+    <!-- Firebase Integration CDN -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "***REMOVED***",
+            authDomain: "crowncare-116e4.firebaseapp.com",
+            projectId: "crowncare-116e4",
+            storageBucket: "crowncare-116e4.firebasestorage.app",
+            messagingSenderId: "368231456323",
+            appId: "1:368231456323:web:4b428e19de81766fb23ef6",
+            measurementId: "G-ZGR9CSDH9H"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const form = document.getElementById('pro-founders-form');
+        const submitBtn = document.getElementById('submit-btn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Registering Status...";
+
+            const name = document.getElementById('stylist-name').value;
+            const email = document.getElementById('stylist-email').value;
+            const salon = document.getElementById('salon-name').value;
+
+            try {
+                // Write lead details to Firestore
+                await addDoc(collection(db, 'founders_leads'), {
+                    name: name.trim(),
+                    email: email.trim().toLowerCase(),
+                    salon: salon.trim(),
+                    timestamp: new Date().toISOString(),
+                    status: 'interested',
+                    source: 'stylist-professionals-page'
+                });
+
+                // Redirect to the Welcome success page
+                window.location.href = '/welcome.html';
+            } catch (error) {
+                console.error("Firestore Lead Error:", error);
+                alert("Something went wrong saving your details. Please check your network and try again.");
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Get Free Business Guide & Code";
+            }
+        });
+    </script>
+
+    <script src="/ai-assistant.js"></script>
+</body>
+</html>

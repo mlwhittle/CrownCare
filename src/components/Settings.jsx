@@ -4,7 +4,7 @@ import { db, auth } from '../firebase';
 import { doc, updateDoc, collection, addDoc, onSnapshot } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { deleteUser } from 'firebase/auth';
-import { Settings as SettingsIcon, Sun, MoonStar, Crown, Trash2, User, Zap, Briefcase, Scissors, AlertTriangle, Activity, BookOpen } from 'lucide-react';
+import { Settings as SettingsIcon, Sun, MoonStar, Crown, Trash2, User, Zap, Briefcase, Scissors, AlertTriangle, Activity, BookOpen, ExternalLink } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import settingsImg from '../assets/images/settings.png';
 import UserManual from './UserManual';
@@ -35,108 +35,15 @@ export default function Settings({ setCurrentView }) {
     };
 
     const handleUpgrade = async () => {
-        if (!user) return alert("Please log in first.");
-        setIsUpgrading(true);
-        try {
-            const checkoutSessionRef = await addDoc(
-                collection(db, 'users', user.uid, 'checkout_sessions'),
-                {
-                    price: 'price_1TCjkdIunC29aUxhudcQbWAI', // CrownCare Premium $19.99/mo
-                    success_url: window.location.origin,
-                    cancel_url: window.location.origin,
-                    client: 'web',
-                    mode: 'subscription',
-                }
-            );
-
-            // Listen for the extension to attach the Stripe Checkout URL
-            onSnapshot(checkoutSessionRef, (snap) => {
-                const data = snap.data();
-                if (data?.error) {
-                    alert(`An error occurred: ${data.error.message}`);
-                    setIsUpgrading(false);
-                }
-                if (data?.url) {
-                    // Redirect to the Stripe Hosted Checkout page!
-                    if (!Capacitor.isNativePlatform()) {
-                        window.location.assign(data.url);
-                    }
-                }
-            });
-        } catch (error) {
-            console.error(error);
-            alert("Failed to start checkout. Please make sure the Stripe Extension is configured.");
-            setIsUpgrading(false);
-        }
+        alert("Subscriptions are processed natively on the App Store. Please download or open CrownCare on your mobile device to upgrade.");
     };
 
     const handleStylistUpgrade = async () => {
-        if (!user) return alert("Please log in first.");
-        setIsUpgrading(true);
-        try {
-            const checkoutSessionRef = await addDoc(
-                collection(db, 'users', user.uid, 'checkout_sessions'),
-                {
-                    price: 'price_1TCk0aIunC29aUxhJ5PM65Ek', // Placeholder for CrownCare Pro $49.99/mo Stripe Product
-                    success_url: window.location.origin,
-                    cancel_url: window.location.origin,
-                    client: 'web',
-                    mode: 'subscription',
-                }
-            );
-
-            onSnapshot(checkoutSessionRef, (snap) => {
-                const data = snap.data();
-                if (data?.error) {
-                    alert(`An error occurred: ${data.error.message}`);
-                    setIsUpgrading(false);
-                }
-                if (data?.url) {
-                    if (!Capacitor.isNativePlatform()) {
-                        window.location.assign(data.url);
-                    }
-                }
-            });
-        } catch (error) {
-            console.error(error);
-            alert("Failed to start checkout. Please make sure the Stripe Extension is configured.");
-            setIsUpgrading(false);
-        }
+        alert("Pro Stylist subscriptions are processed natively on the App Store. Please download or open CrownCare on your mobile device to upgrade.");
     };
 
     const handleConnectedTierUpgrade = async (pendingCode) => {
-        if (!user) return alert("Please log in first.");
-        setIsUpgrading(true);
-        try {
-            const checkoutSessionRef = await addDoc(
-                collection(db, 'users', user.uid, 'checkout_sessions'),
-                {
-                    price: 'price_1TCjx9IunC29aUxhpmBhOtLE', // Placeholder for CrownCare Connected $29.99/mo Stripe Product
-                    success_url: window.location.origin,
-                    cancel_url: window.location.origin,
-                    client: 'web',
-                    mode: 'subscription',
-                    metadata: { pending_stylist_code: pendingCode } // Webhook saves this upon success
-                }
-            );
-
-            onSnapshot(checkoutSessionRef, (snap) => {
-                const data = snap.data();
-                if (data?.error) {
-                    alert(`An error occurred: ${data.error.message}`);
-                    setIsUpgrading(false);
-                }
-                if (data?.url) {
-                    if (!Capacitor.isNativePlatform()) {
-                        window.location.assign(data.url);
-                    }
-                }
-            });
-        } catch (error) {
-            console.error(error);
-            alert("Failed to start Connected verification.");
-            setIsUpgrading(false);
-        }
+        alert("Connected Client subscriptions are processed natively on the App Store. Please download or open CrownCare on your mobile device to upgrade.");
     };
 
 
@@ -290,9 +197,36 @@ export default function Settings({ setCurrentView }) {
                     </p>
 
                     <div style={{ marginTop: 'var(--space-lg)', borderTop: '1px solid var(--border-color)', paddingTop: 'var(--space-md)' }}>
-                        <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => setShowUpgradeModal(true)}>
+                        <button className="btn btn-primary" style={{ width: '100%', marginBottom: 'var(--space-md)' }} onClick={() => setShowUpgradeModal(true)}>
                             <Zap size={16} /> Manage Subscriptions & Upgrades
                         </button>
+                        
+                        <div style={{ borderTop: '1px dashed var(--border-color)', paddingTop: 'var(--space-md)', textAlign: 'center' }}>
+                            <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-primary)', marginBottom: '8px', fontWeight: 600 }}>Redeem Apple Store Offer Codes</p>
+                            <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '10px', lineHeight: 1.4 }}>
+                                Redeem Apple subscription offer codes securely via the App Store. <br />
+                                <strong>Stylist Code:</strong> CrowncareFounders (90 days free) <br />
+                                <strong>Client Code:</strong> CrownFounders1 (30 days free)
+                            </p>
+                            <button
+                                className="btn btn-outline"
+                                style={{ width: '100%', fontWeight: 600 }}
+                                onClick={async () => {
+                                    if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
+                                        try {
+                                            const { Purchases } = await import('@revenuecat/purchases-capacitor');
+                                            await Purchases.presentOfferCodeRedemptionSheet();
+                                        } catch (err) {
+                                            console.error(err);
+                                        }
+                                    } else {
+                                        window.open('https://apps.apple.com/redeem?ctx=offercodes&id=6502206775', '_blank');
+                                    }
+                                }}
+                            >
+                                Redeem on App Store
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -448,12 +382,23 @@ export default function Settings({ setCurrentView }) {
                         <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)', marginBottom: 'var(--space-sm)' }}>
                             You have full B2B access to the Stylist Hub, Client Roster, and Custom Protocol tools.
                         </p>
+                        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)', marginBottom: 'var(--space-sm)' }}>
+                            Your CrownCare Pro dashboard lives at <a href="https://pro.crowncare.net/" target="_blank" rel="noopener noreferrer">https://pro.crowncare.net/</a>. Use it to manage connected clients, review their shared CrownCare app activity, and send care instructions.
+                        </p>
                         <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)', marginBottom: 'var(--space-md)', fontStyle: 'italic' }}>
                             Note: While you are in your 7-Day Free Trial, you will not be charged. However, your trial will automatically convert into to a paid subscription based on your decision to stay with the app. You can cancel at any time below.
                         </p>
 
                         <button 
                             className="btn btn-primary" 
+                            style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 'var(--space-md)', gap: '8px' }}
+                            onClick={() => window.open('https://pro.crowncare.net/', '_blank')}
+                        >
+                            <ExternalLink size={16} /> Open Pro Dashboard
+                        </button>
+
+                        <button 
+                            className="btn btn-outline" 
                             style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 'var(--space-md)', gap: '8px' }}
                             onClick={() => setShowScaleBusiness(true)}
                         >

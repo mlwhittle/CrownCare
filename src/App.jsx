@@ -24,14 +24,16 @@ import StylistPortal from './components/StylistPortal';
 import VisualDiary from './components/VisualDiary';
 import Menu from './components/Menu';
 import AuthModal from './components/AuthModal';
+import FoundersProgram from './components/FoundersProgram';
+import FoundersOffer from './components/FoundersOffer';
 import { Sparkles } from 'lucide-react';
 import { AnalyticsService } from './services/AnalyticsService';
 
 const MAIN_TABS = ['home', 'treatments', 'diary', 'nutrition', 'routines', 'stylist-portal', 'reports', 'settings'];
-const SUB_PAGES = ['journal', 'narrative', 'menu', 'results', 'privacy', 'delete-account']; // Pages that don't slide back through tabs
+const SUB_PAGES = ['journal', 'narrative', 'menu', 'results', 'privacy', 'delete-account', 'founders-program', 'founders-offer']; // Pages that don't slide back through tabs
 
 function AppInner() {
-    const { onboarding, completeOnboarding, isPremium, isTrialExpired, redeemVipCode, user } = useApp();
+    const { onboarding, completeOnboarding, isPremium, isTrialExpired, redeemVipCode, user, isStylistAccount, setIsStylistAccount } = useApp();
     const [showAuthModal, setShowAuthModal] = useState(true);
 
     // Initialize RevenueCat for iOS and Android native payments
@@ -145,8 +147,30 @@ function AppInner() {
         };
     }, [navHistory]);
 
-    // If no onboarding, show quiz
-    if (!onboarding) {
+    // Redirect web visitors who are not logged in and have no onboarding to the marketing site
+    useEffect(() => {
+        if (!Capacitor.isNativePlatform()) {
+            const isProDomain = window.location.hostname.includes('pro');
+            
+            if (isProDomain) {
+                sessionStorage.setItem('cc_app_started', 'true');
+            }
+
+            const hasStartedApp = window.location.search.includes('start=true') || sessionStorage.getItem('cc_app_started');
+            
+            if (window.location.search.includes('start=true')) {
+                sessionStorage.setItem('cc_app_started', 'true');
+            }
+            
+            // Redirect web visitors who have no onboarding to the marketing site
+            if (!hasStartedApp && !onboarding) {
+                window.location.href = '/home.html';
+            }
+        }
+    }, [onboarding]);
+
+    // If no onboarding and not a stylist, show quiz
+    if (!onboarding && !isStylistAccount) {
         return <OnboardingQuiz onComplete={completeOnboarding} />;
     }
 
@@ -172,6 +196,8 @@ function AppInner() {
             case 'stylist-portal': return <StylistPortal setCurrentView={navigateTo} goBack={goBack} />;
             case 'privacy': return <PrivacyPolicy setCurrentView={navigateTo} goBack={goBack} />;
             case 'delete-account': return <DeleteAccount setCurrentView={navigateTo} goBack={goBack} />;
+            case 'founders-program': return <FoundersProgram setCurrentView={navigateTo} />;
+            case 'founders-offer': return <FoundersOffer setCurrentView={navigateTo} />;
             default: return <Home setCurrentView={navigateTo} openAI={() => setShowAI(true)} />;
         }
     };

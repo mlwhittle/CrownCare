@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrownCare — Media, Videos & Guides</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --card-bg: #12121a;
+            --text-white: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --gold-primary: #D4AF37;
+            --blue-glow: rgba(59, 130, 246, 0.15);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --navy-deep: #001F3F;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-white);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Navigation Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 8%;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-white);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: var(--gold-primary);
+        }
+
+        nav {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--gold-primary);
+        }
+
+        .btn-launch {
+            background: linear-gradient(135deg, var(--gold-primary) 0%, #B8962E 100%);
+            color: var(--navy-deep) !important;
+            padding: 8px 20px;
+            border-radius: 9999px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-launch:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 80px 0 40px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: var(--blue-glow);
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Video Gallery Section */
+        .section-padding {
+            padding: 60px 0;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            color: var(--gold-primary);
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        @media (min-width: 768px) {
+            .video-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .video-featured {
+                grid-column: span 2;
+            }
+        }
+
+        .media-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .media-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .video-container {
+            width: 100%;
+            position: relative;
+            background: #000;
+        }
+
+        .video-container.ratio-16-9 {
+            aspect-ratio: 16/9;
+        }
+
+        .video-container.ratio-9-16 {
+            aspect-ratio: 9/16;
+            max-width: 320px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .video-container video, .video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .media-info {
+            padding: 24px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .media-info h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-white);
+        }
+
+        .media-info p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .badge-type {
+            align-self: flex-start;
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold-primary);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Audio & Companion Player Mockup */
+        .audio-player-showcase {
+            background: radial-gradient(circle at top right, rgba(212, 175, 55, 0.08), transparent 70%), var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
+            margin-top: 40px;
+        }
+
+        .audio-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+            align-items: center;
+        }
+
+        @media (min-width: 768px) {
+            .audio-grid {
+                grid-template-columns: 1fr 1.2fr;
+            }
+        }
+
+        .player-mockup {
+            background: #1c1c28;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+
+        .player-track-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .player-track-info h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .player-track-info p {
+            font-size: 0.85rem;
+            color: var(--gold-primary);
+        }
+
+        .waveform-visualizer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            height: 60px;
+            margin-bottom: 24px;
+        }
+
+        .wave-bar {
+            width: 3px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            animation: bounce 1.2s infinite ease-in-out alternate;
+        }
+
+        .wave-bar:nth-child(2n) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(3n) { animation-delay: 0.4s; }
+        .wave-bar:nth-child(4n) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(5n) { animation-delay: 0.5s; }
+
+        @keyframes bounce {
+            0% { height: 10px; }
+            100% { height: 50px; background: var(--gold-primary); }
+        }
+
+        .player-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .player-btn {
+            background: none;
+            border: none;
+            color: var(--text-white);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .player-btn:hover {
+            color: var(--gold-primary);
+        }
+
+        .player-btn-play {
+            background: var(--gold-primary);
+            color: #1c1c28;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .player-btn-play:hover {
+            color: #1c1c28;
+            transform: scale(1.05);
+        }
+
+        /* Guides List */
+        .guides-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .guide-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .guide-text h4 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .guide-text p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .btn-guide-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-white);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-guide-action:hover {
+            background: var(--gold-primary);
+            color: var(--navy-deep);
+            border-color: var(--gold-primary);
+        }
+
+        /* Footer */
+        footer {
+            padding: 48px 0;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            margin-top: 60px;
+        }
+
+        footer a {
+            color: var(--text-white);
+            text-decoration: none;
+            margin: 0 12px;
+        }
+
+        footer a:hover {
+            color: var(--gold-primary);
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 16px;
+                padding: 16px;
+            }
+            nav {
+                gap: 16px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/home.html" class="logo">CrownCare<span>.</span></a>
+        <nav>
+            <a href="/home.html">Overview</a>
+            <a href="/pricing.html">Pricing</a>
+            <a href="/professionals.html">For Professionals</a>
+            <a href="/media.html" class="active">Media & Guides</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-glow"></div>
+            <h1>Media, Videos & Guides</h1>
+            <p class="subtitle">Watch feature demonstrations, explore our B2B salon masterclass guides, and listen to the voice companion experience.</p>
+        </section>
+
+        <!-- VIDEO SECTION -->
+        <section class="section-padding">
+            <h2 class="section-title">Video Library & Feature Walkthroughs</h2>
+            <div class="video-grid">
+                
+                <!-- FEATURED VIDEO: Stylist Pro Pitch -->
+                <div class="media-card video-featured">
+                    <div class="video-container ratio-16-9">
+                        <video src="/professionals_video.mp4" controls playsinline></video>
+                    </div>
+                    <div class="media-info">
+                        <div>
+                            <span class="badge-type">Featured Presentation</span>
+                            <h3 style="margin-top: 12px;">CrownCare Pro: Keeping Clients Connected 24/7</h3>
+                            <p>Watch this detailed overview of CrownCare Pro. Learn how elite cosmetologists use the professional dashboard, automated client tracking, and porosity mapping to improve retention and generate recurring revenue between appointments.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIDEO 2: Client App Demo -->
+                <div class="media-card">
+                    <div class="video-container ratio-16-9">
+                        <iframe src="https://www.youtube-nocookie.com/embed/ci2_hxiST_A?modestbranding=1&rel=0" title="CrownCare App Demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="media-info">
+                        <div>
+                            <span class="badge-type">App Demo</span>
+                            <h3 style="margin-top: 12px;">CrownCare Client App & Visual Diary</h3>
+                            <p>A quick demonstration of how individual users track their hair diaries, snap progress photos, log daily moisture vs. protein routines, and coordinate their clinical journey with their stylist.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIDEO 3: Hair Loss Tracker Tour -->
+                <div class="media-card">
+                    <div class="video-container ratio-16-9">
+                        <iframe src="https://www.youtube-nocookie.com/embed/XEFddKyUZjc?modestbranding=1&rel=0" title="CrownCare Hair Loss Tracker" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="media-info">
+                        <div>
+                            <span class="badge-type">Feature Focus</span>
+                            <h3 style="margin-top: 12px;">Alopecia & Edges Growth Tracker Overview</h3>
+                            <p>Understand the science behind CrownCare's biological tracking. This overview shows how tracking follicle mapping, hair profiles (Types 1-4), and daily plates works to prevent breakage.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIDEO 4: Revised Introduction Video -->
+                <div class="media-card">
+                    <div class="video-container ratio-16-9">
+                        <video src="/CrownCare_Introduction_Revised_2.mp4" controls playsinline></video>
+                    </div>
+                    <div class="media-info">
+                        <div>
+                            <span class="badge-type">Welcome Video</span>
+                            <h3 style="margin-top: 12px;">CrownCare Introduction (Revised)</h3>
+                            <p>Watch the newly revised introductory video to CrownCare. Learn about the inspiration behind the platform, our holistic approach to hair wellness, and how we empower both clients and professionals.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIDEO 5: Pro Connected Intelligence -->
+                <div class="media-card">
+                    <div class="video-container ratio-16-9">
+                        <video src="/CrownCare_Pro__Connected_Intelligence_Beyond_the_Chair.mp4" controls playsinline></video>
+                    </div>
+                    <div class="media-info">
+                        <div>
+                            <span class="badge-type">Professional Guide</span>
+                            <h3 style="margin-top: 12px;">CrownCare Pro: Connected Intelligence</h3>
+                            <p>Discover how CrownCare Pro delivers connected intelligence beyond the salon chair. This video outlines our remote monitoring tools, custom home-care protocol pads, and business integration suites for stylists.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- MIDDLE CTA SECTION -->
+        <section class="section-padding" style="text-align: center; background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%); border-radius: 20px; border: 1px solid var(--border-color); margin: 20px 0;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--gold-primary); margin-bottom: 12px;">Become a CrownCare Founding Member</h3>
+                <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 24px;">Unlock 90 days free Pro access, custom stylist playbooks, and extended 30-day free trials for your clients.</p>
+                <a href="/founders.html" class="btn-launch" style="padding: 12px 30px; text-decoration: none; display: inline-block;">Verify Stylist Status & Join</a>
+            </div>
+        </section>
+
+        <!-- PODCAST SECTION -->
+        <section class="section-padding" style="background: rgba(255, 255, 255, 0.01); border-radius: 24px; padding: 40px; border: 1px solid var(--border-color); margin-top: 40px;">
+            <h2 class="section-title" style="border: none; margin-bottom: 20px;">CrownCare Audio Masterclass</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 32px; align-items: stretch;">
+                
+                <!-- Podcast Episode 1 -->
+                <div style="background: #12121a; border: 1px solid var(--border-color); border-radius: 20px; padding: 30px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px;">
+                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--gold-primary) 0%, #B8962E 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--navy-deep); font-weight: 800;">🎙️</div>
+                            <div>
+                                <span class="badge-type" style="margin-bottom: 4px; font-size: 0.65rem; padding: 2px 8px;">Episode 1</span>
+                                <h3 style="font-size: 1.15rem; font-weight: 600; margin: 0;">The Digital X-ray for Hair Care</h3>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;">
+                            A deep-dive audio masterclass exploring how CrownCare acts as a "Digital X-Ray" to eliminate trial-and-error in hair wellness. Learn how B2C features like label scanners, nutritional audits, and alignment-aligned visual diaries combine with B2B pro portals to build a connected hair-care ecosystem.
+                        </p>
+                    </div>
+                    <div>
+                        <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
+                            <span style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">⏱️ ~25 mins</span>
+                            <span style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">🎯 Stylists & Consumers</span>
+                        </div>
+                        <audio src="/The_Digital_X-ray_for_Hair_Care.m4a" controls style="width: 100%; border-radius: 99px; outline: none; filter: sepia(20%) saturate(70%) hue-rotate(340deg) invert(90%);"></audio>
+                    </div>
+                </div>
+
+                <!-- Podcast Episode 2 -->
+                <div style="background: #12121a; border: 1px solid var(--border-color); border-radius: 20px; padding: 30px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px;">
+                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--gold-primary) 0%, #B8962E 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--navy-deep); font-weight: 800;">🎙️</div>
+                            <div>
+                                <span class="badge-type" style="margin-bottom: 4px; font-size: 0.65rem; padding: 2px 8px;">Episode 2</span>
+                                <h3 style="font-size: 1.15rem; font-weight: 600; margin: 0;">AI Closes the Hair Care Gap</h3>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;">
+                            Uncover how CrownCare closes the "care gap" in the beauty industry. This episode reveals how AI-powered insights empower stylists with proactive client management and offer clients continuous, data-driven hair wellness to transform professional care.
+                        </p>
+                    </div>
+                    <div>
+                        <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
+                            <span style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">⏱️ ~27 mins</span>
+                            <span style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">🎯 Stylists & Consumers</span>
+                        </div>
+                        <audio src="/CrownCare_AI_closes_the_hair_care_gap.m4a" controls style="width: 100%; border-radius: 99px; outline: none; filter: sepia(20%) saturate(70%) hue-rotate(340deg) invert(90%);"></audio>
+                    </div>
+                </div>
+
+                <!-- Podcast Episode 3 -->
+                <div style="background: #12121a; border: 1px solid var(--border-color); border-radius: 20px; padding: 30px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px;">
+                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--gold-primary) 0%, #B8962E 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--navy-deep); font-weight: 800;">🎙️</div>
+                            <div>
+                                <span class="badge-type" style="margin-bottom: 4px; font-size: 0.65rem; padding: 2px 8px;">Episode 3</span>
+                                <h3 style="font-size: 1.15rem; font-weight: 600; margin: 0;">Tracking Hair Health Between Visits</h3>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;">
+                            Stylists lose nearly half their clients annually; CrownCare reveals why. This episode explores how its "connected hair journey intelligence" uses AI and personal data to bridge the gap between salon visits and at-home care, boosting client retention and ethically growing salon revenue.
+                        </p>
+                    </div>
+                    <div>
+                        <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
+                            <span style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">⏱️ ~26 mins</span>
+                            <span style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">🎯 Stylists & Consumers</span>
+                        </div>
+                        <audio src="/CrownCare_tracks_hair_health_between_visits.m4a" controls style="width: 100%; border-radius: 99px; outline: none; filter: sepia(20%) saturate(70%) hue-rotate(340deg) invert(90%);"></audio>
+                    </div>
+                </div>
+
+                <!-- Podcast Episode 4 -->
+                <div style="background: #12121a; border: 1px solid var(--border-color); border-radius: 20px; padding: 30px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px;">
+                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--gold-primary) 0%, #B8962E 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--navy-deep); font-weight: 800;">🎙️</div>
+                            <div>
+                                <span class="badge-type" style="margin-bottom: 4px; font-size: 0.65rem; padding: 2px 8px;">Episode 4</span>
+                                <h3 style="font-size: 1.15rem; font-weight: 600; margin: 0;">Ending the Type 4 Guessing Game</h3>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;">
+                            Tired of guessing what your hair needs? This episode dives into CrownCare, a smart platform revolutionizing textured hair care with AI and biometric tracking to transform frustrating hair journeys into confident, measurable progress.
+                        </p>
+                    </div>
+                    <div>
+                        <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
+                            <span style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">⏱️ ~25 mins</span>
+                            <span style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">🎯 Stylists & Consumers</span>
+                        </div>
+                        <audio src="/Ending_the_Type_4_hair_guessing_game.m4a" controls style="width: 100%; border-radius: 99px; outline: none; filter: sepia(20%) saturate(70%) hue-rotate(340deg) invert(90%);"></audio>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- AUDIO SECTION -->
+        <section class="section-padding">
+            <h2 class="section-title">Voice & Audio Companion (As Found in the App)</h2>
+            <div class="audio-player-showcase">
+                <div class="audio-grid">
+                    <div class="player-mockup">
+                        <div class="player-track-info">
+                            <h4>Empathetic Mirror Therapy</h4>
+                            <p>Stress Reduction Affirmations</p>
+                        </div>
+                        <div class="waveform-visualizer">
+                            <div class="wave-bar" style="height: 15px;"></div>
+                            <div class="wave-bar" style="height: 25px;"></div>
+                            <div class="wave-bar" style="height: 38px;"></div>
+                            <div class="wave-bar" style="height: 18px;"></div>
+                            <div class="wave-bar" style="height: 48px;"></div>
+                            <div class="wave-bar" style="height: 30px;"></div>
+                            <div class="wave-bar" style="height: 22px;"></div>
+                            <div class="wave-bar" style="height: 44px;"></div>
+                            <div class="wave-bar" style="height: 12px;"></div>
+                            <div class="wave-bar" style="height: 35px;"></div>
+                        </div>
+                        <div class="player-controls">
+                            <button class="player-btn">⏮</button>
+                            <button class="player-btn player-btn-play" onclick="alert('Audio playback is simulated here. This feature is active inside the CrownCare mobile app.')">▶</button>
+                            <button class="player-btn">⏭</button>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge-type">Mobile App Feature</span>
+                        <h3 style="margin-top: 16px; font-family: 'Playfair Display', serif; font-size: 1.5rem;">Acoustic Mirrors to Lower Cortisol</h3>
+                        <p style="margin-top: 12px;">Alopecia and shedding are strongly triggered by stress hormones. To address this biological link, CrownCare includes an audio component in the mobile app. The Voice Therapy Companion acts as an empathetic acoustic mirror to calm anxiety and lower cortisol levels that precede hair shedding cycles.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GUIDES SECTION -->
+        <section class="section-padding">
+            <h2 class="section-title">Guides & Playbooks</h2>
+            <div class="guides-list">
+                
+                <div class="guide-item">
+                    <div class="guide-text">
+                        <h4>Salon Strategy: Increase Ticket Prices by 25%</h4>
+                        <p>Our complete step-by-step masterclass on transition from simple styling services to certified clinical hair health consultation.</p>
+                    </div>
+                    <a href="/clinical_hair_guide.html" class="btn-guide-action">View Playbook <span>→</span></a>
+                </div>
+
+                <div class="guide-item">
+                    <div class="guide-text">
+                        <h4>Discover CrownCare Overview</h4>
+                        <p>Download the official introductory PDF playbook that outlines the CrownCare philosophy, ecosystem details, and strategy.</p>
+                    </div>
+                    <a href="/DISCOVER_CROWNCARE.pdf" download class="btn-guide-action">Download PDF <span>↓</span></a>
+                </div>
+
+                <div class="guide-item">
+                    <div class="guide-text">
+                        <h4>Why Stylists Adopt CrownCare Pro: The B2B Growth Blueprint</h4>
+                        <p>Read the comprehensive B2B growth framework detailing customer lifetime value, salon ROI, client retention rates, and onboarding models.</p>
+                    </div>
+                    <a href="/Why_Stylists_Adopt_CrownCare_Pro_The_B2B_Growth_Blueprint.pdf" download class="btn-guide-action">Download PDF <span>↓</span></a>
+                </div>
+
+            </div>
+        </section>
+        <!-- BOTTOM CTA SECTION -->
+        <section class="section-padding" style="text-align: center; background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%); border-top: 1px solid var(--border-color); margin-top: 40px;">
+            <div style="max-width: 600px; margin: 0 auto;">
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--gold-primary); margin-bottom: 12px;">Get Started with CrownCare Pro</h3>
+                <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 24px;">Submit your email to qualify for our B2B Stylist Partnership and claim your complimentary launch resources.</p>
+                <a href="/founders.html" class="btn-primary" style="background: linear-gradient(135deg, var(--gold-primary) 0%, #B8962E 100%); color: var(--navy-deep); font-weight: bold; padding: 12px 30px; border-radius: 99px; text-decoration: none; display: inline-block; box-shadow: 0 4px 15px rgba(212,175,55,0.35);">Verify Stylist Status & Join</a>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p style="margin-bottom: 16px;">&copy; 2026 CrownCare. All rights reserved.</p>
+            <div>
+                <a href="/home.html">Home</a> |
+                <a href="/privacy.html">Privacy</a> | 
+                <a href="/support.html">Support</a> |
+                <a href="/terms.html">Terms</a> |
+                <a href="/?reset=true" style="color: #f87171;">Sign Out / Reset App</a>
+            </div>
+            <p style="margin-top: 15px; font-size: 11px; color: var(--text-muted);">
+                Contact: <a href="mailto:crown@crowncare.net" style="margin: 0; color: var(--gold-primary);">crown@crowncare.net</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="/ai-assistant.js"></script>
+</body>
+</html>

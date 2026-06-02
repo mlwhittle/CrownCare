@@ -100,6 +100,32 @@ export default function StylistPortal() {
 
     const renderHub = () => (
         <div style={{ animation: 'fadeIn 0.2s ease-out' }}>
+            {/* Desktop Dashboard Link */}
+            <div className="card-glass" style={{ marginBottom: '1.5rem', padding: '16px', border: '2px solid var(--brand-500)', borderRadius: '16px' }}>
+                <h3 style={{ marginTop: 0, marginBottom: '8px', color: 'var(--brand-600)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <ExternalLink size={20} /> Your CrownCare Pro Desktop Dashboard
+                </h3>
+                <p style={{ fontSize: '0.9rem', lineHeight: '1.5', color: 'var(--text-secondary)', margin: '0 0 16px 0' }}>
+                    Your CrownCare Pro subscription includes access to the desktop stylist dashboard at <a href="https://pro.crowncare.net/" target="_blank" rel="noopener noreferrer">pro.crowncare.net</a>. Use it to manage connected clients, review progress photos, prepare aftercare protocols, send messages, schedule appointments, and guide care beyond the chair.
+                </p>
+                <button 
+                    className="btn btn-primary" 
+                    style={{ width: '100%', marginBottom: '16px' }}
+                    onClick={() => window.open('https://pro.crowncare.net/', '_blank')}
+                >
+                    Open Desktop Dashboard
+                </button>
+                <h4 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>How to connect clients:</h4>
+                <ol style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', paddingLeft: '20px', margin: 0, lineHeight: '1.5' }}>
+                    <li>Open your dashboard at pro.crowncare.net.</li>
+                    <li>Copy your stylist code.</li>
+                    <li>Give the code to your client.</li>
+                    <li>Your client enters the code in the CrownCare app.</li>
+                    <li>Your client approves sharing.</li>
+                    <li>Their hair journey appears in your dashboard.</li>
+                </ol>
+            </div>
+
             <div 
                 onClick={() => setShowInviteModal(true)}
                 style={{ background: 'var(--gold-light)', border: '1px solid var(--gold-primary)', borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(212, 175, 55, 0.15)' }}

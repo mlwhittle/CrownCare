@@ -157,7 +157,10 @@ export async function fetchLinkedClients(stylistCode) {
     
     try {
         const usersRef = collection(db, 'users');
-        const q = query(usersRef, where('referredBy_StylistId', '==', stylistCode.toUpperCase()));
+        const q = query(usersRef, 
+            where('stylistCode', '==', stylistCode.toUpperCase()),
+            where('consentStatus', '==', true)
+        );
         const snapshot = await getDocs(q);
         
         const clients = [];

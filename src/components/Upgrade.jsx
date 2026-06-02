@@ -13,12 +13,6 @@ export default function Upgrade({ onClose }) {
     const [isPurchaseLoading, setIsPurchaseLoading] = useState(false);
     const [isProductsLoading, setIsProductsLoading] = useState(true);
 
-    const STRIPE_LINKS = {
-        'Solo Client': 'https://buy.stripe.com/eVq3cwbJ5b8O7WzbQ2fUQ04',
-        'Connected Client': 'https://buy.stripe.com/14A8wQfZlgt8a4HdYafUQ05',
-        'Stylist Pro': 'https://buy.stripe.com/aFa00kcN97WCgt5g6ifUQ06',
-    };
-
     const REVENUECAT_PRODUCTS = {
         'Solo Client': 'crowncare_solo_monthly',
         'Connected Client': 'crowncare_connected_monthly',
@@ -83,11 +77,7 @@ export default function Upgrade({ onClose }) {
     };
 
     const handleSelectTier = async (tierName, price) => {
-        // Web / Android: open Stripe payment link
-        const stripeUrl = STRIPE_LINKS[tierName];
-        if (stripeUrl && !Capacitor.isNativePlatform()) {
-            window.open(stripeUrl, '_blank');
-        }
+        alert("Subscriptions are processed natively on the mobile App Store. Please download CrownCare on your phone to subscribe.");
         onClose();
     };
 
@@ -186,11 +176,10 @@ export default function Upgrade({ onClose }) {
                             $49.99<span style={{ fontSize: '1rem', color: 'var(--text-tertiary)', fontWeight: 400 }}>/mo</span>
                         </div>
                         <ul style={{ listStyle: 'none', padding: 0, margin: 0, flex: 1, marginBottom: 'var(--space-lg)' }}>
-                            <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)' }}><Users size={16} color="var(--gray-500)" /> Unlimited Client Roster</li>
-                            <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)' }}><Database size={16} color="var(--gray-500)" /> Client Management System</li>
-                            <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)' }}><Calendar size={16} color="var(--gray-500)" /> Appointment Calendar</li>
-                            <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)' }}><Check size={16} color="var(--gray-500)" /> Issue Clinical Protocols</li>
-                            <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)' }}><Check size={16} color="var(--gray-500)" /> <strong>Manage Client Connections</strong></li>
+                            <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)' }}><Database size={16} color="var(--gray-500)" /> Desktop dashboard at pro.crowncare.net</li>
+                            <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)' }}><Users size={16} color="var(--gray-500)" /> Connected clients & progress photos</li>
+                            <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)' }}><Stethoscope size={16} color="var(--gray-500)" /> Aftercare protocols & client follow-up</li>
+                            <li style={{ display: 'flex', gap: '8px', marginBottom: '8px', fontSize: 'var(--font-size-sm)' }}><Calendar size={16} color="var(--gray-500)" /> Appointment prep</li>
                         </ul>
                         <button className="btn btn-outline" style={{ width: '100%' }} onClick={() => handleSelectTier('Stylist Pro', '$49.99')}>
                             Select Plan
@@ -201,7 +190,7 @@ export default function Upgrade({ onClose }) {
 
                 <div className="upgrade-footer" style={{ textAlign: 'center', background: 'transparent', border: 'none', paddingTop: 0, paddingBottom: 'var(--space-md)' }}>
                     <p className="secure-badge" style={{ justifyContent: 'center', marginBottom: 'var(--space-md)' }}>
-                        <ShieldCheck size={14} /> Secure recurring billing
+                        <ShieldCheck size={14} /> Processed securely via App Store
                     </p>
                     <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>
                         <a href="https://crowncare.net/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-tertiary)', textDecoration: 'underline', cursor: 'pointer' }}>Privacy Policy</a>

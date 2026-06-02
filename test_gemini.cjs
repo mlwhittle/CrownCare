@@ -1,14 +1,14 @@
 const https = require('https');
 
 require('dotenv').config();
-const API_KEY = process.env.GEMINI_API_KEY; // Extracted from AIAssistantWidget.jsx
+const API_KEY = "REDACTED";
 const data = JSON.stringify({
   contents: [{ parts: [{ text: "Hello" }] }]
 });
 
 const options = {
   hostname: 'generativelanguage.googleapis.com',
-  path: `/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
+  path: `/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',

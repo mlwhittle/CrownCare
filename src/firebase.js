@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getFunctions } from "firebase/functions";
 
 const firebaseConfig = {
     apiKey: "***REMOVED***",
@@ -18,6 +19,7 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const functions = getFunctions(app);
 const googleProvider = new GoogleAuthProvider();
 
-export { app, analytics, db, auth, googleProvider, GoogleAuthProvider };
+export { app, analytics, db, auth, functions, googleProvider, GoogleAuthProvider };

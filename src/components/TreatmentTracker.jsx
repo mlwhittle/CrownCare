@@ -33,7 +33,7 @@ const SCALP_ACTIVES = [
 ];
 
 export default function TreatmentTracker({ openAI }) {
-    const { treatments, addTreatment, deleteTreatment, toggleTreatmentDone, setCustomEvaluationPrompt, stylistCode, setStylistCode, prescribedTreatments, stylistMessages, appointments, stylistContact, onboarding, isStylistAccount } = useApp();
+    const { treatments, addTreatment, deleteTreatment, toggleTreatmentDone, setCustomEvaluationPrompt, stylistCode, setStylistCode, prescribedTreatments, stylistMessages, appointments, stylistContact, onboarding, isStylistAccount, addProductScan } = useApp();
     const [tab, setTab] = useState('clinical');
     const [showAdd, setShowAdd] = useState(false);
     const [newType, setNewType] = useState('');
@@ -52,7 +52,11 @@ export default function TreatmentTracker({ openAI }) {
     const handleProductMatchScan = async () => {
         try {
             const image = await Camera.getPhoto({
-                quality: 60, allowEditing: false, resultType: CameraResultType.DataUrl, source: CameraSource.Prompt, width: 800
+                quality: 90,
+                allowEditing: true,
+                resultType: CameraResultType.DataUrl,
+                source: CameraSource.Prompt,
+                width: 1600
             });
             setMatchLoading(true);
             setMatchResult(null); // Clear previous
@@ -68,11 +72,21 @@ export default function TreatmentTracker({ openAI }) {
                 porosity: onboarding?.porosity || 'Unknown'
             };
 
-            const result = await matchProductLabelWithGemini(apiKey, image.dataUrl, profileMap);
+            const mimeType = image.format ? `image/${image.format}` : 'image/jpeg';
+            const result = await matchProductLabelWithGemini(apiKey, image.dataUrl, profileMap, mimeType);
             if (result && result.matchScore !== undefined) {
                 setMatchResult(result);
+                if (addProductScan) {
+                    addProductScan({
+                        productName: result.productName || 'Scanned Product',
+                        ingredients: result.ingredients || '',
+                        analysisResult: `${result.verdict || 'Compatibility Review'}: ${result.analysis || ''}`,
+                        matchScore: result.matchScore,
+                        readConfidence: result.readConfidence || 'partial'
+                    });
+                }
             } else {
-                alert("The AI couldn't read the ingredient label clearly. Please try again with better lighting.");
+                alert("The AI couldn't read enough of the ingredient label. Try again with the ingredients panel flat, close, and well lit, or enter the ingredients manually.");
             }
         } catch (error) {
             console.error("Match Scan Cancelled/Failed:", error);
@@ -224,6 +238,12 @@ export default function TreatmentTracker({ openAI }) {
                         </div>
                         
                         <div style={{ background: 'var(--bg-secondary)', padding: '12px', borderRadius: '8px', fontSize: '13px', lineHeight: 1.6, color: 'var(--text-secondary)' }}>
+                            {matchResult.productName && (
+                                <div style={{ marginBottom: '8px', fontWeight: 700, color: 'var(--text-primary)' }}>{matchResult.productName}</div>
+                            )}
+                            {matchResult.ingredients && (
+                                <div style={{ marginBottom: '8px' }}><strong>Ingredients read:</strong> {matchResult.ingredients}</div>
+                            )}
                             {matchResult.analysis}
                         </div>
                     </div>

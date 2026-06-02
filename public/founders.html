@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrownCare Pro — Founders Program Invitation</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --navy-deep: #001F3F;
+            --navy-medium: #003366;
+            --gold-primary: #D4AF37;
+            --gold-light: #F9F1D8;
+            --bg-light: #F8F9FA;
+            --text-white: #FFFFFF;
+            --text-muted: #E9ECEF;
+            --border-color: rgba(212, 175, 55, 0.2);
+            --shadow: 0 15px 35px rgba(0, 31, 63, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #001122 0%, #001F3F 100%);
+            color: var(--text-white);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid var(--border-color);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        /* Left Side: Value Proposition */
+        .promo-side {
+            padding: 40px;
+            display: flex;
+            flex-direction: center;
+            flex-direction: column;
+            justify-content: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            background: radial-gradient(circle at top left, rgba(212, 175, 55, 0.05), transparent 70%);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-primary);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            align-self: flex-start;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            color: #FFFFFF;
+        }
+
+        h1 span {
+            color: var(--gold-primary);
+        }
+
+        .pitch-text {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+        }
+
+        .benefit-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .benefit-icon {
+            color: var(--gold-primary);
+            font-weight: 900;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+        }
+
+        /* Right Side: Form Card */
+        .form-side {
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-header {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .form-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+            color: var(--gold-primary);
+        }
+
+        .form-header p {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            color: var(--text-white);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--gold-primary) 0%, #B8962E 100%);
+            color: var(--navy-deep);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(1px);
+        }
+
+        .disclaimer {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            text-align: center;
+            margin-top: 16px;
+            line-height: 1.4;
+        }
+
+        /* Success View */
+        .success-view {
+            display: none;
+            padding: 40px;
+            text-align: center;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .success-icon {
+            font-size: 48px;
+            color: var(--gold-primary);
+            margin-bottom: 20px;
+        }
+
+        .activation-box {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px dashed var(--gold-primary);
+            border-radius: 12px;
+            padding: 16px;
+            font-family: monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            margin: 20px 0;
+            letter-spacing: 2px;
+        }
+
+        .store-badge-wrap {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }        .store-badge {
+            height: 40px;
+            width: auto;
+            transition: transform 0.2s ease;
+        }
+
+        .store-badge:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .promo-side {
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="landing-container">
+        <!-- Left Side: Copy & Incentive -->
+        <div class="promo-side" id="promo-section">
+            <div class="badge">✦ Limited Cohort Invitation</div>
+            <h1>Claim Your <span>90-Day Free</span> Pro Stylist Partnership</h1>
+            <p class="pitch-text">
+                Join our exclusive 2026 Founders Program launch. Eliminate client breakage, boost retention, and unlock premium tools for your salon.
+            </p>
+            
+            <ul class="benefit-list">
+                <li class="benefit-item">
+                    <span class="benefit-icon">✓</span>
+                    <span><strong>90-Day Free Pro Access:</strong> Try the entire CrownCare app & desktop Pro Dashboard free (Standard price: $49.99/mo).</span>
+                </li>
+                <li class="benefit-item">
+                    <span class="benefit-icon">✓</span>
+                    <span><strong>30-Day Free Client Trials:</strong> Give every client you connect a full 30 days of free app tracking (Standard price: $29.99/mo).</span>
+                </li>
+                <li class="benefit-item">
+                    <span class="benefit-icon">✓</span>
+                    <span><strong>Follicle-First Business Guide (Free Gift):</strong> Submit your email to instantly receive our downloadable handbook: <em>"How to Increase Ticket Prices by 25% Using Clinical Hair & Porosity Tracking."</em></span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Right Side: Email Collector Form -->
+        <div class="form-side" id="form-section">
+            <div class="form-header">
+                <h2>Join the Program</h2>
+                <p>Verify your stylist status to claim your guide & activation code.</p>
+            </div>
+
+            <form id="founders-form">
+                <div class="form-group">
+                    <label class="form-label" for="stylist-name">Full Name</label>
+                    <input class="form-input" type="text" id="stylist-name" required placeholder="e.g. Sarah Jenkins">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="stylist-email">Email Address</label>
+                    <input class="form-input" type="email" id="stylist-email" required placeholder="e.g. sarah@salon.com">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="salon-name">Salon / Business Name</label>
+                    <input class="form-input" type="text" id="salon-name" required placeholder="e.g. Studio 54 Hair">
+                </div>
+
+                <button class="btn-submit" type="submit" id="submit-btn">
+                    Get Free Business Guide & Code
+                </button>
+            </form>
+
+            <p class="disclaimer">
+                By clicking above, you agree to receive the downloadable business guide and Founders launch updates. You may opt-out at any time.
+            </p>
+        </div>
+
+        <!-- Right Side: Success View (Displays after form submission) -->
+        <div class="success-view" id="success-section">
+            <div class="success-icon">✦</div>
+            <h2 style="font-family: 'Playfair Display', serif; font-size: 1.6rem; color: #FFFFFF; margin-bottom: 12px;">Welcome to the Family!</h2>
+            <p style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); line-height: 1.5; margin-bottom: 15px;">
+                Your exclusive guide **"How to Increase Ticket Prices by 25%"** is ready. Click below to view or print/save it as a PDF. Use the launch code below at the App Store/Google Play checkout to activate your 90-day auto-renewing trial.
+            </p>
+            
+            <a href="/clinical_hair_guide.html" target="_blank" style="display: inline-block; text-decoration: none; text-align: center; padding: 12px 20px; border-radius: 12px; background: linear-gradient(135deg, var(--gold-primary) 0%, #B8962E 100%); color: var(--navy-deep); font-weight: 700; font-size: 0.9rem; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);">
+                Open Free Business Guide
+            </a>
+
+            <div style="font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 10px;">
+                ENTER CODE AT NATIVE CHECKOUT:
+            </div>
+            <div class="activation-box" id="code-display" style="margin-top: 5px; margin-bottom: 20px;">
+                STYLIST-FOUNDERS
+            </div>
+
+            <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 16px; margin-bottom: 20px; text-align: left; width: 100%;">
+                <h3 style="font-size: 0.95rem; color: var(--gold-primary); margin-bottom: 6px; font-family: 'Playfair Display', serif;">Accessing Your Pro Dashboard</h3>
+                <p style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.8); line-height: 1.4; margin: 0;">
+                    Manage your client roster, review progress photos, and customize client aftercare regimens from your desktop computer:
+                    <a href="https://pro.crowncare.net" target="_blank" style="display: block; color: var(--gold-primary); font-weight: 700; text-decoration: underline; margin-top: 6px; font-size: 0.85rem;">
+                        pro.crowncare.net
+                    </a>
+                </p>
+            </div>
+
+            <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-bottom: 12px;">
+                Download the CrownCare mobile app to get started:
+            </p>
+
+            <div class="store-badge-wrap">
+                <a href="https://apps.apple.com/us/app/crowncare-ai/id6502206775" target="_blank">
+                    <img class="store-badge" src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="Download on the App Store">
+                </a>
+                <a href="https://play.google.com/store/apps/details?id=net.crowncare.app" target="_blank">
+                    <img class="store-badge" src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play">
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Firebase SDK CDN Integration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "***REMOVED***",
+            authDomain: "crowncare-116e4.firebaseapp.com",
+            projectId: "crowncare-116e4",
+            storageBucket: "crowncare-116e4.firebasestorage.app",
+            messagingSenderId: "368231456323",
+            appId: "1:368231456323:web:4b428e19de81766fb23ef6",
+            measurementId: "G-ZGR9CSDH9H"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const form = document.getElementById('founders-form');
+        const formSection = document.getElementById('form-section');
+        const successSection = document.getElementById('success-section');
+        const submitBtn = document.getElementById('submit-btn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Verifying Status...";
+
+            const name = document.getElementById('stylist-name').value;
+            const email = document.getElementById('stylist-email').value;
+            const salon = document.getElementById('salon-name').value;
+
+            try {
+                // Save lead to Firestore database
+                await addDoc(collection(db, 'founders_leads'), {
+                    name: name.trim(),
+                    email: email.trim().toLowerCase(),
+                    salon: salon.trim(),
+                    timestamp: new Date().toISOString(),
+                    status: 'interested',
+                    source: 'stylist-landing-page'
+                });
+
+                // Display success content and code
+                formSection.style.display = 'none';
+                successSection.style.display = 'flex';
+            } catch (error) {
+                console.error("Firestore Save Error:", error);
+                alert("Something went wrong saving your details. Please try again or contact support at crown@crowncare.net.");
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Get Free Business Guide & Code";
+            }
+        });
+    </script>
+</body>
+</html>

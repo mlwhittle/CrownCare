@@ -141,10 +141,17 @@ export const AppProvider = ({ children }) => {
     }, [isVIP]);
 
     const redeemVipCode = (code) => {
-        const validCodes = ['FAMILY-VIP', 'FOUNDERS-CLUB'];
+        const validCodes = ['FAMILY-VIP', 'FOUNDERS-CLUB', 'STYLIST-FOUNDERS'];
         if (code && validCodes.includes(code.trim().toUpperCase())) {
             setIsVIP(true);
             save('cc_vip', true);
+            
+            // If the code is STYLIST-FOUNDERS, auto-upgrade to Stylist Pro Mode
+            if (code.trim().toUpperCase() === 'STYLIST-FOUNDERS') {
+                setIsStylistAccount(true);
+                save('cc_is_stylist', true);
+            }
+            
             return true;
         }
         return false;

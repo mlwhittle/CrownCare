@@ -134,8 +134,8 @@ export default function Journal() {
                                             voices.find(v => v?.lang?.startsWith('en-US'));
                                             
                        if (premiumVoice) utterance.voice = premiumVoice;
-                       utterance.pitch = 1.05;
-                       utterance.rate = 0.98;
+                       utterance.pitch = 1.0;
+                       utterance.rate = 0.85;
                    } catch (e) {
                        console.error("Voice assignment error bypassed:", e);
                    }
