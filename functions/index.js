@@ -248,7 +248,7 @@ exports.generateEmpatheticResponse = gemini.generateEmpatheticResponse;
 exports.generateTikTokScripts = gemini.generateTikTokScripts;
 exports.generateSEOBlog = gemini.generateSEOBlog;
 exports.generateNewsletter = gemini.generateNewsletter;
-
+exports.marketingAssistantChat = gemini.marketingAssistantChat;
 // ==========================================
 // AUTO-NOTIFICATION FOR NEW FOUNDER LEADS
 // ==========================================
