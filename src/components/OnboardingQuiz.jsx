@@ -158,6 +158,7 @@ export default function OnboardingQuiz({ onComplete }) {
         currentTreatments: [],
     });
     const [acceptedTerms, setAcceptedTerms] = useState(false);
+    const [isStylistBlocked, setIsStylistBlocked] = useState(false);
 
     const STEPS = getSteps(answers.userType);
     const current = STEPS[step];
@@ -168,6 +169,10 @@ export default function OnboardingQuiz({ onComplete }) {
     };
 
     const handleChoice = (field, value) => {
+        if (field === 'userType' && value === 'stylist') {
+            setIsStylistBlocked(true);
+            return;
+        }
         setAnswers(prev => ({ ...prev, [field]: value }));
         setTimeout(handleNext, 300);
     };
@@ -198,6 +203,19 @@ export default function OnboardingQuiz({ onComplete }) {
     };
 
     const progress = ((step + 1) / STEPS.length) * 100;
+
+    if (isStylistBlocked) {
+        return (
+            <div className="auth-page" style={{ background: 'var(--bg-primary)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+                <div className="auth-card" style={{ maxWidth: '520px', width: '100%', textAlign: 'center', padding: '40px 20px' }}>
+                    <Crown size={48} style={{ color: 'var(--brand-primary)', margin: '0 auto 20px' }} />
+                    <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, fontSize: '1.1rem' }}>
+                        CrownCare Pro is a multi-platform business software. Professional stylist accounts must be set up and managed via our secure web terminal.
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="auth-page" style={{ background: 'var(--bg-primary)', minHeight: '100vh', overflowY: 'auto', padding: 'max(40px, env(safe-area-inset-top)) 20px max(80px, env(safe-area-inset-bottom)) 20px', display: 'flex', justifyContent: 'center' }}>

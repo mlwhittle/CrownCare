@@ -38,28 +38,24 @@ export default function Home({ setCurrentView, openAI }) {
             </div>
 
             {/* Founders Program Invitation Banner */}
-            <div className="card" style={{ 
-                marginBottom: '1.5rem', 
-                padding: '1.25rem', 
-                background: 'linear-gradient(135deg, rgba(0, 31, 63, 0.95), rgba(0, 51, 102, 0.9))', 
+            <div style={{ 
+                margin: '1.5rem 0', 
+                padding: '16px', 
+                background: 'linear-gradient(135deg, var(--navy-deep) 0%, #1a2a3a 100%)', 
                 color: '#FFFFFF',
                 border: '1px solid var(--gold-primary)', 
                 borderRadius: '20px', 
                 boxShadow: 'var(--shadow-md)',
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center',
-                cursor: 'pointer'
-            }} onClick={() => setCurrentView('founders-program')}>
+                alignItems: 'center'
+            }}>
                 <div style={{ flex: 1, paddingRight: '12px' }}>
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 8px', background: 'rgba(212, 175, 55, 0.2)', border: '1px solid var(--gold-primary)', borderRadius: '100px', color: 'var(--gold-primary)', fontWeight: 'bold', fontSize: '10px', marginBottom: '8px' }}>
-                        <Sparkles size={10} /> LIMITED OFFER
+                        <Sparkles size={10} /> SYSTEM UPDATE
                     </div>
-                    <h3 style={{ fontSize: '1.15rem', color: '#FFFFFF', margin: '0 0 4px 0', fontFamily: 'var(--font-serif)', fontWeight: 600 }}>CrownCare Founders Program</h3>
-                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255,255,255,0.8)' }}>Stylists get 90 Days Free / Clients get 30 Days Free. Click to join.</p>
-                </div>
-                <div style={{ background: 'var(--gradient-warm)', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifySelf: 'center', justifyContent: 'center' }}>
-                    <ArrowRight size={18} color="#FFFFFF" />
+                    <h3 style={{ fontSize: '1.15rem', color: '#FFFFFF', margin: '0 0 4px 0', fontFamily: 'var(--font-serif)', fontWeight: 600 }}>CrownCare Digital Workspace</h3>
+                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255,255,255,0.8)', lineHeight: 1.5 }}>CrownCare Digital Workspace. Ready to sync with your clients? Share your unique Stylist Code from your profile settings to link your dashboard.</p>
                 </div>
             </div>
 

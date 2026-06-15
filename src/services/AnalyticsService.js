@@ -92,29 +92,6 @@ class AnalyticsServiceImpl {
         this.logEvent('feature_view', properties);
     }
 
-    trackPaywallShown(location, tiersShown) {
-        this.logEvent('paywall_shown', { location, tiers_shown: tiersShown });
-    }
-
-    trackSubscriptionInitiated(tier, priceUsd, billingPeriod) {
-        this.logEvent('subscription_initiated', {
-            tier,
-            tier_price_usd: priceUsd,
-            billing_period: billingPeriod
-        });
-    }
-
-    trackSubscriptionCompleted(tier, priceUsd, billingPeriod, transactionId) {
-        this.logEvent('subscription_completed', {
-            tier,
-            tier_price_usd: priceUsd,
-            billing_period: billingPeriod,
-            transaction_id: transactionId,
-            converted_from_trial: false,
-            days_to_conversion: 0
-        });
-    }
-
     trackFeatureInteraction(featureName, action, success = true, errorMessage = null) {
         const properties = { feature_name: featureName, action, success };
         if (errorMessage) properties.error_message = errorMessage;

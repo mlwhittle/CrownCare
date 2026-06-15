@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Capacitor } from '@capacitor/core';
 import { App as CapacitorApp } from '@capacitor/app';
-import { Purchases } from '@revenuecat/purchases-capacitor';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from './components/Header';
 import Home from './components/Home';
@@ -13,7 +12,6 @@ import TreatmentTracker from './components/TreatmentTracker';
 import LifestyleRoutines from './components/LifestyleRoutines';
 import Settings from './components/Settings';
 import OnboardingQuiz from './components/OnboardingQuiz';
-import Paywall from './components/Paywall';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import DeleteAccount from './components/DeleteAccount';
 import Journal from './components/Journal';
@@ -25,49 +23,17 @@ import VisualDiary from './components/VisualDiary';
 import Menu from './components/Menu';
 import AuthModal from './components/AuthModal';
 import FoundersProgram from './components/FoundersProgram';
-import FoundersOffer from './components/FoundersOffer';
 import { Sparkles } from 'lucide-react';
 import { AnalyticsService } from './services/AnalyticsService';
 
 const MAIN_TABS = ['home', 'treatments', 'diary', 'nutrition', 'routines', 'stylist-portal', 'reports', 'settings'];
-const SUB_PAGES = ['journal', 'narrative', 'menu', 'results', 'privacy', 'delete-account', 'founders-program', 'founders-offer']; // Pages that don't slide back through tabs
+const SUB_PAGES = ['journal', 'narrative', 'menu', 'results', 'privacy', 'delete-account', 'founders-program']; // Pages that don't slide back through tabs
 
 function AppInner() {
     const { onboarding, completeOnboarding, isPremium, isTrialExpired, redeemVipCode, user, isStylistAccount, setIsStylistAccount } = useApp();
     const [showAuthModal, setShowAuthModal] = useState(true);
 
-    // Initialize RevenueCat for iOS and Android native payments
-    useEffect(() => {
-        const initRC = async () => {
-            if (!Capacitor.isNativePlatform()) return;
-            const platform = Capacitor.getPlatform();
-            if (platform !== 'ios' && platform !== 'android') return;
-            
-            try {
-                const rcKey = platform === 'ios' 
-                    ? import.meta.env.VITE_REVENUECAT_IOS_KEY 
-                    : import.meta.env.VITE_REVENUECAT_ANDROID_KEY;
-                
-                if (rcKey) {
-                    await Purchases.configure({ apiKey: rcKey });
-                } else {
-                    console.warn(`Missing VITE_REVENUECAT_${platform.toUpperCase()}_KEY in environment variables.`);
-                }
-            } catch (error) {
-                console.error("Failed to initialize RevenueCat:", error);
-            }
-        };
-        initRC();
-    }, []);
 
-    // Sync Firebase UID with RevenueCat
-    useEffect(() => {
-        if (user && user.uid && Capacitor.isNativePlatform()) {
-            Purchases.logIn({ appUserID: user.uid }).catch(err => {
-                console.error("Failed to log into RevenueCat:", err);
-            });
-        }
-    }, [user]);
 
     if (onboarding && !onboarding.userType) {
         localStorage.removeItem('cc_onboarding');
@@ -150,7 +116,7 @@ function AppInner() {
     // Redirect web visitors who are not logged in and have no onboarding to the marketing site
     useEffect(() => {
         if (!Capacitor.isNativePlatform()) {
-            const isProDomain = window.location.hostname.includes('pro');
+            const isProDomain = window.location.hostname.includes('pro') || window.location.hostname.includes('app');
             
             if (isProDomain) {
                 sessionStorage.setItem('cc_app_started', 'true');
@@ -174,10 +140,7 @@ function AppInner() {
         return <OnboardingQuiz onComplete={completeOnboarding} />;
     }
 
-    // 30-DAY FREE TRIAL LOGIC: Only strictly enforce the Paywall if their 30 days have mathematically expired.
-    if (!isPremium && isTrialExpired && !Capacitor.isNativePlatform()) {
-        return <Paywall onSubscribeSuccess={() => redeemVipCode('FAMILY-VIP')} />;
-    }
+
 
     const renderView = () => {
         switch (currentView) {
@@ -197,7 +160,6 @@ function AppInner() {
             case 'privacy': return <PrivacyPolicy setCurrentView={navigateTo} goBack={goBack} />;
             case 'delete-account': return <DeleteAccount setCurrentView={navigateTo} goBack={goBack} />;
             case 'founders-program': return <FoundersProgram setCurrentView={navigateTo} />;
-            case 'founders-offer': return <FoundersOffer setCurrentView={navigateTo} />;
             default: return <Home setCurrentView={navigateTo} openAI={() => setShowAI(true)} />;
         }
     };

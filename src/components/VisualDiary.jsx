@@ -5,7 +5,6 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import beforeImg from '../assets/images/before.png';
 import afterImg from '../assets/images/after.png';
 import diaryImg from '../assets/images/diary.png';
-import Paywall from './Paywall';
 import PWAGhostCamera from './PWAGhostCamera';
 import { loadApiKey, analyzeScalpPhotoWithGemini } from '../services/GeminiService';
 import './VisualDiary.css';
@@ -16,7 +15,6 @@ export default function VisualDiary({ setCurrentView, openAI }) {
     const { photos, addPhoto, updatePhoto, deletePhoto, isPremium, shareAuditWithStylist } = useApp();
     const [zone, setZone] = useState('All');
     const [showNextSteps, setShowNextSteps] = useState(false);
-    const [showUpgrade, setShowUpgrade] = useState(false);
     const [captured, setCaptured] = useState(null);
     const [photoZone, setPhotoZone] = useState('Part Line');
     const [notes, setNotes] = useState('');
@@ -355,7 +353,7 @@ export default function VisualDiary({ setCurrentView, openAI }) {
                         <button className="btn btn-secondary" onClick={() => { setShowNextSteps(false); setCurrentView('routines'); }} style={{ width: '100%', marginBottom: 'var(--space-sm)' }}>
                             <Moon size={18} /> Plan Night Routine
                         </button>
-                        <button className="btn" onClick={() => { setShowNextSteps(false); if (isPremium) { openAI(); } else { setShowUpgrade(true); } }} style={{ width: '100%', marginBottom: 'var(--space-md)', border: '1px solid var(--border-color)' }}>
+                        <button className="btn" onClick={() => { setShowNextSteps(false); openAI(); }} style={{ width: '100%', marginBottom: 'var(--space-md)', border: '1px solid var(--border-color)' }}>
                             <Sparkles size={18} /> Ask AI Coach
                         </button>
 
@@ -370,16 +368,7 @@ export default function VisualDiary({ setCurrentView, openAI }) {
                 </div>
             )}
 
-            {showUpgrade && (
-                <div className="ai-overlay" style={{ zIndex: 1000, overflowY: 'auto' }}>
-                    <div style={{ position: 'relative', width: '100%', maxWidth: '900px', margin: 'auto' }}>
-                        <button onClick={() => setShowUpgrade(false)} style={{ position: 'absolute', top: 16, right: 16, background: 'rgba(0,0,0,0.5)', border: 'none', color: 'white', cursor: 'pointer', width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
-                            <X size={18} />
-                        </button>
-                        <Paywall onSubscribeSuccess={() => { setShowUpgrade(false); openAI(); }} />
-                    </div>
-                </div>
-            )}
+
             
             {showGhostCamera && (
                 <PWAGhostCamera 

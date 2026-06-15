@@ -10,7 +10,6 @@ import settingsImg from '../assets/images/settings.png';
 import UserManual from './UserManual';
 import ScaleYourBusiness from './ScaleYourBusiness';
 import DeleteAccount from './DeleteAccount';
-import Upgrade from './Upgrade';
 import './Settings.css';
 
 export default function Settings({ setCurrentView }) {
@@ -18,9 +17,7 @@ export default function Settings({ setCurrentView }) {
     const [showManual, setShowManual] = useState(false);
     const [showScaleBusiness, setShowScaleBusiness] = useState(false);
     const [showDeleteAccount, setShowDeleteAccount] = useState(false);
-    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [isCanceling, setIsCanceling] = useState(false);
-    const [isUpgrading, setIsUpgrading] = useState(false);
     const [vipInput, setVipInput] = useState('');
     const [newStylistCode, setNewStylistCode] = useState('');
     const [pendingStylistCode, setPendingStylistCode] = useState(null);
@@ -34,26 +31,11 @@ export default function Settings({ setCurrentView }) {
         if (newVal) alert("Successfully linked Biometric tracking securely via local state.");
     };
 
-    const handleUpgrade = async () => {
-        alert("Subscriptions are processed natively on the App Store. Please download or open CrownCare on your mobile device to upgrade.");
-    };
-
-    const handleStylistUpgrade = async () => {
-        alert("Pro Stylist subscriptions are processed natively on the App Store. Please download or open CrownCare on your mobile device to upgrade.");
-    };
-
-    const handleConnectedTierUpgrade = async (pendingCode) => {
-        alert("Connected Client subscriptions are processed natively on the App Store. Please download or open CrownCare on your mobile device to upgrade.");
-    };
-
 
     if (showManual) {
         return <UserManual onClose={() => setShowManual(false)} />;
     }
 
-    if (showUpgradeModal) {
-        return <Upgrade onClose={() => setShowUpgradeModal(false)} />;
-    }
 
     if (showScaleBusiness) {
         return <ScaleYourBusiness onClose={() => setShowScaleBusiness(false)} />;
@@ -101,8 +83,9 @@ export default function Settings({ setCurrentView }) {
                             setIsTransferring(false);
                             alert(isTransferring ? 'Stylist updated successfully. Active Sponsor transferred.' : 'Successfully connected to Styling Portal! As a Lifetime VIP, your Stylist Connection is included for free.');
                         } else {
-                            handleConnectedTierUpgrade(pendingStylistCode);
+                            setStylistCode(pendingStylistCode);
                             setPendingStylistCode(null);
+                            alert('Successfully connected to Styling Portal!');
                         }
                     }}
                 >
@@ -197,34 +180,18 @@ export default function Settings({ setCurrentView }) {
                     </p>
 
                     <div style={{ marginTop: 'var(--space-lg)', borderTop: '1px solid var(--border-color)', paddingTop: 'var(--space-md)' }}>
-                        <button className="btn btn-primary" style={{ width: '100%', marginBottom: 'var(--space-md)' }} onClick={() => setShowUpgradeModal(true)}>
-                            <Zap size={16} /> Manage Subscriptions & Upgrades
-                        </button>
-                        
-                        <div style={{ borderTop: '1px dashed var(--border-color)', paddingTop: 'var(--space-md)', textAlign: 'center' }}>
-                            <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-primary)', marginBottom: '8px', fontWeight: 600 }}>Redeem Apple Store Offer Codes</p>
+                        <div style={{ paddingTop: 'var(--space-md)', textAlign: 'center' }}>
                             <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '10px', lineHeight: 1.4 }}>
-                                Redeem Apple subscription offer codes securely via the App Store. <br />
-                                <strong>Stylist Code:</strong> CrowncareFounders (90 days free) <br />
-                                <strong>Client Code:</strong> CrownFounders1 (30 days free)
+                                Have an Activation Code? Enter your web-generated promo or pilot validation code below to unlock premium workspace modules.
                             </p>
                             <button
                                 className="btn btn-outline"
                                 style={{ width: '100%', fontWeight: 600 }}
-                                onClick={async () => {
-                                    if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
-                                        try {
-                                            const { Purchases } = await import('@revenuecat/purchases-capacitor');
-                                            await Purchases.presentOfferCodeRedemptionSheet();
-                                        } catch (err) {
-                                            console.error(err);
-                                        }
-                                    } else {
-                                        window.open('https://apps.apple.com/redeem?ctx=offercodes&id=6502206775', '_blank');
-                                    }
+                                onClick={() => {
+                                    alert("Verify Web Code: No activation code entered.");
                                 }}
                             >
-                                Redeem on App Store
+                                Verify Web Code
                             </button>
                         </div>
                     </div>
@@ -331,11 +298,9 @@ export default function Settings({ setCurrentView }) {
                             />
                             <button
                                 className="btn btn-primary"
-                                disabled={isUpgrading}
                                 onClick={() => {
                                     if (!newStylistCode.trim()) return;
                                     const code = newStylistCode.trim().toUpperCase();
-                                    
                                     if (code === 'PRO-MODE') {
                                         setIsStylistAccount(true);
                                         setNewStylistCode('');
@@ -349,14 +314,12 @@ export default function Settings({ setCurrentView }) {
                                         return;
                                     }
 
-                                    // Normally we would check if they already have an active $29.99 connected tier subscription in standard logic.
-                                    if(confirm(`Connecting with a professional stylist requires an active CrownCare subscription.`)) {
-                                        setPendingStylistCode(code);
-                                        setNewStylistCode('');
-                                    }
+                                    // Bypass to connect stylist
+                                    setPendingStylistCode(code);
+                                    setNewStylistCode('');
                                 }}
                             >
-                                {isUpgrading ? 'Loading...' : 'Connect'}
+                                Connect
                             </button>
                         </div>
                     </div>
@@ -377,16 +340,13 @@ export default function Settings({ setCurrentView }) {
                     <div style={{ padding: 'var(--space-md)', background: 'var(--bg-primary)', borderRadius: 'var(--radius-lg)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-sm)' }}>
                             <span style={{ fontWeight: 600 }}>Stylist Web Portal</span>
-                            <span className="badge badge-primary">Active ($49.99/mo)</span>
+                            <span className="badge badge-primary">Active</span>
                         </div>
                         <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)', marginBottom: 'var(--space-sm)' }}>
                             You have full B2B access to the Stylist Hub, Client Roster, and Custom Protocol tools.
                         </p>
                         <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)', marginBottom: 'var(--space-sm)' }}>
                             Your CrownCare Pro dashboard lives at <a href="https://pro.crowncare.net/" target="_blank" rel="noopener noreferrer">https://pro.crowncare.net/</a>. Use it to manage connected clients, review their shared CrownCare app activity, and send care instructions.
-                        </p>
-                        <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)', marginBottom: 'var(--space-md)', fontStyle: 'italic' }}>
-                            Note: While you are in your 7-Day Free Trial, you will not be charged. However, your trial will automatically convert into to a paid subscription based on your decision to stay with the app. You can cancel at any time below.
                         </p>
 
                         <button 
@@ -404,14 +364,6 @@ export default function Settings({ setCurrentView }) {
                         >
                             <Briefcase size={16} /> B2B Features: How it Works
                         </button>
-
-                        <button 
-                            className="btn btn-outline" 
-                            style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                            onClick={() => setShowUpgradeModal(true)}
-                        >
-                            Manage Pro Subscriptions
-                        </button>
                     </div>
                 ) : (
                     <div style={{ padding: 'var(--space-md)', background: 'var(--bg-primary)', borderRadius: 'var(--radius-lg)' }}>
@@ -420,15 +372,8 @@ export default function Settings({ setCurrentView }) {
                             <span className="badge" style={{ background: 'var(--surface-color)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>Standard</span>
                         </div>
                         <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)', marginBottom: 'var(--space-lg)', lineHeight: 1.5 }}>
-                            Are you a professional stylist? Upgrade to unlock the exclusive B2B Stylist Portal, custom protocol designer, and client roster management.
+                            Are you a professional stylist? Upgrade to unlock the exclusive B2B Stylist Portal, custom protocol designer, and client roster management via our web portal.
                         </p>
-                        <button 
-                            className="btn btn-primary" 
-                            style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
-                            onClick={() => setShowUpgradeModal(true)}
-                        >
-                            <Crown size={18} /> Upgrade to Stylist Tier
-                        </button>
                     </div>
                 )}
             </div>

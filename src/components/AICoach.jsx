@@ -3,7 +3,6 @@ import { askGemini, loadApiKey, saveApiKey, loadSavedAnswers, persistSavedAnswer
 import { sendEscalationEmail } from '../services/EmailService';
 import { Sparkles, Send, X, Save, Trash2, MessageCircle, Key, ShieldCheck, Headset, Paperclip, Mic, User, Volume2, VolumeX } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import PremiumGate from './PremiumGate';
 import { Capacitor } from '@capacitor/core';
 import './AICoach.css';
 
@@ -149,22 +148,6 @@ export default function AICoach({ isOverlay, onClose }) {
              return;
         }
 
-        // --- 2. TIER 2 INTENT ROUTING (Business / Billing) ---
-        const billingRegex = /\b(billing|password|cancel|credit card|charge|subscription|refund|account)\b/;
-        if (billingRegex.test(lowerQ)) {
-             const isIOS = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
-             const portalMessage = isIOS 
-                 ? "To resolve issues regarding your subscription, please navigate to your Apple ID Settings on this device to manage or cancel subscriptions."
-                 : "To resolve issues regarding your subscription, please manage it through your app store settings.";
-
-             setChat(prev => [...prev, { 
-                role: 'ai', 
-                text: `${portalMessage} If you need a password reset, say 'reset password' and I will trigger a Firebase email.`, 
-                timestamp: new Date().toISOString() 
-             }]);
-             return;
-        }
-
         // --- 3. TIER 1 CLINICAL ROUTING (Gemini AI with Context) ---
         setLoading(true);
         try {
@@ -275,8 +258,7 @@ export default function AICoach({ isOverlay, onClose }) {
                     <p className="consent-footer">Your privacy and data security are our absolute priority.</p>
                 </div>
             ) : (
-                /* Main App Logic (only renders after consent) */
-                <PremiumGate featureName="AI Coach">
+                <>
                     {showSetup ? (
                         <div className="ai-setup">
                             <Sparkles size={36} style={{ color: 'var(--sky-500)', marginBottom: 'var(--space-md)' }} />
@@ -452,7 +434,7 @@ export default function AICoach({ isOverlay, onClose }) {
                             </form>
                         </>
                     )}
-                </PremiumGate>
+                </>
             )}
         </div>
     );

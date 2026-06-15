@@ -195,49 +195,11 @@ export const AppProvider = ({ children }) => {
                     consentStatus: load(STORAGE_KEYS.consentStatus, false) === true
                 }, { merge: true });
 
-                // STRIPE INTEGRATION: Listen for active apps subscriptions AND web bridge upgrades
-                let hasAppSubscription = false; // Stripe app subcollection
-                let hasWebSubscription = false;
-                let hasNativeAppSubscription = false;
-
-                const evaluatePremium = () => {
-                    const isUserVIP = load('cc_vip', false);
-                    if (isUserVIP || hasAppSubscription || hasWebSubscription || hasNativeAppSubscription || currentUser?.email === 'tester1@crowncare.net') {
-                        setIsPremium(true);
-                    } else {
-                        setIsPremium(false);
-                    }
-                };
-
-                const subsRef = collection(db, `customers/${currentUser.uid}/subscriptions`);
-                const q = query(subsRef, where('status', 'in', ['trialing', 'active']));
-                const unsubscribeSubs = onSnapshot(q, (snapshot) => {
-                    hasAppSubscription = !snapshot.empty;
-                    evaluatePremium();
-                }, (error) => {
-                    console.error("Subscription listener error:", error);
-                });
-
                 const unsubscribeUser = onSnapshot(userRef, (docSnap) => {
-                    const data = docSnap.data();
-                    
-                    if (data && !data.trialStartedAt) {
-                        // Natively stamp the exact ms they registered
-                        setDoc(userRef, { trialStartedAt: Date.now() }, { merge: true });
-                    }
-                    if (data && data.trialStartedAt) {
-                        // 30 Days mathematically evaluated for Cardless Free Trial
-                        const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
-                        setIsTrialExpired(Date.now() - data.trialStartedAt > THIRTY_DAYS_MS);
-                    }
-
-                    hasWebSubscription = data?.hasActiveWebSubscription === true;
-                    hasNativeAppSubscription = data?.hasActiveAppSubscription === true;
-                    evaluatePremium();
+                    setIsPremium(true); // Free utility app - all users have full access
                 });
 
                 return () => {
-                    unsubscribeSubs();
                     unsubscribeUser();
                 };
             } else {
