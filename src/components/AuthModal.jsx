@@ -27,37 +27,19 @@ export default function AuthModal({ onComplete, userName }) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
-    // Links the anonymous account to a real account — preserving all existing data
-    const linkAnonymousToEmail = async () => {
+    // Strictly Sign In (No Account Creation) to enforce external payments
+    const handleLoginWithEmail = async () => {
         if (!email || !password) return;
-        if (password.length < 6) { setError('Password must be at least 6 characters.'); return; }
 
         setIsLoading(true);
         setError('');
 
         try {
-            const currentUser = auth.currentUser;
-
-            if (currentUser?.isAnonymous) {
-                // Link anonymous account to email — data is preserved
-                const credential = EmailAuthProvider.credential(email, password);
-                await linkWithCredential(currentUser, credential);
-            } else {
-                // Create fresh account
-                await createUserWithEmailAndPassword(auth, email, password);
-            }
+            await signInWithEmailAndPassword(auth, email, password);
             onComplete();
         } catch (err) {
-            if (err.code === 'auth/email-already-in-use') {
-                // Account exists — sign them in instead
-                try {
-                    await signInWithEmailAndPassword(auth, email, password);
-                    onComplete();
-                } catch (signInErr) {
-                    setError('Incorrect password for that email. Please try again.');
-                }
-            } else if (err.code === 'auth/weak-password') {
-                setError('Password must be at least 6 characters.');
+            if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                setError('Invalid email or password. Please check your credentials or create an account on our website first.');
             } else if (err.code === 'auth/invalid-email') {
                 setError('Please enter a valid email address.');
             } else {
@@ -149,10 +131,10 @@ export default function AuthModal({ onComplete, userName }) {
                         fontSize: '1.4rem', fontWeight: 700, color: 'var(--brand-primary)',
                         fontFamily: 'var(--font-serif)', marginBottom: '8px'
                     }}>
-                        Secure Your Crown, {userName || 'Queen'}
+                        Welcome Back, {userName || 'Queen'}
                     </h2>
                     <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                        Create a free account to make sure your progress photos, treatments, and journal entries are always safe — even if you get a new phone.
+                        Log in to access your CrownCare workspace. Need an account? Please sign up on our website first.
                     </p>
                 </div>
 
@@ -176,7 +158,7 @@ export default function AuthModal({ onComplete, userName }) {
                                 <svg width="20" height="20" viewBox="0 0 24 24">
                                     <path fill="currentColor" d="M17.05 15.68c-.02 2.7 2.37 3.6 2.4 3.61-.02.16-.36 1.25-1.14 2.4-.68 1-1.4 2-2.47 2.03-1.05.02-1.4-.62-2.58-.62-1.2 0-1.6.6-2.6.64-1.07.03-1.88-1.08-2.55-2.07-1.4-2-2.73-5.65-1.3-8.1 7.1-1.2 1.6-1.92 2.5-1.92 3.6 0 1.02.6 1.6.64 1.2 0 2-.64 3.32-.64 1.13 0 1.83.5 2.27 1.13-2.04 1.2-1.74 3.9-.03 4.88zM15.4 6.94c.58-.7 1-1.7 8.9-2.67-.1-1.1-.55-2.05-1.13-2.75-.72-.82-1.74-1.38-2.65-1.4-.13 1.14.34 2.15.93 2.87z"/>
                                 </svg>
-                                {isLoading ? 'Connecting...' : 'Continue with Apple'}
+                                {isLoading ? 'Logging in...' : 'Log in with Apple'}
                             </button>
                         )}
 
@@ -198,7 +180,7 @@ export default function AuthModal({ onComplete, userName }) {
                                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                             </svg>
-                            {isLoading ? 'Connecting...' : 'Continue with Google'}
+                            {isLoading ? 'Logging in...' : 'Log in with Google'}
                         </button>
 
                         {/* Divider */}
@@ -219,23 +201,11 @@ export default function AuthModal({ onComplete, userName }) {
                                 color: 'white', transition: 'all 0.2s'
                             }}
                         >
-                            <Mail size={20} /> Continue with Email
-                        </button>
-
-                        {/* Skip */}
-                        <button
-                            onClick={skipForNow}
-                            style={{
-                                background: 'none', border: 'none', color: 'var(--text-tertiary)',
-                                fontSize: '13px', cursor: 'pointer', padding: '8px',
-                                textDecoration: 'underline', marginTop: '4px'
-                            }}
-                        >
-                            Skip for now (data may not survive reinstall)
+                            <Mail size={20} /> Log in with Email
                         </button>
 
                         {error && (
-                            <p style={{ color: 'var(--error)', fontSize: '13px', textAlign: 'center' }}>{error}</p>
+                            <p style={{ color: 'var(--error)', fontSize: '13px', textAlign: 'center', marginTop: '8px' }}>{error}</p>
                         )}
                     </div>
                 )}
@@ -296,7 +266,7 @@ export default function AuthModal({ onComplete, userName }) {
                         )}
 
                         <button
-                            onClick={linkAnonymousToEmail}
+                            onClick={handleLoginWithEmail}
                             disabled={isLoading || !email || !password}
                             style={{
                                 width: '100%', padding: '14px', borderRadius: '12px',
@@ -307,7 +277,7 @@ export default function AuthModal({ onComplete, userName }) {
                                 transition: 'all 0.2s'
                             }}
                         >
-                            {isLoading ? 'Securing your account...' : '🔒 Secure My Data'}
+                            {isLoading ? 'Logging in...' : 'Log In'}
                         </button>
 
                         <button
