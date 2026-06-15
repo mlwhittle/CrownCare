@@ -39,13 +39,11 @@ export default function Home({ setCurrentView, openAI }) {
 
             {/* Founders Program Invitation Banner */}
             <div style={{ 
-                margin: '1.5rem 0', 
-                padding: '16px', 
-                background: 'linear-gradient(135deg, var(--navy-deep) 0%, #1a2a3a 100%)', 
-                color: '#FFFFFF',
-                border: '1px solid var(--gold-primary)', 
-                borderRadius: '20px', 
-                boxShadow: 'var(--shadow-md)',
+                background: 'linear-gradient(135deg, var(--bg-primary) 0%, var(--surface-50) 100%)',
+                border: '1px solid var(--gold-300)',
+                borderRadius: '16px',
+                padding: '16px',
+                marginBottom: '20px',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center'
@@ -54,8 +52,8 @@ export default function Home({ setCurrentView, openAI }) {
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 8px', background: 'rgba(212, 175, 55, 0.2)', border: '1px solid var(--gold-primary)', borderRadius: '100px', color: 'var(--gold-primary)', fontWeight: 'bold', fontSize: '10px', marginBottom: '8px' }}>
                         <Sparkles size={10} /> SYSTEM UPDATE
                     </div>
-                    <h3 style={{ fontSize: '1.15rem', color: '#FFFFFF', margin: '0 0 4px 0', fontFamily: 'var(--font-serif)', fontWeight: 600 }}>CrownCare Digital Workspace</h3>
-                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255,255,255,0.8)', lineHeight: 1.5 }}>CrownCare Digital Workspace. Ready to sync with your clients? Share your unique Stylist Code from your profile settings to link your dashboard.</p>
+                    <h3 style={{ fontSize: '1.15rem', color: 'var(--text-900)', margin: '0 0 4px 0', fontFamily: 'var(--font-serif)', fontWeight: 600 }}>CrownCare Digital Workspace</h3>
+                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-700)', lineHeight: 1.5 }}>CrownCare Digital Workspace. Ready to sync with your clients? Share your unique Stylist Code from your profile settings to link your dashboard.</p>
                 </div>
             </div>
 
