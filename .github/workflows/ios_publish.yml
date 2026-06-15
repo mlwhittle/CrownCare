@@ -137,13 +137,10 @@ jobs:
               is_key_content_base64: true,
               in_house: false
             )
-            upload_to_app_store(
+            upload_to_testflight(
               ipa: ENV["IPA_PATH"],
               app_identifier: "com.crowncare.app",
-              skip_screenshots: true,
-              skip_metadata: true,
-              submit_for_review: false,
-              run_precheck_before_submit: false
+              skip_waiting_for_build_processing: true
             )
           end
           EOF
