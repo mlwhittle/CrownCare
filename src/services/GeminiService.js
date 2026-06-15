@@ -25,9 +25,16 @@ export async function validateApiKey(apiKey) {
 
 export async function askGemini(question, apiKey, userData = null) {
     try {
-        const askGeminiFn = httpsCallable(functions, 'askGemini');
-        const result = await askGeminiFn({ question, userData });
-        return result.data.response;
+        // Use direct fetch to bypass Firebase SDK httpsCallable hanging issues on Capacitor
+        const response = await fetch('https://us-central1-crowncare-116e4.cloudfunctions.net/askGemini', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ data: { question, userData } })
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const result = await response.json();
+        if (result.error) throw new Error(result.error.message);
+        return result.result.response;
     } catch (error) {
         console.error("Gemini Backend Proxy Error:", error);
         throw new Error('API_ERROR');
