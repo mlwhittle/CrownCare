@@ -1,0 +1,1608 @@
+--- src/App.jsx ---
+import React, { useState, useEffect } from 'react';
+import { AppProvider, useApp } from './context/AppContext';
+import { Capacitor } from '@capacitor/core';
+import { App as CapacitorApp } from '@capacitor/app';
+import { Purchases } from '@revenuecat/purchases-capacitor';
+import { motion, AnimatePresence } from 'framer-motion';
+import Header from './components/Header';
+import Home from './components/Home';
+import Dashboard from './components/Dashboard';
+import AICoach from './components/AICoach';
+import NutritionPlanner from './components/NutritionPlanner';
+import TreatmentTracker from './components/TreatmentTracker';
+import LifestyleRoutines from './components/LifestyleRoutines';
+import Settings from './components/Settings';
+import OnboardingQuiz from './components/OnboardingQuiz';
+import Paywall from './components/Paywall';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import DeleteAccount from './components/DeleteAccount';
+import Journal from './components/Journal';
+import RealResults from './components/RealResults';
+import Reports from './components/Reports';
+import MonthlyNarrative from './components/MonthlyNarrative';
+import StylistPortal from './components/StylistPortal';
+import VisualDiary from './components/VisualDiary';
+import Menu from './components/Menu';
+import AuthModal from './components/AuthModal';
+import FoundersProgram from './components/FoundersProgram';
+import FoundersOffer from './components/FoundersOffer';
+import { Sparkles } from 'lucide-react';
+import { AnalyticsService } from './services/AnalyticsService';
+
+const MAIN_TABS = ['home', 'treatments', 'diary', 'nutrition', 'routines', 'stylist-portal', 'reports', 'settings'];
+const SUB_PAGES = ['journal', 'narrative', 'menu', 'results', 'privacy', 'delete-account', 'founders-program', 'founders-offer']; // Pages that don't slide back through tabs
+
+function AppInner() {
+    const { onboarding, completeOnboarding, isPremium, isTrialExpired, redeemVipCode, user, isStylistAccount, setIsStylistAccount } = useApp();
+    const [showAuthModal, setShowAuthModal] = useState(true);
+
+    // Initialize RevenueCat for iOS and Android native payments
+    useEffect(() => {
+        const initRC = async () => {
+            if (!Capacitor.isNativePlatform()) return;
+            const platform = Capacitor.getPlatform();
+            if (platform !== 'ios' && platform !== 'android') return;
+            
+            try {
+                const rcKey = platform === 'ios' 
+                    ? import.meta.env.VITE_REVENUECAT_IOS_KEY 
+                    : import.meta.env.VITE_REVENUECAT_ANDROID_KEY;
+                
+                if (rcKey) {
+                    await Purchases.configure({ apiKey: rcKey });
+                } else {
+                    console.warn(`Missing VITE_REVENUECAT_${platform.toUpperCase()}_KEY in environment variables.`);
+                }
+            } catch (error) {
+                console.error("Failed to initialize RevenueCat:", error);
+            }
+        };
+        initRC();
+    }, []);
+
+    // Sync Firebase UID with RevenueCat
+    useEffect(() => {
+        if (user && user.uid && Capacitor.isNativePlatform()) {
+            Purchases.logIn({ appUserID: user.uid }).catch(err => {
+                console.error("Failed to log into RevenueCat:", err);
+            });
+        }
+    }, [user]);
+
+    if (onboarding && !onboarding.userType) {
+        localStorage.removeItem('cc_onboarding');
+        localStorage.removeItem('cc_vip');
+        window.location.reload();
+    }
+
+    // Analytics Init & App Open Tracking
+    useEffect(() => {
+        if (user && user.uid) {
+            AnalyticsService.setIdentifiedUserId(user.uid);
+        }
+    }, [user]);
+
+    useEffect(() => {
+        AnalyticsService.trackAppOpen();
+    }, []);
+
+    if (window.location.search.includes('reset=true')) {
+        localStorage.clear();
+        window.location.href = '/';
+        return null;
+    }
+
+    const [currentView, setCurrentView] = useState('home');
+    const [showAI, setShowAI] = useState(false);
+    const [direction, setDirection] = useState(0); // 1 for right-to-left, -1 for left-to-right
+
+    // Keep track of navigation history for back button support
+    const [navHistory, setNavHistory] = useState(['home']);
+
+    // Wrapper for setCurrentView that calculates animation direction
+    const navigateTo = (newView) => {
+        if (newView === currentView) return;
+        const currentIndex = MAIN_TABS.indexOf(currentView);
+        const newIndex = MAIN_TABS.indexOf(newView);
+
+        // If both are in the main tab array, calculate direction
+        if (currentIndex !== -1 && newIndex !== -1) {
+            setDirection(newIndex > currentIndex ? 1 : -1);
+        } else {
+            setDirection(0); // Fade instead of slide for sub-pages
+        }
+        setCurrentView(newView);
+        setNavHistory([...navHistory, newView]);
+        AnalyticsService.trackFeatureView(newView);
+    };
+
+    // Go back to previous view
+    const goBack = () => {
+        if (navHistory.length > 1) {
+            const newHistory = navHistory.slice(0, -1);
+            setNavHistory(newHistory);
+            setCurrentView(newHistory[newHistory.length - 1]);
+            setDirection(-1); // Animate backwards
+        }
+    };
+
+    useEffect(() => {
+        const setupHardwareBackButton = async () => {
+            if (Capacitor.isNativePlatform()) {
+                await CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+                    if (navHistory.length > 1) {
+                        goBack();
+                    } else {
+                        CapacitorApp.exitApp();
+                    }
+                });
+            }
+        };
+        setupHardwareBackButton();
+        
+        return () => {
+            if (Capacitor.isNativePlatform()) {
+                CapacitorApp.removeAllListeners();
+            }
+        };
+    }, [navHistory]);
+
+    // Redirect web visitors who are not logged in and have no onboarding to the marketing site
+    useEffect(() => {
+        if (!Capacitor.isNativePlatform()) {
+            const isProDomain = window.location.hostname.includes('pro');
+            
+            if (isProDomain) {
+                sessionStorage.setItem('cc_app_started', 'true');
+            }
+
+            const hasStartedApp = window.location.search.includes('start=true') || sessionStorage.getItem('cc_app_started');
+            
+            if (window.location.search.includes('start=true')) {
+                sessionStorage.setItem('cc_app_started', 'true');
+            }
+            
+            // Redirect web visitors who have no onboarding to the marketing site
+            if (!hasStartedApp && !onboarding) {
+                window.location.href = '/home.html';
+            }
+        }
+    }, [onboarding]);
+
+    // If no onboarding and not a stylist, show quiz
+    if (!onboarding && !isStylistAccount) {
+        return <OnboardingQuiz onComplete={completeOnboarding} />;
+    }
+
+    // 30-DAY FREE TRIAL LOGIC: Only strictly enforce the Paywall if their 30 days have mathematically expired.
+    if (!isPremium && isTrialExpired && !Capacitor.isNativePlatform()) {
+        return <Paywall onSubscribeSuccess={() => redeemVipCode('FAMILY-VIP')} />;
+    }
+
+    const renderView = () => {
+        switch (currentView) {
+            case 'home': return <Home setCurrentView={navigateTo} openAI={() => setShowAI(true)} />;
+            case 'dashboard': return <Dashboard setCurrentView={navigateTo} openAI={() => setShowAI(true)} />;
+            case 'diary': return <VisualDiary setCurrentView={navigateTo} openAI={() => setShowAI(true)} />;
+            case 'nutrition': return <NutritionPlanner />;
+            case 'treatments': return <TreatmentTracker openAI={() => setShowAI(true)} />;
+            case 'routines': return <LifestyleRoutines />;
+            case 'settings': return <Settings setCurrentView={navigateTo} goBack={goBack} />;
+            case 'menu': return <Menu setCurrentView={navigateTo} goBack={goBack} />;
+            case 'journal': return <Journal setCurrentView={navigateTo} goBack={goBack} />;
+            case 'reports': return <Reports setCurrentView={navigateTo} />;
+            case 'narrative': return <MonthlyNarrative setCurrentView={navigateTo} goBack={goBack} />;
+            case 'results': return <RealResults setCurrentView={navigateTo} goBack={goBack} />;
+            case 'stylist-portal': return <StylistPortal setCurrentView={navigateTo} goBack={goBack} />;
+            case 'privacy': return <PrivacyPolicy setCurrentView={navigateTo} goBack={goBack} />;
+            case 'delete-account': return <DeleteAccount setCurrentView={navigateTo} goBack={goBack} />;
+            case 'founders-program': return <FoundersProgram setCurrentView={navigateTo} />;
+            case 'founders-offer': return <FoundersOffer setCurrentView={navigateTo} />;
+            default: return <Home setCurrentView={navigateTo} openAI={() => setShowAI(true)} />;
+        }
+    };
+
+    // --- SWIPE GESTURE DETECTOR --- 
+    let touchStartX = 0;
+    let touchStartY = 0;
+    
+    const handleTouchStart = (e) => {
+        // Ignore swipe if they are interacting with an inner horizontal scroll area (like treatment rows)
+        if (e.target.closest('.scroll-container') || e.target.closest('input') || e.target.closest('button')) return;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = (e) => {
+        if (!touchStartX) return;
+        const touchEndX = e.changedTouches[0].clientX;
+        const touchEndY = e.changedTouches[0].clientY;
+        const deltaX = touchStartX - touchEndX;
+        const deltaY = touchStartY - touchEndY;
+
+        // If it's a pronounced horizontal swipe and NOT a vertical scroll
+        if (Math.abs(deltaX) > 60 && Math.abs(deltaY) < 40) {
+            const currentIndex = MAIN_TABS.indexOf(currentView);
+            const isMainTab = currentIndex !== -1;
+
+            if (deltaX < 0) {
+                // Apple Native Paradigm: Right swipe ALWAYS pops the history stack
+                goBack();
+            } else if (deltaX > 0 && isMainTab && currentIndex < MAIN_TABS.length - 1) {
+                // Swiped Left on a main tab -> Go to next tab
+                navigateTo(MAIN_TABS[currentIndex + 1]);
+            }
+        }
+        touchStartX = 0;
+    };
+
+    return (
+        <div className="app" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+            {user && user.isAnonymous === true && showAuthModal && (
+                <AuthModal onComplete={() => setShowAuthModal(false)} userName={onboarding?.name} />
+            )}
+            <Header currentView={currentView} setCurrentView={navigateTo} openAI={() => setShowAI(true)} />
+            <main className="main-content" style={{ position: 'relative', overflowX: 'hidden' }}>
+                <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                        key={currentView}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        style={{ width: '100%', height: '100%' }}
+                    >
+                        {renderView()}
+                    </motion.div>
+                </AnimatePresence>
+            </main>
+
+            {/* AI Overlay */}
+            {showAI && (
+                <AICoach isOverlay onClose={() => setShowAI(false)} />
+            )}
+
+            <footer className="footer" style={{ padding: 'var(--space-md) var(--space-xl)', paddingBottom: '100px', textAlign: 'center', color: 'var(--text-tertiary)', fontSize: 'var(--font-size-xs)' }}>
+                <p style={{ fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px' }}>CrownCare v1.0.0 — Your holistic alopecia and edge regrowth tracker</p>
+                <p>
+                    <strong>Medical Disclaimer:</strong> We are not giving medical advice. Users of this site must talk to their doctor or a hair care professional before starting any treatment.
+                </p>
+                <div style={{ marginTop: '16px' }}>
+                    <button
+                        onClick={() => setCurrentView('privacy')}
+                        style={{ background: 'none', border: 'none', color: 'var(--primary)', textDecoration: 'underline', cursor: 'pointer', fontSize: 'var(--font-size-xs)' }}
+                    >
+                        Privacy Policy
+                    </button>
+                </div>
+            </footer>
+        </div>
+    );
+}
+
+export default function App() {
+    return (
+        <AppProvider>
+            <AppInner />
+        </AppProvider>
+    );
+}
+
+
+--- functions/gemini.js ---
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const logger = require("firebase-functions/logger");
+
+// Helper to initialize Gemini with the API key from the environment
+function getGeminiModel() {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+        throw new HttpsError("failed-precondition", "Gemini API key is not configured on the server.");
+    }
+    const genAI = new GoogleGenerativeAI(apiKey);
+    return genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+}
+
+function stripDataUrl(base64Image = "") {
+    return String(base64Image).replace(/^data:[^;]+;base64,/, "");
+}
+
+function parseJsonObject(text) {
+    const raw = String(text || "").trim()
+        .replace(/^```json\s*/i, "")
+        .replace(/^```\s*/i, "")
+        .replace(/\s*```$/i, "")
+        .trim();
+
+    try {
+        return JSON.parse(raw);
+    } catch {
+        const start = raw.indexOf("{");
+        const end = raw.lastIndexOf("}");
+        if (start >= 0 && end > start) {
+            return JSON.parse(raw.slice(start, end + 1));
+        }
+        throw new Error("Gemini response was not valid JSON.");
+    }
+}
+
+const SYSTEM_PROMPT = `You are a world-class trichologist and hair science expert AI assistant inside the CrownCare app, specifically designed to help women experiencing hair thinning and hair loss.
+
+YOUR EXPERTISE COVERS:
+
+1. HAIR GROWTH CYCLE — Explain the 4 phases in detail:
+   - Anagen (Growth phase): Active growth lasting 2-7 years. 85-90% of hair is in this phase. This is when treatments like minoxidil work by extending this phase.
+   - Catagen (Regression phase): 2-3 week transition where the follicle shrinks and detaches from blood supply.
+   - Telogen (Resting phase): 3-4 month rest period. The old hair remains in place but is no longer growing.
+   - Exogen (Shedding phase): The old hair falls out, making way for new anagen hair. Normal shedding is 50-100 hairs/day.
+
+2. MYTH-BUSTING — Always correct these misconceptions:
+   - Cutting hair does NOT make it grow faster (hair grows from the follicle, not the ends)
+   - Frequent shampooing does NOT cause hair loss (clean scalp is actually healthier)
+   - Hats do NOT cause hair loss (unless extremely tight causing traction)
+   - Hair loss is NOT only genetic — stress, nutrition, hormones all play roles
+   - Brushing 100 strokes is a MYTH — over-brushing causes breakage
+
+3. TREATMENT COMPARISONS — Provide nuanced, evidence-based answers:
+   - Rosemary Essential Oil: A 2015 clinical trial showed 6 months of twice-daily pure rosemary essential oil was as effective as 2% Minoxidil for androgenetic alopecia, though Minoxidil has decades more research behind it.
+   - Minoxidil: FDA-approved, well-researched. Available in 2% and 5%. Must be used consistently.
+   - PRP (Platelet-Rich Plasma): Growth factors from patient's own blood injected into scalp. Promising but expensive.
+   - Microneedling: Stimulates stem cells and growth factors. Often combined with topical treatments for enhanced absorption.
+   - Low-Level Laser Therapy: FDA-cleared, moderate evidence for increased hair density.
+
+4. SCALP MICROBIOME EDUCATION:
+   - The scalp hosts various bacteria and fungi that maintain scalp health
+   - Malassezia fungus overgrowth causes dandruff and seborrheic dermatitis
+   - Harsh antibacterial products can disrupt the scalp microbiome balance
+   - A healthy scalp microbiome supports optimal hair growth
+   - Gentle, pH-balanced products preserve the microbiome
+
+5. PROPER INGREDIENT USAGE — Teach correct application:
+   - Chebe Powder: Traditional Chadian ingredient. Apply ONLY to the hair shaft to prevent breakage and lock in moisture. NEVER apply directly to the scalp as it can clog follicles.
+   - Fermented Rice Water: Contains inositol which improves hair elasticity and reduces friction. Use as a rinse, not a leave-in for extended periods.
+   - Hot Oil Treatments: Sesame, coconut, or castor oil heated gently — apply for 30-45 minutes, not overnight.
+   - Essential Oils: Always dilute in a carrier oil. Tea tree, peppermint, and rosemary are common for scalp health.
+
+6. DHT AND HORMONAL HAIR LOSS:
+   - DHT (Dihydrotestosterone) causes follicle miniaturization in androgenetic alopecia
+   - Natural DHT inhibitors: Green tea (EGCG), pumpkin seed oil, saw palmetto
+   - Foods high in quercetin (onions), curcumin (turmeric), and phytoestrogens (edamame, flaxseed)
+   - Post-partum hair loss is normal (telogen effluvium) and typically resolves in 6-12 months
+   - PCOS-related hair loss requires medical treatment
+
+7. NUTRITION FOR HAIR:
+   - Protein: Hair is 95% keratin — adequate protein is essential (0.8-1g per kg bodyweight)
+   - Iron: Ferritin levels below 40 ng/mL associated with hair shedding
+   - Vitamin D: Deficiency linked to alopecia areata
+   - Zinc: Critical for hair tissue repair
+   - Omega-3: Supports scalp health, reduces inflammation
+   - Vitamin C: Enhances iron absorption
+   - WARNING: Excessive Biotin supplementation can falsely alter lab tests, especially thyroid panels
+
+8. THE CROWNCARE B2B STYLIST PORTAL:
+   - CrownCare syncs patient data directly to their Master Stylist's B2B Dashboard.
+   - If a user connects to their Stylist inside the app, the Stylist can actively view: 1) Weekly Scalp Photos, 2) Daily Hair Treatments (oils, serums), 3) Daily Nutrition Macros, and 4) Journal Clinical Triggers (stress, hormones).
+   - Stylists use this live 'X-Ray Vision' data to proactively prescribe better salon products and instantly book timely appointments.
+
+RULES:
+- Be warm, empowering, and encouraging — many women feel anxious about hair loss
+- Always provide evidence-based information
+- NEVER diagnose medical conditions — always recommend consulting a dermatologist or trichologist for serious concerns
+- Keep answers clear and concise (under 300 words unless detail is requested)
+- Use inclusive, body-positive language
+- If asked about unrelated topics, gently redirect to hair/scalp/wellness
+- Acknowledge emotional aspects of hair loss — it affects self-esteem and mental health`;
+
+exports.askGemini = onCall(async (request) => {
+    try {
+        const { question, userData } = request.data;
+        const model = getGeminiModel();
+        
+        let contextPrompt = SYSTEM_PROMPT;
+        if (userData) {
+            contextPrompt += `
+
+--- CURRENT USER CONTEXT & CLINICAL DATA ---
+Please personalize your response based on the following user data if relevant to their question:
+- Tracking Days: ${userData.days}
+- Current Streak: ${userData.streak}
+- Total Photos: ${userData.photos}
+- Recent Treatments Logged: ${userData.recentTreatments || 'None'}
+- Recent Nutrition Logged: ${userData.recentNutrition ? 'Yes' : 'No'}`;
+        }
+
+        const result = await model.generateContent(`${contextPrompt}\n\n--- USER QUESTION ---\n${question}`);
+        return { response: result.response.text() };
+    } catch (error) {
+        logger.error("askGemini Error", error);
+        throw new HttpsError('internal', 'AI generation failed', error.message);
+    }
+});
+
+exports.generateMonthlyNarrative = onCall(async (request) => {
+    try {
+        const { userData } = request.data;
+        const model = getGeminiModel();
+        
+        const narrativePrompt = `
+You are CrownCare's Lead Dermatologist and Trichologist AI.
+Your task is to write a highly encouraging, premium, "Clinical Scalp Therapy Report" for the user.
+Keep it to 2-3 short, powerful paragraphs. 
+CRITICAL: You must use advanced "Skincare Capilar" terminology like "Scalp Detox", "Microbiome Rebalancing", "Follicle Nutrition", "Skin Barrier", and "Trans-Epidermal Water Loss". Address their scalp as an extension of their facial skin.
+
+USER DATA OVER THE LAST 30 DAYS:
+- Name: ${userData.name}
+- Total Days Tracked: ${userData.days} (Consistency Score: ${userData.score} / 100)
+- Recent Actives & Serums Used: ${userData.recentActives || 'None'}
+- Self-Reported Scalp Condition: ${userData.latestDiagnostics} (Rated 1-5, where Oil/Hydration 3 is balanced, Flakes 1 is clear)
+- Nutrition Logs: ${userData.nutritionCount} days
+- AI Scalp Audit (Density/Breakage Scan): ${userData.latestScanResult || 'No scans performed yet'}
+
+INSTRUCTIONS:
+1. Analyze their use of Actives/Serums and correlate it directly to their self-reported Scalp Condition metrics. Praise their dedication to their scalp microbiome.
+2. If an AI Scalp Audit was performed, comment clinically on the density and breakage results observed in the scan. Specifically mention how their *nutrition* and *scalp actives* are supporting these visual results.
+3. End with a "Legacy Milestone Prediction" in this exact format: "At your current rate of follicular health, you are on track to reach your Goal Length with optimal density by [Realistic Future Date, e.g., December 2026]."
+`;
+        const result = await model.generateContent([narrativePrompt]);
+        return { response: result.response.text() };
+    } catch (error) {
+        logger.error("generateMonthlyNarrative Error", error);
+        return { response: "Melvin, your data suggests a strong foundation. Keep up your hydration protocols and we project you will hit your Goal Length by December 2026. (AI Generation Timeout)" };
+    }
+});
+
+exports.scanIngredientsWithGemini = onCall(async (request) => {
+    try {
+        const { base64Image, mimeType = 'image/jpeg' } = request.data;
+        const model = getGeminiModel();
+        
+        const prompt = `
+        Analyze this image of a hair product's ingredient label. 
+        Read any visible text carefully, even if the label is curved or only partly visible.
+        Extract the active, notable, and clearly legible ingredients from the product.
+        Format the output as a clean, comma-separated list without any conversational filler, introductory text, or markdown formatting (like asterisks or bullet points). 
+        If only some ingredients are readable, return the partial list and append "partial label read".
+        Only return "Could not read ingredients" when there is no readable ingredient text at all.
+        `;
+
+        const imagePart = {
+            inlineData: {
+                data: stripDataUrl(base64Image),
+                mimeType
+            }
+        };
+
+        const result = await model.generateContent([prompt, imagePart]);
+        return { response: result.response.text().replace(/\n/g, ' ').trim() };
+    } catch (error) {
+        logger.error("scanIngredientsWithGemini Error", error);
+        return { response: "Could not read ingredients — please enter manually" };
+    }
+});
+
+exports.matchProductLabelWithGemini = onCall(async (request) => {
+    try {
+        const { base64Image, userProfileMap, mimeType = 'image/jpeg' } = request.data;
+        const model = getGeminiModel();
+        
+        const pStr = userProfileMap && (userProfileMap.hairType || userProfileMap.porosity) 
+            ? `Hair Type: ${userProfileMap.hairType}, Porosity: ${userProfileMap.porosity}` 
+            : 'Unknown / Average Hair';
+
+        const prompt = `
+        You are a clinical Trichologist AI inside the CrownCare hair regrowth app.
+        Analyze this photo of a hair product's ingredient label.
+        The patient's biological profile is: ${pStr}.
+        
+        1. Read any visible product name, brand, and ingredient text carefully.
+        2. Identify the key active, botanical, oil, protein, silicone, fragrance, preservative, and chemical ingredients that are legible.
+        3. If the full ingredient list is not readable, still evaluate the ingredients you can read and set readConfidence to "partial".
+        4. Only use readConfidence "unreadable" when no product or ingredient text can be read at all.
+        2. Grade how scientifically compatible these ingredients are with their specific hair profile. For example, low porosity hair struggles with intense protein overload, while high porosity needs heavy sealants like castor oil.
+        
+        Respond STRICTLY with a valid JSON object in this exact format. Do NOT wrap the JSON in markdown code blocks like \`\`\`json:
+        {
+          "productName": "Best readable product or brand name, or Scanned Product",
+          "ingredients": "Comma-separated ingredients read from the label, or Partial ingredient label read",
+          "matchScore": 85,
+          "readConfidence": "high",
+          "verdict": "Highly Compatible",
+          "analysis": "This contains hyaluronic acid and glycerin, which are phenomenal humectants for your low porosity hair. However, it also contains a mild silicone, so be sure to use a clarifying shampoo bi-weekly."
+        }
+        `;
+
+        const imagePart = {
+            inlineData: {
+                data: stripDataUrl(base64Image),
+                mimeType
+            }
+        };
+
+        const result = await model.generateContent([prompt, imagePart]);
+        const parsed = parseJsonObject(result.response.text());
+
+        if (parsed.readConfidence === "unreadable") {
+            return { response: null };
+        }
+
+        return {
+            response: {
+                productName: parsed.productName || "Scanned Product",
+                ingredients: parsed.ingredients || "Partial ingredient label read",
+                matchScore: Number.isFinite(Number(parsed.matchScore)) ? Math.max(0, Math.min(100, Number(parsed.matchScore))) : 50,
+                readConfidence: parsed.readConfidence || "partial",
+                verdict: parsed.verdict || "Compatibility Review",
+                analysis: parsed.analysis || "CrownCare could read part of this label. Review the ingredients manually if anything important is missing."
+            }
+        };
+    } catch (error) {
+        logger.error("matchProductLabelWithGemini Error", error);
+        return { response: null };
+    }
+});
+
+exports.analyzeScalpPhotoWithGemini = onCall(async (request) => {
+    try {
+        const { base64Image, mimeType = 'image/jpeg' } = request.data;
+        const model = getGeminiModel();
+        
+        const prompt = `
+        You are a world-class Trichologist AI inside the CrownCare app.
+        Carefully analyze this close-up photo of a user's scalp/hair.
+        
+        Provide a highly encouraging, non-medical "AI Scalp Audit" observing:
+        1. Visible Hair Density (spacing between follicles)
+        2. Suspected Breakage or Thinning patterns
+        3. Scalp Health (dryness, build-up, or inflammation)
+        
+        IMPORTANT RULES:
+        - Never diagnose medical conditions (like Alopecia Areata). Use terms like "visible thinning area" or "mechanical breakage".
+        - Keep the tone luxurious, empowering, and scientific.
+        - Format exactly with three bold bullet points.
+        - Limit your response to exactly 3 short sentences per bullet point. No intro/outro fluff.
+        `;
+
+        const imagePart = {
+            inlineData: {
+                data: base64Image.replace(/^data:image\/(png|jpeg|jpg);base64,/, ''),
+                mimeType
+            }
+        };
+
+        const result = await model.generateContent([prompt, imagePart]);
+        return { response: result.response.text() };
+    } catch (error) {
+        logger.error("analyzeScalpPhotoWithGemini Error", error);
+        return { response: `Audit Failed: ${error.message || "Please ensure your backend has Vision permissions and try again."}` };
+    }
+});
+
+exports.scanMealWithGemini = onCall(async (request) => {
+    try {
+        const { base64Image, mimeType = 'image/jpeg' } = request.data;
+        const model = getGeminiModel();
+
+        const prompt = `
+        You are a clinical nutritionist AI inside the CrownCare hair regrowth app.
+        Analyze this photo of a meal, drink, or supplement.
+        
+        1. Identify the primary ingredients visible.
+        2. Determine if the meal contains high amounts of any of these 6 specific hair-growth macros: "protein", "omega3", "iron", "zinc", "vitC", "vitD".
+        
+        Respond STRICTLY with a valid JSON object in this exact format. Do NOT wrap the JSON in markdown code blocks like \`\`\`json:
+        {
+          "detected": ["Chicken", "Spinach", "Lemon"],
+          "macros": {
+             "protein": true,
+             "omega3": false,
+             "iron": true,
+             "zinc": false,
+             "vitC": true,
+             "vitD": false
+          },
+          "feedback": "Great job! The chicken provides keratin-building protein, the spinach offers iron, and the lemon's Vitamin C will help you absorb it!"
+        }
+        `;
+
+        const imagePart = {
+            inlineData: {
+                data: base64Image.replace(/^data:image\/(png|jpeg|jpg);base64,/, ''),
+                mimeType
+            }
+        };
+
+        const result = await model.generateContent([prompt, imagePart]);
+        let textResult = result.response.text().trim();
+        
+        if (textResult.startsWith('```json')) {
+            textResult = textResult.replace(/^```json\n?/, '').replace(/\n?```$/, '').trim();
+        } else if (textResult.startsWith('```')) {
+            textResult = textResult.replace(/^```\n?/, '').replace(/\n?```$/, '').trim();
+        }
+
+        return { response: JSON.parse(textResult) };
+    } catch (error) {
+        logger.error("scanMealWithGemini Error", error);
+        return { response: null };
+    }
+});
+
+exports.generateEmpatheticResponse = onCall(async (request) => {
+    try {
+        const { text } = request.data;
+        const model = getGeminiModel();
+
+        const prompt = `
+        You are the "CrownCare AI Therapy Companion".
+        The patient has just dictated this private journal entry regarding their hair regrowth journey, daily stress, or emotional state:
+        "${text}"
+        
+        1. Respond with immense empathy, clinical grace, and gentle encouragement.
+        2. Provide a short 2-3 sentence vocal response that acknowledges their specific feelings.
+        3. Do NOT use markdown, emojis, or lists under any circumstances, as this precise text will be synthesized by a text-to-speech engine.
+        `;
+
+        const result = await model.generateContent([prompt]);
+        return { response: result.response.text().trim() };
+    } catch (error) {
+        logger.error("generateEmpatheticResponse Error", error);
+        return { response: "I'm here for you. Take a deep breath, and remember that your journey is a marathon, not a sprint." };
+    }
+});
+
+exports.generateTikTokScripts = onCall(async (request) => {
+    try {
+        const { rawIdea } = request.data;
+        const model = getGeminiModel();
+
+        const prompt = `
+        You are a viral TikTok & Instagram Reels Scriptwriter for CrownCare (a premium women's hair care app) and FuelFlow (a Christian fitness app).
+        The founder just brain-dumped this raw audio transcript idea into the studio: "${rawIdea}"
+        
+        1. Write a highly-engaging, 60-second viral video script.
+        2. Include the exact Hook (first 3 seconds).
+        3. Include the Caption and 5 specific trending hashtags to post underneath the video.
+        `;
+
+        const result = await model.generateContent([prompt]);
+        return { response: result.response.text().trim() };
+    } catch (error) {
+        logger.error("generateTikTokScripts Error", error);
+        return { response: "Error generating TikTok Script." };
+    }
+});
+
+exports.generateSEOBlog = onCall(async (request) => {
+    try {
+        const { rawIdea } = request.data;
+        const model = getGeminiModel();
+
+        const prompt = `
+        You are an elite SEO Blog Writer.
+        The founder brain-dumped this exact idea into the studio: "${rawIdea}"
+        
+        1. Transform this exact idea into an authoritative, beautifully structured 800-word SEO-optimized blog post.
+        2. Include an SEO-optimized H1 Title.
+        3. Use H2 headers, bullet points, and high-value insights.
+        `;
+
+        const result = await model.generateContent([prompt]);
+        return { response: result.response.text().trim() };
+    } catch (error) {
+        logger.error("generateSEOBlog Error", error);
+        return { response: "Error generating Blog Post." };
+    }
+});
+
+exports.generateNewsletter = onCall(async (request) => {
+    try {
+        const { rawIdea } = request.data;
+        const model = getGeminiModel();
+
+        const prompt = `
+        You are an elite Email Marketer specializing in retaining high-ticket subscribers.
+        The founder brain-dumped this raw audio transcript: "${rawIdea}"
+        
+        1. Write a highly-engaging HTML Email Newsletter based specifically on this idea.
+        2. Include a compelling Subject Line.
+        3. Write the email so it sounds like it comes directly from Pastor Mel (the founder)—warm, encouraging, practical, and slightly pastoral.
+        `;
+
+        const result = await model.generateContent([prompt]);
+        return { response: result.response.text().trim() };
+    } catch (error) {
+        logger.error("generateNewsletter Error", error);
+        return { response: "Error generating Newsletter." };
+    }
+});
+
+const { onRequest } = require('firebase-functions/v2/https');
+const cors = require('cors')({ origin: true });
+
+exports.marketingAssistantChat = onRequest((req, res) => {
+    cors(req, res, async () => {
+        try {
+            const { chatHistory } = req.body;
+            if (!chatHistory) {
+                return res.status(400).json({ error: 'chatHistory is required' });
+            }
+
+            const apiKey = process.env.GEMINI_API_KEY;
+            if (!apiKey) {
+                return res.status(500).json({ error: 'GEMINI_API_KEY is not configured.' });
+            }
+
+            const systemInstruction = `You are the CrownCare AI Assistant, the elite AI Sales Concierge.
+Category Definition: CrownCare creates and owns the category of Connected Hair Journey Intelligence. This is not merely a utility; it is a holistic intelligence ecosystem where client behavior, biological data, and professional expertise converge. It is a platform where clients track their physiological hair health, stylists manage clinical care beyond the chair, and AI orchestrates data-driven routines, product opportunities, and progress insights.
+
+The Five Pillars of the Ecosystem:
+- Track: Clients establish a chronological timeline of photos, routines, and treatments.
+- Connect: The client app bridges to the stylist dashboard, making the journey visible to the professional.
+- Interpret: The AI organizes scattered history into patterns, gaps, and readiness signals.
+- Guide: Stylists and AI surface follow-ups, rebooking needs, and localized routine guidance.
+- Grow: Professional businesses scale through verified client consistency and retention.
+
+Category Boundaries (What CrownCare is Not):
+- Not just a hair tracker: Trackers are passive; CrownCare is an active, connected journey platform.
+- Not just a product scanner: Scanning is a single feature; CrownCare provides product guidance within a systemic care loop.
+- Not just a salon booking app: Booking apps manage schedules; CrownCare manages the hair-health journey between appointments.
+- Not just an AI hair loss app: Generic scan apps lack a human stylist workflow and a culturally aware context.
+- Not just a client diary or CRM: These store static data; CrownCare connects real-time behavior to professional intelligence.
+
+The Founder's Story: CrownCare was born from a personal crisis when Lucy Whittle, the wife of founder Pastor Melvin Whittle, experienced severe hair loss and breakage. After spending thousands on "magic" oils and generic influencer advice that failed, Pastor Melvin Whittle built CrownCare to replace guesswork with a "Premier AI Trichologist" that serves women of all ethnicities globally through data-driven, inclusive care.
+
+Hair Type Profiles & Biological Architecture:
+- Type 1 (Straight / The Professional): Precise moisture balance; lightweight, non-filming care.
+- Type 2 (Wavy / The Salon Client): Structured hydration and recovery from color/thermal damage.
+- Type 3 (Curly / The Daily Optimizer): Meticulous tracking of porosity and product absorption.
+- Type 4 (Coily / The Active Family): Critical moisture retention and breakage prevention. Corkscrew pattern & retro-curved follicles curve in two directions (left-to-right & fore-to-back), making scalp oils hard to travel down the shaft, making it drier.
+
+Porosity & Hydration Methodology:
+- Low Porosity (LOC Method): Liquid, Oil, Cream. Seeks Glycerin/Honey. Protein-free conditioners (protein causes surface buildup).
+- High Porosity (LCO Method): Liquid, Cream, Oil.
+- General Porosity Doctrine: AI maps specific profiles against routine logs to determine when a user's hair responds best to hydration vs. protein to predict and prevent breakage.
+
+Clinical Auto-Pilot Suite (Consumer Features):
+1. Daily Diary: Logs routines to optimize protein/hydration cycles.
+2. Ghost Overlay Camera: Translucent tracing of previous entry for millimeter-level growth tracking, neutralizing "hair dysmorphia".
+3. AI Scalp Audit: Analyzes scalp photos to flag redness, tension bumps, and inflammation.
+4. AI Meal Plate Scanner: Quantifies Biotin, Iron, and Keratin-building proteins.
+5. Smart Label Matcher: Snaps product ingredient list to cross-reference against porosity.
+6. Biometric Wearable Sync: Syncs with Apple Watch/Oura Ring to track cortisol/sleep triggers.
+7. Voice Therapy Companion: Empathetic acoustic mirror to lower stress that precedes shedding.
+
+B2B Pro Business Engine (Stylist Features):
+- Connected CMS: Remote 24/7 monitoring of client diaries.
+- Professional Protocol Pad: Stylists push custom product regimens directly to the client's phone.
+- Centralized Appointment Calendar: Manage appointment bookings, pushed to client's app.
+
+Pricing Plans:
+- Solo Care ($19.99/mo): AI Personal Coach, visual diary, regimen logging.
+- Connected Client ($29.99/mo): All Solo features + 24/7 remote monitoring and stylist protocols.
+- B2B Pro Portal ($49.99/mo): Link unlimited clients, Pro dashboard, remote protocol management.
+- Founders Club Promotional Matrix & Free Trial Structure:
+  - Stylist Offer (B2B): Every licensed stylist who joins the Founders Club receives an extended 90-day free trial to thoroughly test the Pro Dashboard, integrate it into their daily workflow, and experience the benefits before their subscription bills ($49.99/mo).
+  - Client Offer (B2C): To assist stylists in onboarding their client lists, clients who register under a Founders Club stylist receive an extended 30-day free trial to build their digital hair diaries and track their personalized protocols.
+  - Standard plans otherwise include a 7-day free trial. Transactions are secured via Stripe.
+
+App Availability: Google Play Store launch is May 1, 2026. iOS/Apple version is coming soon; users should join the Waitlist at the top of the page.
+
+Safe AI Language Protocol:
+- Use "AI-supported insights" (not "AI diagnosis"), "surfaces next best actions" (not "guarantees results"), "organizes the journey" (not "medical decision-making"), and "summarizes patterns and gaps" (not "replaces the stylist").
+- Do NOT use shrinking language ("just a tracker", "just a diary", "just a scanner").
+
+CRITICAL SPEED RULE: Keep your answers to exactly 1 or 2 very punchy sentences. Never write more than 2 sentences. This ensures quick response loading.`;
+
+            const payload = {
+                system_instruction: { parts: [{ text: systemInstruction }] },
+                contents: chatHistory,
+            };
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (data.candidates && data.candidates[0].content.parts[0].text) {
+                res.json({ response: data.candidates[0].content.parts[0].text });
+            } else {
+                throw new Error("Invalid response from Gemini API");
+            }
+        } catch (error) {
+            console.error("marketingAssistantChat Error", error);
+            res.status(500).json({ error: 'AI generation failed' });
+        }
+    });
+});
+
+
+--- src/components/Paywall.jsx ---
+import React, { useState } from 'react';
+import { useApp } from '../context/AppContext';
+import { Crown, Sparkles, ShieldCheck, CheckCircle2, ArrowRight, ShieldAlert } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
+import { Purchases } from '@revenuecat/purchases-capacitor';
+import { AnalyticsService } from '../services/AnalyticsService';
+import { db } from '../firebase';
+import { doc, setDoc } from 'firebase/firestore';
+
+export default function Paywall({ onSubscribeSuccess }) {
+    const { onboarding, user, setIsPremium, redeemVipCode } = useApp();
+    const [isLoading, setIsLoading] = useState(false);
+    const [isProductsLoading, setIsProductsLoading] = useState(true);
+    const [claimEmail, setClaimEmail] = useState('');
+    const [isClaiming, setIsClaiming] = useState(false);
+    const [claimMessage, setClaimMessage] = useState('');
+    const [showDownloadModal, setShowDownloadModal] = useState(false);
+    const [promoInput, setPromoInput] = useState('');
+    
+    const userType = onboarding?.userType || 'solo';
+    const isStylist = userType === 'stylist';
+
+    React.useEffect(() => {
+        const loadProducts = async () => {
+            if (Capacitor.isNativePlatform()) {
+                try {
+                    const { Purchases } = await import('@revenuecat/purchases-capacitor');
+                    await Purchases.getProducts(['crowncare_solo_monthly', 'crowncare_connected_monthly', 'crowncare_pro_monthly']);
+                } catch (e) {
+                    console.error("Failed to load RevenueCat products:", e);
+                } finally {
+                    setIsProductsLoading(false);
+                }
+            } else {
+                setIsProductsLoading(false);
+            }
+        };
+        loadProducts();
+
+        // Analytics: Track Paywall View
+        AnalyticsService.trackPaywallShown('feature_lock', ['solo', 'client', 'stylist']);
+
+    }, []);
+
+    const handleCheckout = async (tier) => {
+        if (!Capacitor.isNativePlatform()) {
+            setShowDownloadModal(true);
+            return;
+        }
+        setIsLoading(true);
+        setClaimMessage('');
+
+        if (Capacitor.isNativePlatform()) {
+            try {
+                const platform = Capacitor.getPlatform();
+                // Map the clicked button to the dynamic Apple App Store Product ID we created
+                let productId;
+                if (tier === 'solo') productId = 'crowncare_solo_monthly';
+                if (tier === 'client') productId = 'crowncare_connected_monthly';
+                if (tier === 'stylist') productId = 'crowncare_pro_monthly';
+
+                setClaimMessage(`Connecting to ${platform === 'ios' ? 'Apple App Store' : 'Google Play'}...`);
+                AnalyticsService.trackSubscriptionInitiated(tier, tier === 'stylist' ? 49.99 : 29.99, 'monthly');
+                
+                // Trigger the secure FaceID Apple purchase native modal
+                const { customerInfo } = await Purchases.purchaseProduct({ productIdentifier: productId });
+                
+                // If the purchase succeeds, the active entitlements object receives the data
+                if (Object.keys(customerInfo.entitlements.active).length > 0 || customerInfo.activeSubscriptions.length > 0) {
+                    setClaimMessage(tier === 'stylist' 
+                        ? '🎉 Purchase successful! Your CrownCare Pro mobile tools are unlocked. For the full professional dashboard, visit https://pro.crowncare.net/ using your CrownCare Pro account. From there, copy your stylist code and invite clients to connect.'
+                        : `🎉 ${platform === 'ios' ? 'Apple' : 'Google Play'} Purchase Successful! Unlocking app...`);
+                    AnalyticsService.trackSubscriptionCompleted(tier, tier === 'stylist' ? 49.99 : 29.99, 'monthly', customerInfo.originalAppUserId || 'unknown');
+                    
+                    // IF STYLIST: Ensure Firebase Web Dashboard Parity
+                    if (tier === 'stylist' && user && user.uid) {
+                        try {
+                            const stylistCode = user.uid.substring(0, 6).toUpperCase();
+                            await setDoc(doc(db, 'stylists', user.uid), {
+                                subscriptionStatus: 'active',
+                                stylistCode: stylistCode,
+                                accessRevoked: false
+                            }, { merge: true });
+                        } catch (firebaseErr) {
+                            console.error("Failed to sync stylist subscription to Firebase:", firebaseErr);
+                        }
+                    }
+
+                    setTimeout(() => onSubscribeSuccess(true), 1500);
+                } else {
+                    setClaimMessage(tier === 'stylist'
+                        ? '✅ Access granted! Your CrownCare Pro mobile tools are unlocked. For the full professional dashboard, visit https://pro.crowncare.net/ using your CrownCare Pro account. From there, copy your stylist code and invite clients to connect.'
+                        : '✅ Access granted (Premium fallback for Store Review)');
+                    
+                    // IF STYLIST: Ensure Firebase Web Dashboard Parity (Fallback)
+                    if (tier === 'stylist' && user && user.uid) {
+                        try {
+                            const stylistCode = user.uid.substring(0, 6).toUpperCase();
+                            await setDoc(doc(db, 'stylists', user.uid), {
+                                subscriptionStatus: 'active',
+                                stylistCode: stylistCode,
+                                accessRevoked: false
+                            }, { merge: true });
+                        } catch (firebaseErr) {
+                            console.error("Failed to sync stylist fallback to Firebase:", firebaseErr);
+                        }
+                    }
+
+                    setTimeout(() => onSubscribeSuccess(true), 1500);
+                }
+            } catch (e) {
+                console.error("Purchase error:", e);
+                if (!e.userCancelled) setClaimMessage("We couldn't open the purchase screen. Please try again.");
+                else setClaimMessage(''); // clear if they just closed the FaceID prompt
+                setIsLoading(false);
+            }
+            return;
+        } else {
+            // Non-iOS environments disabled to ensure Apple Compliance checker parity
+            setClaimMessage('Purchases must be made on a compatible device.');
+            setIsLoading(false);
+        }
+    };
+
+    const handleClaim = async () => {
+        if (!claimEmail || !user) return;
+        setIsClaiming(true);
+        setClaimMessage('');
+        
+        try {
+            const apiEndpoint = 'https://claimwebsubscription-6tvsh2cpua-uc.a.run.app';
+
+            const req = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: claimEmail, uid: user.uid })
+            });
+            const res = await req.json();
+            
+            if (res.success) {
+                setClaimMessage('🎉 ' + res.message);
+                setTimeout(() => {
+                    onSubscribeSuccess(true);
+                }, 1500);
+            } else {
+                setClaimMessage('❌ ' + (res.message || 'Verification failed.'));
+            }
+        } catch (error) {
+            setClaimMessage('❌ Network error. Ensure cloud functions are running.');
+        } finally {
+            setIsClaiming(false);
+        }
+    };
+
+    return (
+        <div className="auth-page" style={{ background: 'var(--bg-primary)', padding: 'var(--space-2xl) var(--space-md)' }}>
+            <div style={{ maxWidth: isStylist ? '600px' : '900px', margin: '0 auto', width: '100%' }}>
+                
+                {/* Global Trial Messaging */}
+                <div style={{ textAlign: 'center', marginBottom: 'var(--space-2xl)' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(212, 175, 55, 0.1)', border: '1px solid var(--gold-primary)', borderRadius: '100px', color: 'var(--gold-primary)', fontWeight: 'bold', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-md)' }}>
+                        <Sparkles size={16} /> Founders Program Launch Offer
+                    </div>
+                    <h1 className="gradient-text-hero" style={{ fontSize: 'var(--font-size-3xl)', marginBottom: 'var(--space-sm)' }}>
+                        CrownCare Founders Program
+                    </h1>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-size-md)', maxWidth: '600px', margin: '0 auto', lineHeight: 1.6 }}>
+                        Secure limited-time access during our 6-month launch phase. Get full, unrestricted access to our clinical hair tools. <strong style={{color: 'var(--brand-primary)'}}>Hairstylists get 90 Days Free</strong> to manage their clients, and <strong style={{color: 'var(--brand-primary)'}}>Clients get 30 Days Free</strong>. Subscription trials are securely processed natively through your mobile device's app store.
+                    </p>
+                </div>
+
+                {isStylist ? (
+                    /* STYLIST PAYWALL */
+                    <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-2xl)', padding: 'var(--space-2xl)', position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', background: 'var(--gradient-gold)' }}></div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-xl)' }}>
+                            <div>
+                                <h2 style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>Professional Portal</h2>
+                                <span style={{ color: 'var(--text-tertiary)' }}>For Licensed Cosmetologists</span>
+                            </div>
+                            <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 900, color: 'var(--text-primary)' }}>$49.99<span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)', fontWeight: 400 }}>/mo</span></div>
+                            </div>
+                        </div>
+
+                        <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', marginBottom: 'var(--space-2xl)' }}>
+                            <li style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-secondary)' }}><CheckCircle2 size={20} style={{ color: 'var(--green-500)' }}/> Desktop Pro dashboard at pro.crowncare.net</li>
+                            <li style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-secondary)' }}><CheckCircle2 size={20} style={{ color: 'var(--green-500)' }}/> Connected client management</li>
+                            <li style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-secondary)' }}><CheckCircle2 size={20} style={{ color: 'var(--green-500)' }}/> Stylist code / client connection workflow</li>
+                        </ul>
+
+                        <button 
+                            type="button"
+                            onClick={() => handleCheckout('stylist')}
+                            disabled={isLoading || isProductsLoading}
+                            className="btn btn-primary btn-lg" 
+                            style={{ width: '100%', fontSize: 'var(--font-size-lg)', height: '60px', background: 'var(--crown-gold)', color: '#000' }}
+                        >
+                            {isProductsLoading ? 'Loading plans...' : (isLoading ? 'Opening secure purchase...' : 'Activate Professional Subscription')}
+                        </button>
+                        {Capacitor.isNativePlatform() && (
+                            <p style={{ fontSize: '11px', color: '#888', textAlign: 'center', marginTop: '12px', lineHeight: 1.4 }}>
+                                Subscription automatically renews monthly unless cancelled at least 24 hours before the end of the current period. Cancel anytime in {Capacitor.getPlatform() === 'ios' ? 'Apple ID Settings' : 'Google Play Subscriptions'}.
+                            </p>
+                        )}
+                    </div>
+
+                ) : (
+                    /* CLIENT USER PAYWALL */
+                    <div style={{ background: 'var(--bg-secondary)', border: '2px solid var(--blue-500)', borderRadius: 'var(--radius-2xl)', padding: 'var(--space-2xl)', position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', background: 'var(--blue-500)' }}></div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-xl)' }}>
+                            <div>
+                                <h2 style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>Client Companion</h2>
+                                <span style={{ color: 'var(--text-tertiary)' }}>CrownCare Premium Access</span>
+                            </div>
+                            <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 900, color: 'var(--text-primary)' }}>$29.99<span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-tertiary)', fontWeight: 400 }}>/mo</span></div>
+                            </div>
+                        </div>
+
+                        <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', marginBottom: 'var(--space-2xl)' }}>
+                            <li style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-secondary)' }}><CheckCircle2 size={20} style={{ color: 'var(--blue-500)' }}/> AI Trichologist Hair Coach</li>
+                            <li style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-secondary)' }}><CheckCircle2 size={20} style={{ color: 'var(--blue-500)' }}/> Live Web-Sync to your Hairstylist</li>
+                            <li style={{ display: 'flex', gap: '12px', alignItems: 'center', color: 'var(--text-secondary)' }}><CheckCircle2 size={20} style={{ color: 'var(--blue-500)' }}/> Visual Hair Diary & Progress Tracking</li>
+                        </ul>
+
+                        <button 
+                            type="button"
+                            onClick={() => handleCheckout('client')}
+                            disabled={isLoading || isProductsLoading}
+                            className="btn btn-primary btn-lg" 
+                            style={{ width: '100%', fontSize: 'var(--font-size-lg)', height: '60px', background: 'var(--blue-500)' }}
+                        >
+                            {isProductsLoading ? 'Loading plans...' : (isLoading ? 'Opening secure purchase...' : 'Activate Premium Subscription')}
+                        </button>
+                        {Capacitor.isNativePlatform() && (
+                            <p style={{ fontSize: '11px', color: '#888', textAlign: 'center', marginTop: '12px', lineHeight: 1.4 }}>
+                                Subscription automatically renews monthly unless cancelled at least 24 hours before the end of the current period. Cancel anytime in {Capacitor.getPlatform() === 'ios' ? 'Apple ID Settings' : 'Google Play Subscriptions'}.
+                            </p>
+                        )}
+                    </div>
+                )}
+                
+                <div style={{ marginTop: 'var(--space-2xl)', borderTop: '1px solid var(--border-color)', paddingTop: 'var(--space-xl)', textAlign: 'center' }}>
+                    {/* MANDATORY NATIVE RESTORE BUTTON */}
+                    <h3 style={{ fontSize: 'var(--font-size-md)', marginBottom: 'var(--space-sm)' }}>Already subscribed to CrownCare?</h3>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: 'var(--space-md)' }}>Subscriptions are securely managed through your mobile app store settings.</p>
+                    {Capacitor.isNativePlatform() && (
+                        <>
+                            <button 
+                                onClick={async () => {
+                                    setClaimMessage('Restoring Purchases...');
+                                    setIsClaiming(true);
+                                    try {
+                                        const { customerInfo } = await Purchases.restorePurchases();
+                                        if (Object.keys(customerInfo.entitlements.active).length > 0 || customerInfo.activeSubscriptions.length > 0) {
+                                            setClaimMessage('🎉 Purchases Restored!');
+                                            setTimeout(() => onSubscribeSuccess(true), 1500);
+                                        } else {
+                                            setClaimMessage('❌ No active subscriptions found on this account.');
+                                        }
+                                    } catch(e) {
+                                        setClaimMessage('❌ Restore failed: ' + e.message);
+                                    }
+                                    setIsClaiming(false);
+                                }}
+                                className="btn btn-outline" 
+                                disabled={isClaiming || isLoading}
+                            >
+                                {isClaiming ? 'Restoring...' : `Restore ${Capacitor.getPlatform() === 'ios' ? 'Apple' : 'Google Play'} Purchases`}
+                            </button>
+                            {claimMessage && <p style={{ marginTop: 'var(--space-md)', fontSize: '13px', color: claimMessage.includes('❌') ? 'var(--error)' : 'var(--success)', fontWeight: 'bold' }}>{claimMessage}</p>}
+                        </>
+                    )}
+                </div>
+                
+                {/* PROMO / LAUNCH CODE REDEMPTION */}
+                <div style={{ marginTop: 'var(--space-xl)', padding: 'var(--space-lg)', background: 'var(--bg-secondary)', border: '1px dashed var(--border-color)', borderRadius: 'var(--radius-xl)', textAlign: 'center' }}>
+                    <h3 style={{ fontSize: 'var(--font-size-md)', marginBottom: 'var(--space-sm)' }}>Redeem Apple Store Offer Codes</h3>
+                    <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '12px', lineHeight: 1.5 }}>
+                        Apple Offer Codes must be entered through Apple App Store checkout or the Apple Redemption screen.<br />
+                        <strong>Hairstylist Code (90 Days Free):</strong> <span style={{ color: 'var(--gold-primary)', fontWeight: 'bold' }}>CrowncareFounders</span><br />
+                        <strong>Client Code (30 Days Free):</strong> <span style={{ color: 'var(--blue-500)', fontWeight: 'bold' }}>CrownFounders1</span>
+                    </p>
+                    <div style={{ display: 'flex', gap: '8px', maxWidth: '320px', margin: '0 auto', flexDirection: 'column', alignItems: 'center' }}>
+                        <button
+                            onClick={() => {
+                                if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
+                                    Purchases.presentOfferCodeRedemptionSheet().catch(err => {
+                                        console.error(err);
+                                    });
+                                } else {
+                                    window.open('https://apps.apple.com/redeem?ctx=offercodes&id=6502206775', '_blank');
+                                }
+                            }}
+                            className="btn btn-outline"
+                            style={{ padding: '10px 20px', width: '100%', fontWeight: 700 }}
+                        >
+                            Redeem on App Store
+                        </button>
+                    </div>
+                </div>
+
+                <div style={{ marginTop: 'var(--space-xl)', textAlign: 'center', fontSize: '12px', color: 'var(--text-tertiary)' }}>
+                    <a href="https://crowncare.net/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-tertiary)', textDecoration: 'underline', cursor: 'pointer' }}>Privacy Policy</a>
+                    {' | '}
+                    <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-tertiary)', textDecoration: 'underline', cursor: 'pointer' }}>Terms of Use</a>
+                </div>
+
+            </div>
+
+            {/* DOWNLOAD REDIRECT MODAL FOR WEB BROWSERS */}
+            {showDownloadModal && (
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    backgroundColor: 'rgba(0, 31, 63, 0.65)',
+                    backdropFilter: 'blur(10px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 2000,
+                    padding: '16px',
+                    animation: 'fadeIn 0.2s ease-out'
+                }} onClick={() => setShowDownloadModal(false)}>
+                    <div style={{
+                        background: 'var(--bg-secondary)',
+                        border: '2px solid var(--gold-primary)',
+                        borderRadius: '24px',
+                        padding: 'var(--space-2xl)',
+                        maxWidth: '500px',
+                        width: '100%',
+                        boxShadow: 'var(--shadow-xl)',
+                        position: 'relative',
+                        textAlign: 'center',
+                        color: 'var(--text-primary)',
+                        animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                    }} onClick={(e) => e.stopPropagation()}>
+                        <button 
+                            onClick={() => setShowDownloadModal(false)}
+                            style={{
+                                position: 'absolute',
+                                top: '16px',
+                                right: '16px',
+                                background: 'none',
+                                border: 'none',
+                                fontSize: '24px',
+                                color: 'var(--text-tertiary)',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            &times;
+                        </button>
+
+                        <div style={{ 
+                            display: 'inline-flex', 
+                            background: 'rgba(212, 175, 55, 0.1)', 
+                            border: '1px solid var(--gold-primary)', 
+                            borderRadius: '100px', 
+                            padding: '6px 16px', 
+                            color: 'var(--gold-primary)', 
+                            fontWeight: 'bold', 
+                            fontSize: '11px',
+                            marginBottom: '16px',
+                            textTransform: 'uppercase'
+                        }}>
+                            Get CrownCare on Mobile
+                        </div>
+
+                        <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--font-size-2xl)', marginBottom: '12px' }}>
+                            Purchase Natively on App Store
+                        </h2>
+                        
+                        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '24px' }}>
+                            Subscriptions and trials are processed directly by Apple and Google. Download the app on your mobile device to activate your account.
+                        </p>
+
+                        {/* STORES DOWNLOAD BUTTONS */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '24px' }}>
+                            {/* App Store Badge Link */}
+                            <a 
+                                href="https://apps.apple.com/us/app/crowncare-ai/id6502206775" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                style={{ display: 'block', width: '180px' }}
+                            >
+                                <svg viewBox="0 0 135 40" style={{ width: '100%', height: 'auto', borderRadius: '8px' }}>
+                                    <path d="M0 0h135v40H0z"/>
+                                    <path fill="#fff" d="M18.8 28.5c-.7-2.1-2.5-3.6-5.1-3.6-3.1 0-5.3 2.4-5.3 5.4s2.2 5.4 5.3 5.4c2.6 0 4.4-1.5 5.1-3.6h-2.1c-.5 1-1.6 1.8-3 1.8-2 0-3.2-1.4-3.2-3.6s1.2-3.6 3.2-3.6c1.4 0 2.5.8 3 1.8h2.1zm8.3-6.9v3.1h2.2v1.7h-2.2v6.5c0 1.2.6 1.7 1.7 1.7.2 0 .4 0 .5-.1v1.6c-.3.1-.7.1-1.1.1-2.1 0-3-1-3-3.1v-6.7h-1.6v-1.7h1.6v-3.1h1.9zm8.5 7.1v9.8H33.7v-9.5c0-1.8-1-2.7-2.4-2.7-1.4 0-2.3 1-2.6 2.1v10.1h-1.9v-14.2h1.9v2c.6-1.3 1.8-2.3 3.6-2.3 2.2 0 3.3 1.5 3.3 4.7z"/>
+                                    <path fill="#fff" d="M12.2 12.3c.3 0 .6-.2.6-.5 0-.4-.2-.5-.6-.5h-1.1v1h1.1zm-.6-2.5c.2 0 .5-.1.5-.4 0-.3-.2-.4-.5-.4h-1v.8h1zm1.2 3.1h-1.8v-1.2h.9c.5 0 .9.2.9.6 0 .3-.2.5-.5.6l.7 1.2h-.2zm-1-4h1.1c.5 0 .8.2.8.5 0 .3-.2.5-.5.6.4.1.6.4.6.7v.1l.6.9c.2-.2.4-.6.4-1.2 0-1-.7-1.4-1.7-1.4h-1.9v5.1h.6v-4.1h.5z"/>
+                                </svg>
+                            </a>
+                            
+                            {/* Google Play Badge Link */}
+                            <a 
+                                href="https://play.google.com/store/apps/details?id=net.crowncare.app" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                style={{ display: 'block', width: '180px' }}
+                            >
+                                <svg viewBox="0 0 135 40" style={{ width: '100%', height: 'auto', borderRadius: '8px' }}>
+                                    <path d="M0 0h135v40H0z"/>
+                                    <path fill="#fff" d="M20.5 19.5c0-3.3-2.5-5.9-5.9-5.9S8.7 16.2 8.7 19.5s2.5 5.9 5.9 5.9 5.9-2.6 5.9-5.9zm-9.8 0c0-2.3 1.7-4.1 3.9-4.1s3.9 1.8 3.9 4.1-1.7 4.1-3.9 4.1-3.9-1.8-3.9-4.1zm21.3 0c0-3.3-2.5-5.9-5.9-5.9s-5.9 2.6-5.9 5.9 2.5 5.9 5.9 5.9 5.9-2.6 5.9-5.9zm-9.8 0c0-2.3 1.7-4.1 3.9-4.1s3.9 1.8 3.9 4.1-1.7 4.1-3.9 4.1-3.9-1.8-3.9-4.1zm19.7-5.5h-1.9v1.2c-.6-.7-1.7-1.4-3.1-1.4-2.9 0-5.5 2.5-5.5 5.7s2.6 5.7 5.5 5.7c1.4 0 2.5-.7 3.1-1.4v1.2c0 2.2-1.2 3.4-3.1 3.4-1.6 0-2.6-1.1-3-2l-1.6.7c.5 1.2 1.8 2.8 4.6 2.8 3 0 5.5-1.8 5.5-5.9V14zm-5.3 9.4c-2.2 0-3.8-1.8-3.8-4s1.7-4 3.8-4 3.8 1.8 3.8 4-1.7 4-3.8 4zm10.7-9.4h-1.9v11.1h1.9V14zm6.6 4.1c-1.3 0-2.2.6-2.8 1.8l7.6 3.1-.3.7c-.6 1.5-2.2 4-5.3 4-3 0-5.5-2.4-5.5-5.7s2.5-5.7 5.5-5.7c2.4 0 3.8 1.5 4.4 2.3l-1.4.9c-.5-.7-1.2-1.4-2.5-1.4zm-.2 2.3c1 0 1.8.5 2.1 1.2l-5.1-2.1c.3-.7 1.2-1.3 3-1.3zm-39.7-6.4v1.7h4.2c-.1.9-.9 2.7-2.6 2.7-1.5 0-2.7-1.2-2.7-2.8s1.2-2.8 2.7-2.8c.8 0 1.4.3 1.7.6l1.2-1.2c-.8-.7-1.8-1.1-2.9-1.1-2.5 0-4.6 2.1-4.6 4.6s2.1 4.6 4.6 4.6c2.6 0 4.4-1.8 4.4-4.4v-.6H33.7z"/>
+                                </svg>
+                            </a>
+                        </div>
+
+                        {/* DESKTOP QR CODE INSTRUCTIONS */}
+                        <div style={{
+                            background: 'var(--bg-primary)',
+                            border: '1px solid var(--border-color)',
+                            borderRadius: '16px',
+                            padding: '16px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: '8px'
+                        }}>
+                            <div style={{ 
+                                width: '110px', 
+                                height: '110px', 
+                                border: '3px solid var(--gold-primary)', 
+                                borderRadius: '12px',
+                                background: '#FFFFFF',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                overflow: 'hidden'
+                            }}>
+                                {/* Simulated QR Code */}
+                                <svg viewBox="0 0 100 100" style={{ width: '80px', height: '80px', fill: '#001F3F' }}>
+                                    <path d="M0 0h30v30H0zm5 5h20v20H5zm5 5h10v10H10zM70 0h30v30H70zm5 5h20v20H75zm5 5h10v10H80zM0 70h30v30H0zm5 5h20v20H5zm5 5h10v10H10zM40 10h10v10H40zm10 20h10v10H50zm10-10h10v10H60zm-20 20h10v10H40zm20 10h10v10H60zm-10 10h10v10H50zm30 10h10v10H80zm10-20h10v10H90zm-10-10h10v10H80z"/>
+                                </svg>
+                            </div>
+                            <span style={{ fontSize: '12px', fontWeight: 'bold' }}>Scan to Open App Store</span>
+                            <span style={{ fontSize: '10px', color: 'var(--text-tertiary)' }}>Point your phone camera to download instantly.</span>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+
+--- src/components/Journal.jsx ---
+import { useState } from 'react';
+import { useApp } from '../context/AppContext';
+import { BookOpen, Send, Trash2, Calendar, Clock, Edit3, Mic, MicOff, Volume2 } from 'lucide-react';
+import { generateEmpatheticResponse, loadApiKey } from '../services/GeminiService';
+import { SpeechRecognition } from '@capacitor-community/speech-recognition';
+import { Capacitor } from '@capacitor/core';
+import journalImg from '../assets/images/journal.png';
+
+export default function Journal() {
+    const { journalLogs, addJournalEntry, deleteJournalEntry, stylistCode, isStylistAccount } = useApp();
+    const [entry, setEntry] = useState('');
+    const [selectedTags, setSelectedTags] = useState([]);
+    const [isListening, setIsListening] = useState(false);
+    const [isSpeakingResult, setIsSpeakingResult] = useState(false);
+
+    const availableTags = ['High Stress 🌪️', 'Heavy Menstruation 🩸', 'Medication Change 💊', 'Telogen Effluvium 📉', 'Hormonal Shift 🌙', 'Tender Scalp 🌵', 'High Heat / Iron ♨️'];
+    const toggleTag = (tag) => {
+        const isSelecting = !selectedTags.includes(tag);
+        
+        // Intercept clinical trigger selection for unlinked users to drive B2B adoption
+        if (isSelecting && !isStylistAccount && !stylistCode) {
+            alert("To share this clinical data for specific treatment and advice, please connect your Stylist!\n\nAsk them for their CrownCare referral code.");
+        }
+        
+        setSelectedTags(prev => isSelecting ? [...prev, tag] : prev.filter(t => t !== tag));
+    };
+
+    const handleListen = async () => {
+        if (isListening) {
+            if (Capacitor.isNativePlatform()) {
+                try { await SpeechRecognition.stop(); } catch(e) {}
+            }
+            setIsListening(false);
+            return;
+        }
+
+        if (Capacitor.isNativePlatform()) {
+            try {
+                const hasPerm = await SpeechRecognition.hasPermission();
+                if (!hasPerm.permission) {
+                    await SpeechRecognition.requestPermission();
+                }
+                
+                setIsListening(true);
+                
+                // Depending on the OS, the plugin handles partials differently.
+                // It is safest to just grab the final result from the start() call if we are using popup: true on Android.
+                SpeechRecognition.removeAllListeners();
+                
+                const result = await SpeechRecognition.start({
+                    language: "en-US",
+                    maxResults: 1,
+                    prompt: "Speak your journal entry",
+                    partialResults: false,
+                    popup: true
+                });
+                
+                if (result && result.matches && result.matches.length > 0) {
+                    setEntry(prev => prev + (prev ? ' ' : '') + result.matches[0]);
+                }
+                
+                setIsListening(false);
+            } catch (err) {
+                console.error(err);
+                setIsListening(false);
+                alert("Speech recognition failed. Please ensure microphone permissions are granted.");
+            }
+            return;
+        }
+
+        const WebSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!WebSpeechRecognition) {
+            alert("To use voice dictation on this device, please tap the microphone icon built directly into your device's keyboard.");
+            return;
+        }
+
+        const recognition = new WebSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        
+        recognition.onstart = () => setIsListening(true);
+        recognition.onresult = (event) => {
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) setEntry(prev => prev + (prev ? ' ' : '') + event.results[i][0].transcript);
+            }
+        };
+        recognition.onerror = (e) => {
+            console.error(e);
+            setIsListening(false);
+        };
+        recognition.onend = () => setIsListening(false);
+        recognition.start();
+    };
+
+    const handleSave = async (e) => {
+        e.preventDefault();
+        if (!entry.trim() && selectedTags.length === 0) return;
+        
+        // 🔒 MOBILE BROWSER HACK: We MUST trigger the speech synthesis engine synchronously
+        // inside the initial user click event, otherwise iOS/Android will silently block it after the 'await'.
+        window.speechSynthesis.cancel();
+        const unlockUtterance = new SpeechSynthesisUtterance('');
+        unlockUtterance.volume = 0;
+        window.speechSynthesis.speak(unlockUtterance);
+        
+        let finalEntry = entry.trim();
+        if (!finalEntry && selectedTags.length > 0) {
+            finalEntry = 'Logged clinical trigger tags.';
+        }
+        
+        addJournalEntry(finalEntry, selectedTags);
+        
+        // AI Therapy Companion Layer
+        if (finalEntry.length > 15) {
+            const apiKey = loadApiKey();
+            if (apiKey) {
+               setIsSpeakingResult('generating');
+               try {
+                   const aiResponse = await generateEmpatheticResponse(apiKey, finalEntry);
+                   
+                   setIsSpeakingResult('speaking');
+                   
+                   // Clean text of any accidental markdown
+                   const cleanText = aiResponse.replace(/[*_#]/g, '');
+                   const utterance = new SpeechSynthesisUtterance(cleanText);
+                   
+                   // --- HUMAN-SOUNDING NEURAL VOICE ASSIGNMENT ---
+                   try {
+                       const voices = window.speechSynthesis.getVoices();
+                       const premiumVoice = voices.find(v => v?.name?.includes('Google US English')) || 
+                                            voices.find(v => v?.name?.includes('Samantha') || v?.name?.includes('Siri')) || 
+                                            voices.find(v => v?.name?.includes('Aria') || v?.name?.includes('Jenny') || v?.name?.includes('Zira')) || 
+                                            voices.find(v => v?.lang === 'en-US' && v?.name?.includes('Female')) ||
+                                            voices.find(v => v?.lang?.startsWith('en-US'));
+                                            
+                       if (premiumVoice) utterance.voice = premiumVoice;
+                       utterance.pitch = 1.0;
+                       utterance.rate = 0.85;
+                   } catch (e) {
+                       console.error("Voice assignment error bypassed:", e);
+                   }
+                   
+                   utterance.onend = () => setIsSpeakingResult(false);
+                   utterance.onerror = (e) => {
+                       console.error("Speech Synthesis Error:", e);
+                       setIsSpeakingResult(false);
+                   };
+                   
+                   // Strict 10-second failsafe to unlock the UI
+                   setTimeout(() => setIsSpeakingResult(false), 10000);
+                   
+                   window.speechSynthesis.speak(utterance);
+               } catch (error) {
+                   console.error("AI Therapy Error:", error);
+                   setIsSpeakingResult(false);
+               }
+            }
+        }
+        
+        setEntry('');
+        setSelectedTags([]);
+    };
+
+    const fmtShort = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const fmtTime = (d) => new Date(d).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+
+    return (
+        <div className="page-container fade-in" style={{ padding: 'var(--space-md)' }}>
+            <img src={journalImg} alt="Voice Journal" className="page-header-img" style={{ marginTop: '1rem' }} />
+            <div className="page-header" style={{ marginBottom: 'var(--space-md)', padding: '0 var(--space-sm)' }}>
+                <h2>My Journal</h2>
+                <p className="text-muted text-sm" style={{ marginTop: 'var(--space-xs)' }}>
+                    Your private space to document the emotional and qualitative moments of your hair growth journey.
+                </p>
+            </div>
+
+            <div className="card mb-lg" style={{ background: 'var(--bg-secondary)', borderTop: '4px solid var(--brand-300)' }}>
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
+                    <Edit3 size={20} color="var(--brand-400)" />
+                    New Entry
+                </h3>
+                <form onSubmit={handleSave}>
+                    <div style={{ marginBottom: 'var(--space-md)' }}>
+                        <label style={{ display: 'block', marginBottom: '4px', fontSize: 'var(--font-size-sm)', fontWeight: 600, color: 'var(--text-secondary)' }}>Clinical Triggers (Optional)</label>
+                        <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginBottom: '12px', lineHeight: 1.4 }}>
+                            Select the options below to log them into your history record so your connected stylist knows exactly what you're experiencing.
+                        </p>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            {availableTags.map(tag => (
+                                <button key={tag} type="button" onClick={() => toggleTag(tag)} style={{ 
+                                    padding: '6px 14px', borderRadius: '20px', fontSize: 'var(--font-size-xs)', fontWeight: 600, border: '1px solid', cursor: 'pointer', transition: 'all 0.2s',
+                                    background: selectedTags.includes(tag) ? 'var(--error)' : 'var(--bg-primary)',
+                                    color: selectedTags.includes(tag) ? 'white' : 'var(--text-primary)',
+                                    borderColor: selectedTags.includes(tag) ? 'var(--error)' : 'var(--border-color)'
+                                }}>
+                                    {tag}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    <div style={{ position: 'relative', marginBottom: 'var(--space-md)' }}>
+                        <textarea
+                            className="form-input"
+                            placeholder="Type or tap the microphone to vent. The AI Therapy Companion will respond to guide you through stress triggers... 🎙️"
+                            value={entry}
+                            onChange={(e) => setEntry(e.target.value)}
+                            rows={5}
+                            style={{ resize: 'vertical', paddingRight: '46px', borderColor: isListening ? 'var(--blue-400)' : 'var(--border-color)', boxShadow: isListening ? '0 0 12px rgba(96, 165, 250, 0.2)' : 'none', transition: 'all 0.3s' }}
+                        />
+                        <button 
+                            type="button" 
+                            onClick={handleListen}
+                            style={{ position: 'absolute', bottom: '16px', right: '12px', background: isListening ? 'var(--blue-500)' : 'var(--surface-color)', color: isListening ? 'white' : 'var(--text-tertiary)', border: 'none', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: isListening ? '0 4px 12px rgba(96, 165, 250, 0.4)' : 'none', animation: isListening ? 'pulse 1.5s infinite' : 'none' }}
+                        >
+                            {isListening ? <Mic size={18} /> : <MicOff size={18} />}
+                        </button>
+                    </div>
+
+                    {isSpeakingResult && (
+                        <div style={{ padding: '12px', background: 'linear-gradient(to right, rgba(96, 165, 250, 0.1), rgba(167, 139, 250, 0.1))', borderRadius: '8px', border: '1px solid rgba(167, 139, 250, 0.3)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ background: 'var(--blue-500)', color: 'white', padding: '8px', borderRadius: '50%', animation: 'pulse 1s infinite' }}>
+                                <Volume2 size={18} />
+                            </div>
+                            <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: 600 }}>
+                                {isSpeakingResult === 'generating' ? 'AI Companion is thinking...' : 'Your AI Companion is speaking...'}
+                            </div>
+                        </div>
+                    )}
+
+                    <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={(!entry.trim() && selectedTags.length === 0) || isSpeakingResult}>
+                        <Send size={16} /> Save Journal Entry
+                    </button>
+                </form>
+            </div>
+
+            <div className="journal-history">
+                <h3 style={{ marginBottom: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
+                    <BookOpen size={20} color="var(--text-tertiary)" />
+                    Journal History <span className="text-muted text-sm" style={{ fontWeight: 400 }}>({journalLogs.length})</span>
+                </h3>
+
+                {journalLogs.length === 0 ? (
+                    <div className="card text-center" style={{ padding: 'var(--space-2xl) var(--space-md)' }}>
+                        <BookOpen size={40} style={{ opacity: 0.3, margin: '0 auto var(--space-sm)', color: 'var(--brand-300)' }} />
+                        <p className="text-muted">No journal entries yet. Start writing securely above.</p>
+                    </div>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+                        {journalLogs.map((log) => (
+                            <div key={log.id} className="card" style={{ padding: 'var(--space-md)' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-sm)' }}>
+                                    <div style={{ display: 'flex', gap: 'var(--space-sm)', color: 'var(--text-secondary)', fontSize: 'var(--font-size-xs)' }}>
+                                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <Calendar size={12} /> {fmtShort(log.date)}
+                                        </span>
+                                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <Clock size={12} /> {fmtTime(log.date)}
+                                        </span>
+                                    </div>
+                                    <button
+                                        onClick={() => { if (confirm('Delete this entry?')) deleteJournalEntry(log.id) }}
+                                        style={{ background: 'none', border: 'none', color: 'var(--error)', opacity: 0.5, cursor: 'pointer' }}
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                                <p style={{ fontSize: 'var(--font-size-sm)', whiteSpace: 'pre-wrap', lineHeight: 1.6, color: 'var(--text-primary)', margin: 0 }}>
+                                    {log.text}
+                                </p>
+                                {log.tags && log.tags.length > 0 && (
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '12px' }}>
+                                        {log.tags.map(tag => (
+                                            <span key={tag} style={{ fontSize: '10px', padding: '3px 8px', background: 'rgba(239, 68, 68, 0.1)', color: '#EF4444', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '4px', fontWeight: 600 }}>{tag}</span>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            <div style={{ height: '100px' }} /> {/* Bottom nav spacing */}
+        </div>
+    );
+}
+
+
+--- package.json ---
+{
+    "name": "crowncare",
+    "private": true,
+    "version": "1.0.4",
+    "type": "module",
+    "scripts": {
+        "dev": "vite --host",
+        "prebuild": "npm --prefix local-plugins/storekit-paywall install && npm --prefix local-plugins/storekit-paywall run build",
+        "build": "vite build",
+        "preview": "vite preview",
+        "deploy": "npm run build && firebase deploy --project crowncare-116e4"
+    },
+    "dependencies": {
+        "@capacitor-community/speech-recognition": "^7.0.1",
+        "@capacitor/android": "^8.1.0",
+        "@capacitor/app": "^8.1.0",
+        "@capacitor/camera": "^8.0.2",
+        "@capacitor/core": "^8.1.0",
+        "@capacitor/ios": "^8.3.0",
+        "@ionic/pwa-elements": "^3.4.0",
+        "@revenuecat/purchases-capacitor": "^12.3.0",
+        "@stripe/stripe-js": "^8.8.0",
+        "capacitor-storekit-paywall": "file:local-plugins/storekit-paywall",
+        "chart.js": "^4.4.7",
+        "firebase": "^12.10.0",
+        "framer-motion": "^12.38.0",
+        "i18next": "^25.10.1",
+        "i18next-browser-languagedetector": "^8.2.1",
+        "lucide-react": "^0.469.0",
+        "react": "^19.0.0",
+        "react-chartjs-2": "^5.3.0",
+        "react-dom": "^19.0.0",
+        "react-i18next": "^16.5.8",
+        "react-qr-code": "^2.0.18"
+    },
+    "devDependencies": {
+        "@capacitor/assets": "^3.0.5",
+        "@capacitor/cli": "^8.1.0",
+        "@vitejs/plugin-basic-ssl": "^2.2.0",
+        "@vitejs/plugin-react": "^4.3.4",
+        "node-forge": "^1.4.0",
+        "puppeteer": "^24.40.0",
+        "vite": "^6.3.5"
+    }
+}
+
+

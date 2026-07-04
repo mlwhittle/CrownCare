@@ -398,9 +398,9 @@
 
 .tl-note {
     display: block;
-    font-size: 10px;
-    color: var(--text-secondary);
-    font-style: italic;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 6px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis

@@ -298,8 +298,8 @@
         <!-- Right Side: Email Collector Form -->
         <div class="form-side" id="form-section">
             <div class="form-header">
-                <h2>Join the Program</h2>
-                <p>Verify your stylist status to claim your guide & activation code.</p>
+                <h2>Start Your Hair Journey</h2>
+                <p>Register below to activate your 30-day free trial.</p>
             </div>
 
             <form id="founders-form">
@@ -310,16 +310,11 @@
 
                 <div class="form-group">
                     <label class="form-label" for="stylist-email">Email Address</label>
-                    <input class="form-input" type="email" id="stylist-email" required placeholder="e.g. sarah@salon.com">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="salon-name">Salon / Business Name</label>
-                    <input class="form-input" type="text" id="salon-name" required placeholder="e.g. Studio 54 Hair">
+                    <input class="form-input" type="email" id="stylist-email" required placeholder="e.g. sarah@example.com">
                 </div>
 
                 <button class="btn-submit" type="submit" id="submit-btn">
-                    Get Bonus Business Guide & Code
+                    Start 30-Day Free Trial
                 </button>
             </form>
 
@@ -335,20 +330,6 @@
             <p style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); line-height: 1.5; margin-bottom: 15px;">
                 Please wait while we set up your secure subscription schedule. You will be redirected to our billing portal momentarily.
             </p>
-            
-            <a href="/clinical_hair_guide.html" target="_blank" style="display: inline-block; text-decoration: none; text-align: center; padding: 12px 20px; border-radius: 12px; background: linear-gradient(135deg, var(--gold-primary) 0%, #B8962E 100%); color: var(--navy-deep); font-weight: 700; font-size: 0.9rem; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);">
-                Open Bonus Business Guide
-            </a>
-
-            <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 16px; margin-bottom: 20px; text-align: left; width: 100%;">
-                <h3 style="font-size: 0.95rem; color: var(--gold-primary); margin-bottom: 6px; font-family: 'Playfair Display', serif;">Accessing Your Pro Dashboard</h3>
-                <p style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.8); line-height: 1.4; margin: 0;">
-                    Manage your client roster, review progress photos, and customize client aftercare regimens from your desktop computer:
-                    <a href="https://pro.crowncare.net" target="_blank" style="display: block; color: var(--gold-primary); font-weight: 700; text-decoration: underline; margin-top: 6px; font-size: 0.85rem;">
-                        pro.crowncare.net
-                    </a>
-                </p>
-            </div>
         </div>
     </div>
 
@@ -384,17 +365,15 @@
 
             const name = document.getElementById('stylist-name').value;
             const email = document.getElementById('stylist-email').value;
-            const salon = document.getElementById('salon-name').value;
 
             try {
                 // Save lead to Firestore database
-                await addDoc(collection(db, 'founders_leads'), {
+                await addDoc(collection(db, 'client_leads'), {
                     name: name.trim(),
                     email: email.trim().toLowerCase(),
-                    salon: salon.trim(),
                     timestamp: new Date().toISOString(),
                     status: 'interested',
-                    source: 'stylist-landing-page'
+                    source: 'client-landing-page'
                 });
 
                 // Provision Stripe Subscription Schedule and get Checkout URL
@@ -404,7 +383,7 @@
                     body: JSON.stringify({ 
                         email: email.trim(), 
                         name: name.trim(), 
-                        planType: 'stylist'
+                        planType: 'client'
                     })
                 });
 
@@ -425,7 +404,7 @@
                 console.error("Stripe Provisioning Error:", error);
                 alert("Something went wrong while setting up your subscription. Please try again or contact support at crown@crowncare.net.");
                 submitBtn.disabled = false;
-                submitBtn.textContent = "Get Bonus Business Guide & Code";
+                submitBtn.textContent = "Start 30-Day Free Trial";
             }
         });
     </script>

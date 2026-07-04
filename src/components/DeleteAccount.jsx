@@ -3,6 +3,7 @@ import { auth, db } from '../firebase';
 import { 
     EmailAuthProvider, 
     GoogleAuthProvider, 
+    OAuthProvider,
     reauthenticateWithCredential, 
     reauthenticateWithPopup, 
     deleteUser as fbDeleteUser 
@@ -25,9 +26,15 @@ function DeleteAccount({ setCurrentView }) {
         setIsDeleting(true);
         try {
             const isGoogle = auth.currentUser.providerData.some(p => p.providerId === 'google.com');
+            const isApple = auth.currentUser.providerData.some(p => p.providerId === 'apple.com');
 
             if (isGoogle) {
                 const provider = new GoogleAuthProvider();
+                await reauthenticateWithPopup(auth.currentUser, provider);
+            } else if (isApple) {
+                const provider = new OAuthProvider('apple.com');
+                provider.addScope('email');
+                provider.addScope('name');
                 await reauthenticateWithPopup(auth.currentUser, provider);
             } else {
                 if (!password) {
@@ -44,7 +51,17 @@ function DeleteAccount({ setCurrentView }) {
             await processDeletion();
         } catch (error) {
             console.error("Re-Auth Failed:", error);
-            setErrorMessage(`Authentication failed: ${error.message}`);
+            if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
+                setErrorMessage("Sign-in was cancelled. Please try again to confirm account deletion.");
+            } else if (error.code === 'auth/user-mismatch') {
+                setErrorMessage("The Apple ID used does not match your account. Please sign in with the correct Apple ID.");
+            } else if (error.code === 'auth/network-request-failed') {
+                setErrorMessage("A network error occurred. Please check your connection and try again.");
+            } else if (error.code === 'auth/requires-recent-login') {
+                setErrorMessage("Please sign out and sign back in with your Apple ID, then try again.");
+            } else {
+                setErrorMessage(`Authentication failed: ${error.message}`);
+            }
             setIsDeleting(false);
         }
     };
@@ -159,6 +176,10 @@ function DeleteAccount({ setCurrentView }) {
                     {auth.currentUser?.providerData.some(p => p.providerId === 'google.com') ? (
                         <button className="btn btn-danger" style={{ width: '100%' }} onClick={handleReauthAndRetry} disabled={isDeleting}>
                             Re-authenticate with Google
+                        </button>
+                    ) : auth.currentUser?.providerData.some(p => p.providerId === 'apple.com') ? (
+                        <button className="btn btn-danger" style={{ width: '100%' }} onClick={handleReauthAndRetry} disabled={isDeleting}>
+                            Re-authenticate with Apple
                         </button>
                     ) : (
                         <>

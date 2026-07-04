@@ -6,17 +6,17 @@ import beforeImg from '../assets/images/before.png';
 import afterImg from '../assets/images/after.png';
 import diaryImg from '../assets/images/diary.png';
 import PWAGhostCamera from './PWAGhostCamera';
-import { loadApiKey, analyzeScalpPhotoWithGemini } from '../services/GeminiService';
+import { loadApiKey, analyzeScalpPhotoWithGemini, analyzeDiaryPatterns } from '../services/GeminiService';
 import './VisualDiary.css';
 
-const ZONES = ['All', 'Part Line', 'Hairline', 'Crown', 'Edges', 'Nape', 'Overall'];
+const ZONES = ['ALL', 'GROWTH', 'SCALP', 'TEXTURE', 'TREATMENT', 'OTHER'];
 
 export default function VisualDiary({ setCurrentView, openAI }) {
     const { photos, addPhoto, updatePhoto, deletePhoto, isPremium, shareAuditWithStylist } = useApp();
-    const [zone, setZone] = useState('All');
+    const [zone, setZone] = useState('ALL');
     const [showNextSteps, setShowNextSteps] = useState(false);
     const [captured, setCaptured] = useState(null);
-    const [photoZone, setPhotoZone] = useState('Part Line');
+    const [photoZone, setPhotoZone] = useState('GROWTH');
     const [notes, setNotes] = useState('');
     const [oilLevel, setOilLevel] = useState(3);
     const [hydrationLevel, setHydrationLevel] = useState(3);
@@ -30,6 +30,19 @@ export default function VisualDiary({ setCurrentView, openAI }) {
     const [auditLoading, setAuditLoading] = useState(false);
     const [auditResult, setAuditResult] = useState(null);
     const [auditPhoto, setAuditPhoto] = useState(null);
+
+    // AI Pattern Insights State
+    const [patternLoading, setPatternLoading] = useState(false);
+    const [patternResult, setPatternResult] = useState(null);
+
+    const runPatternAnalysis = async () => {
+        setPatternLoading(true);
+        setPatternResult(null);
+        const apiKey = loadApiKey();
+        const result = await analyzeDiaryPatterns(apiKey, photos);
+        setPatternResult(result);
+        setPatternLoading(false);
+    };
 
     const runScalpAudit = async (photo) => {
         setAuditLoading(true);
@@ -54,7 +67,7 @@ export default function VisualDiary({ setCurrentView, openAI }) {
                 width: 800 // Capacitor safely resizes natively avoiding QuotaExceeded errors
             });
             setCaptured(image.dataUrl);
-            setPhotoZone('Part Line');
+            setPhotoZone('GROWTH');
             setNotes('');
             setOilLevel(3);
             setHydrationLevel(3);
@@ -80,7 +93,7 @@ export default function VisualDiary({ setCurrentView, openAI }) {
 
     const cancel = () => { setCaptured(null); setNotes(''); setOilLevel(3); setHydrationLevel(3); setFlakeLevel(1); };
 
-    const filtered = zone === 'All' ? photos : photos.filter(p => p.zone === zone);
+    const filtered = zone === 'ALL' ? photos : photos.filter(p => p.zone === zone);
     const fmt = (d) => new Date(d).toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' });
     const fmtTime = (d) => new Date(d).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
     const fmtShort = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -132,7 +145,7 @@ export default function VisualDiary({ setCurrentView, openAI }) {
                 </p>
                 <div style={{ padding: 'var(--space-sm)', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)' }}>
                     <p className="text-sm" style={{ margin: 0, fontWeight: 500, color: 'var(--text-secondary)' }}>
-                        Consistent visual documentation is the <strong>only clinically proven way</strong> to accurately verify if your routine is successfully reversing follicle miniaturization.
+                        Consistent visual documentation is the most reliable way to <strong>track patterns in your hair over time</strong> and see how your routine is working.
                     </p>
                 </div>
                 <p className="text-muted text-sm" style={{ marginTop: 'var(--space-md)', marginBottom: 0, lineHeight: 1.5, borderTop: '1px solid var(--border-color)', paddingTop: 'var(--space-md)' }}>
@@ -190,7 +203,7 @@ export default function VisualDiary({ setCurrentView, openAI }) {
                         <div style={{ maxWidth: 400, margin: 'var(--space-lg) auto 0' }}>
                             <label className="form-label">Scalp Zone</label>
                             <select className="form-select" value={photoZone} onChange={e => setPhotoZone(e.target.value)} style={{ marginBottom: 'var(--space-md)' }}>
-                                {ZONES.filter(z => z !== 'All').map(z => <option key={z} value={z}>{z}</option>)}
+                                {ZONES.filter(z => z !== 'ALL').map(z => <option key={z} value={z}>{z}</option>)}
                             </select>
 
                             <div style={{ background: 'var(--bg-secondary)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '16px' }}>
@@ -231,9 +244,17 @@ export default function VisualDiary({ setCurrentView, openAI }) {
                 )}
             </div>
 
+            {photos.length >= 10 && (
+                <div style={{ padding: '0 var(--space-md)', marginBottom: 'var(--space-lg)' }}>
+                    <button className="btn btn-outline" style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', border: '1px solid var(--gold-500)', color: 'var(--gold-500)' }} onClick={runPatternAnalysis}>
+                        <Sparkles size={16} /> AI Pattern Insights
+                    </button>
+                </div>
+            )}
+
             {/* Timeline */}
             <div className="tl-header">
-                <h3>{zone === 'All' ? 'Timeline' : `${zone} Timeline`} <span className="text-muted text-sm" style={{ fontWeight: 400 }}>({filtered.length})</span></h3>
+                <h3>{zone === 'ALL' ? 'Timeline' : `${zone} Timeline`} <span className="text-muted text-sm" style={{ fontWeight: 400 }}>({filtered.length})</span></h3>
                 {filtered.length >= 2 && <button className={`btn btn-sm ${compare ? 'btn-primary' : 'btn-outline'}`} onClick={() => { setCompare(!compare); setCompA(null); setCompB(null); }}><ArrowLeftRight size={14} />{compare ? 'Exit' : 'Compare'}</button>}
             </div>
 
@@ -306,6 +327,11 @@ export default function VisualDiary({ setCurrentView, openAI }) {
                                     <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 500 }}>
                                         <Calendar size={10} /> {fmtShort(p.date)}
                                     </div>
+                                    {p.notes && (
+                                        <div className="tl-note">
+                                            {p.notes}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         );
@@ -377,7 +403,7 @@ export default function VisualDiary({ setCurrentView, openAI }) {
                     onCapture={(dataUrl) => {
                         setCaptured(dataUrl);
                         setShowGhostCamera(false);
-                        setPhotoZone(zone === 'All' ? 'Part Line' : zone);
+                        setPhotoZone(zone === 'ALL' ? 'GROWTH' : zone);
                         setNotes('');
                     }}
                 />
@@ -399,7 +425,7 @@ export default function VisualDiary({ setCurrentView, openAI }) {
                         {auditLoading && (
                             <div style={{ padding: '20px', textAlign: 'center', position: 'absolute', top: '120px', left: 0, right: 0 }}>
                                 <div style={{ width: 40, height: 40, border: '3px solid rgba(252,211,77,0.2)', borderTop: '3px solid #FCD34D', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }}></div>
-                                <p style={{ color: '#FCD34D', fontSize: '13px', fontWeight: 'bold', animation: 'pulse 1.5s infinite' }}>Gemini Vision AI is scanning 800+ follicles...</p>
+                                <p style={{ color: '#FCD34D', fontSize: '13px', fontWeight: 'bold', animation: 'pulse 1.5s infinite' }}>AI is analyzing your photo for visible patterns...</p>
                             </div>
                         )}
 
@@ -421,7 +447,37 @@ export default function VisualDiary({ setCurrentView, openAI }) {
                             </div>
                         )}
                         {!auditLoading && auditResult && (
-                            <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginTop: '16px', textAlign: 'center', lineHeight: 1.4 }}>*CrownCare AI Audits are non-medical estimates. Share this photo with your certified Stylist for clinical diagnosis.</p>
+                            <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginTop: '16px', textAlign: 'center', lineHeight: 1.4 }}>*CrownCare AI insights are non-medical estimates. Share this photo with your certified Stylist for professional guidance.</p>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* AI Pattern Insights Modal */}
+            {(patternLoading || patternResult) && (
+                <div className="ai-overlay" style={{ zIndex: 1000, padding: '20px', alignItems: 'center' }}>
+                    <div className="card" style={{ maxWidth: '400px', margin: 'auto', background: 'var(--bg-secondary)', position: 'relative', border: '1px solid var(--brand-400)', width: '100%', borderRadius: '24px', boxShadow: '0 20px 50px rgba(0,0,0,0.8)' }}>
+                        <button onClick={() => { setPatternResult(null); setPatternLoading(false); }} style={{ position: 'absolute', top: 16, right: 16, background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', cursor: 'pointer', width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={18} /></button>
+                        
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: '#FCD34D' }}>
+                            <Sparkles size={22} />
+                            <h3 style={{ margin: 0, color: 'white', fontSize: '18px' }}>AI Pattern Insights</h3>
+                        </div>
+
+                        {patternLoading && (
+                            <div style={{ padding: '20px', textAlign: 'center' }}>
+                                <div style={{ width: 40, height: 40, border: '3px solid rgba(252,211,77,0.2)', borderTop: '3px solid #FCD34D', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }}></div>
+                                <p style={{ color: '#FCD34D', fontSize: '13px', fontWeight: 'bold', animation: 'pulse 1.5s infinite' }}>Analyzing {photos.length} entries for patterns over time...</p>
+                            </div>
+                        )}
+
+                        {!patternLoading && patternResult && (
+                            <div style={{ background: 'rgba(0,0,0,0.5)', padding: '16px', borderRadius: '12px', maxHeight: '55vh', overflowY: 'auto', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                <div style={{ fontSize: '13px', lineHeight: 1.6, color: 'rgba(255,255,255,0.9)', whiteSpace: 'pre-wrap' }} dangerouslySetInnerHTML={{ __html: patternResult.replace(/\*\*(.*?)\*\*/g, '<strong style="color: #FCD34D">$1</strong>') }} />
+                            </div>
+                        )}
+                        {!patternLoading && patternResult && (
+                            <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginTop: '16px', textAlign: 'center', lineHeight: 1.4 }}>*AI-supported insights are for observational pattern recognition only.</p>
                         )}
                     </div>
                 </div>

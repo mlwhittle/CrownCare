@@ -175,7 +175,11 @@ export const AppProvider = ({ children }) => {
                 setTreatments(load(STORAGE_KEYS.treatments, []));
                 setNutritionLogs(load(STORAGE_KEYS.nutrition, []));
                 setRoutineLogs(load(STORAGE_KEYS.routines, []));
-                setPhotos(load(STORAGE_KEYS.photos, []));
+                setPhotos(load(STORAGE_KEYS.photos, []).map(p => ({
+                    ...p,
+                    zone: p.zone || 'OTHER',
+                    notes: p.notes || ''
+                })));
                 setJournalLogs(load(STORAGE_KEYS.journal, []));
                 setUnlockedBadges(load(STORAGE_KEYS.badges, []));
                 setAppointments(load(STORAGE_KEYS.appointments, []));
@@ -233,12 +237,31 @@ export const AppProvider = ({ children }) => {
         if (user) pushAllToCloud(user.uid);
     };
 
+    const updateProfile = (updates) => {
+        const newData = { ...onboarding, ...updates };
+        setOnboarding(newData);
+        if (user) syncToCloud(user.uid, STORAGE_KEYS.onboarding, newData);
+    };
+
     // Photos
-    const [photos, setPhotos] = useState(() => load(STORAGE_KEYS.photos, []));
+    const [photos, setPhotos] = useState(() => {
+        const loaded = load(STORAGE_KEYS.photos, []);
+        return loaded.map(p => ({
+            ...p,
+            zone: p.zone || 'OTHER',
+            notes: p.notes || ''
+        }));
+    });
     useEffect(() => { save(STORAGE_KEYS.photos, photos); if (user) syncToCloud(user.uid, STORAGE_KEYS.photos, photos); }, [photos]);
 
     const addPhoto = (photo) => {
-        setPhotos(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), ...photo }, ...prev]);
+        setPhotos(prev => [{ 
+            id: Date.now().toString(), 
+            date: new Date().toISOString(), 
+            ...photo,
+            zone: photo.zone || 'OTHER',
+            notes: photo.notes || ''
+        }, ...prev]);
     };
     const updatePhoto = (id, updates) => {
         setPhotos(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
@@ -604,7 +627,7 @@ export const AppProvider = ({ children }) => {
         <AppContext.Provider value={{
             user, isPremium, isVIP, isTrialExpired, redeemVipCode, authLoading,
             theme, toggleTheme,
-            onboarding, completeOnboarding,
+            onboarding, completeOnboarding, updateProfile,
             photos, addPhoto, updatePhoto, deletePhoto,
             nutritionLogs, getTodayNutrition, saveNutrition,
             treatments, addTreatment, deleteTreatment, toggleTreatmentDone,
@@ -618,7 +641,7 @@ export const AppProvider = ({ children }) => {
             appointments, addAppointment,
             stylistContact, setStylistContact,
             isStylistAccount, setIsStylistAccount,
-            stylistDashboardData, updateStylistDashboard, linkedClients,
+            stylistDashboardData, updateStylistDashboard, linkedClients, setLinkedClients,
             archivedNarratives, saveNarrativeArchive,
             sharedAudits, shareAuditWithStylist,
             stylistMessages,

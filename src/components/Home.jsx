@@ -95,16 +95,7 @@ export default function Home({ setCurrentView, openAI }) {
             )}
 
             {/* 1. TOP LAYER: Daily Progress Score & Microbiome */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-                <div className="card" style={{ padding: '1.25rem', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '16px', boxShadow: 'var(--shadow-sm)' }}>
-                    <h2 style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--text-secondary)', margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'var(--font-sans)', fontWeight: 700 }}>
-                        <TrendingUp size={14} color="var(--brand-primary)" /> Daily Progress
-                    </h2>
-                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px' }}>
-                        <span style={{ fontSize: '2.5rem', fontWeight: 700, lineHeight: 1, color: 'var(--brand-primary)', fontFamily: 'var(--font-sans)', letterSpacing: '-0.02em' }}>85%</span>
-                    </div>
-                    <p style={{ margin: '8px 0 0 0', fontSize: '0.75rem', color: 'var(--text-tertiary)', lineHeight: 1.2 }}>Sleep sync & nutrition.</p>
-                </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', marginBottom: '1.5rem' }}>
 
                 <div className="card" style={{ padding: '1.25rem', background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.02))', border: '1px solid var(--gold-200)', borderRadius: '16px', boxShadow: 'var(--shadow-sm)', cursor: 'pointer' }} onClick={() => setCurrentView('treatments')}>
                     <h2 style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--gold-600)', margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'var(--font-sans)', fontWeight: 700 }}>
@@ -155,13 +146,8 @@ export default function Home({ setCurrentView, openAI }) {
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <div style={{ padding: '16px', background: 'var(--success-light)', borderRadius: '12px', borderLeft: '4px solid var(--success)' }}>
-                        <h4 style={{ margin: '0 0 6px 0', fontSize: '0.95rem', color: 'var(--brand-primary)', fontFamily: 'var(--font-sans)', fontWeight: 700 }}>Scalp Audit: Excellent</h4>
-                        <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>Your latest visual scan shows a 12% reduction in inflammation along the crown.</p>
-                    </div>
-
-                    <div style={{ padding: '16px', background: 'var(--warning-light)', borderRadius: '12px', borderLeft: '4px solid var(--warning)' }}>
-                        <h4 style={{ margin: '0 0 6px 0', fontSize: '0.95rem', color: 'var(--brand-primary)', fontFamily: 'var(--font-sans)', fontWeight: 700 }}>Ingredient Warning</h4>
-                        <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>The 'Heavy Cream' you scanned yesterday contains Silicones currently incompatible with your Low Porosity profile.</p>
+                        <h4 style={{ margin: '0 0 6px 0', fontSize: '0.95rem', color: 'var(--brand-primary)', fontFamily: 'var(--font-sans)', fontWeight: 700 }}>Keep Tracking Your Crown</h4>
+                        <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>Your consistent logging helps CrownCare surface AI-supported patterns in your hair journey over time.</p>
                     </div>
                 </div>
             </div>

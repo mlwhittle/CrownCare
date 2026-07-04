@@ -1,18 +1,33 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import { Users, DollarSign, Activity, ClipboardList, PenTool, TrendingUp, CheckCircle2, ChevronRight, AlertCircle, Sparkles, Calendar, FileText, ArrowLeft, Pill, BarChart3, ExternalLink, Camera } from 'lucide-react';
+import { Users, DollarSign, Activity, ClipboardList, PenTool, TrendingUp, CheckCircle2, ChevronRight, AlertCircle, Sparkles, Calendar, FileText, ArrowLeft, Pill, BarChart3, ExternalLink, Camera, Mic, X } from 'lucide-react';
 import Reports from './Reports';
 import MonthlyGrowthReport from './MonthlyGrowthReport';
 import MonthlyNarrative from './MonthlyNarrative';
 import StripeService from '../services/StripeService';
-import InviteClientModal from './InviteClientModal';
 import { Capacitor } from '@capacitor/core';
+import { updateClientProfileData } from '../services/ClientService';
+import { askGemini, loadApiKey, analyzeDiaryPatterns } from '../services/GeminiService';
 
 export default function StylistPortal() {
-    const { stylistDashboardData, updateStylistDashboard, linkedClients, isStylistAccount, addAppointment, appointments, stylistContact, setStylistContact, clientContacts, updateClientContact, sharedAudits } = useApp();
+    const { stylistDashboardData, updateStylistDashboard, linkedClients, setLinkedClients, isStylistAccount, addAppointment, appointments, stylistContact, setStylistContact, clientContacts, updateClientContact, sharedAudits } = useApp();
     const [tab, setTab] = useState('hub'); // hub, roster, pad, calendar
     const [profileTab, setProfileTab] = useState('activity'); // activity, reports, narrative
     const [selectedClient, setSelectedClient] = useState('');
+    
+    // Edit Profile State
+    const [isEditingProfile, setIsEditingProfile] = useState(false);
+    const [editProfileForm, setEditProfileForm] = useState({ hairType: '', porosity: '', concern: '' });
+    const [aiChairNotes, setAiChairNotes] = useState('');
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [isListening, setIsListening] = useState(false);
+    const recognitionRef = useRef(null);
+
+    // Global Assistant State
+    const [globalIsListening, setGlobalIsListening] = useState(false);
+    const [globalIsProcessing, setGlobalIsProcessing] = useState(false);
+    const globalRecognitionRef = useRef(null);
+
     const [rxProduct, setRxProduct] = useState('');
     const [rxFrequency, setRxFrequency] = useState('');
     const [rxNotes, setRxNotes] = useState('');
@@ -24,6 +39,19 @@ export default function StylistPortal() {
     
     const [isStripeLoading, setIsStripeLoading] = useState(false);
     const [showInviteModal, setShowInviteModal] = useState(false);
+
+    // AI Pattern Insights State
+    const [stylistPatternLoading, setStylistPatternLoading] = useState(false);
+    const [stylistPatternResult, setStylistPatternResult] = useState(null);
+
+    const runStylistPatternAnalysis = async (diaryEntries) => {
+        setStylistPatternLoading(true);
+        setStylistPatternResult(null);
+        const apiKey = loadApiKey();
+        const result = await analyzeDiaryPatterns(apiKey, diaryEntries);
+        setStylistPatternResult(result);
+        setStylistPatternLoading(false);
+    };
 
     if (!isStylistAccount) {
         return (
@@ -42,6 +70,211 @@ export default function StylistPortal() {
         setRxNotes('');
         setSelectedClient('');
         setTab('roster');
+    };
+
+    const toggleListen = () => {
+        if (isListening) {
+            if (recognitionRef.current) {
+                recognitionRef.current.stop();
+            }
+            setIsListening(false);
+            return;
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert("Your browser does not support Speech Recognition. Please try Chrome, Safari, or Edge.");
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false; 
+        recognition.interimResults = false;
+        
+        recognition.onstart = () => setIsListening(true);
+        
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            setAiChairNotes(prev => (prev ? prev + ' ' : '') + transcript);
+        };
+        
+        recognition.onerror = (event) => {
+            console.error('Speech recognition error:', event.error);
+            setIsListening(false);
+        };
+        
+        recognition.onend = () => {
+            setIsListening(false);
+        };
+
+        recognitionRef.current = recognition;
+        recognition.start();
+    };
+
+    const toggleGlobalListen = () => {
+        if (globalIsListening) {
+            if (globalRecognitionRef.current) {
+                globalRecognitionRef.current.stop();
+            }
+            setGlobalIsListening(false);
+            return;
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert("Your browser does not support Speech Recognition. Please try Chrome, Safari, or Edge.");
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = () => setGlobalIsListening(true);
+        
+        recognition.onresult = async (event) => {
+            const transcript = event.results[0][0].transcript;
+            setGlobalIsListening(false);
+            handleGlobalIntent(transcript);
+        };
+        
+        recognition.onerror = (event) => {
+            console.error('Speech error:', event.error);
+            setGlobalIsListening(false);
+        };
+        
+        recognition.onend = () => {
+            setGlobalIsListening(false);
+        };
+
+        globalRecognitionRef.current = recognition;
+        recognition.start();
+    };
+
+    const handleGlobalIntent = async (transcript) => {
+        setGlobalIsProcessing(true);
+        try {
+            const clientList = linkedClients.map(c => `{ id: "${c.id}", name: "${c.name}" }`).join(', ');
+            
+            const prompt = `You are an AI Intent Router for a hair salon app.
+The user said: "${transcript}"
+
+Here is the list of active clients: [${clientList}]
+
+Extract the intent and return ONLY a valid JSON object. Do not include markdown formatting.
+If the intent is to schedule or set an appointment, return:
+{ "intent": "SET_APPOINTMENT", "clientId": "<matched_id>", "date": "<YYYY-MM-DD>", "time": "<HH:MM>", "notes": "<extracted_notes>" }
+
+If the intent is to view or open a client's profile, return:
+{ "intent": "OPEN_CLIENT_PROFILE", "clientId": "<matched_id>" }
+
+If the intent is to update a client's hair profile/evaluation, return:
+{ "intent": "UPDATE_PROFILE", "clientId": "<matched_id>", "hairType": "<e.g. 4c>", "porosity": "<low|normal|high|unsure>", "concern": "<thinning|shedding|edges|postpartum|medical|maintenance>" }
+
+If unknown, return { "intent": "UNKNOWN" }.
+Return only JSON.`;
+
+            const apiKey = loadApiKey();
+            const responseText = await askGemini(prompt, apiKey);
+            const cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+            const parsed = JSON.parse(cleanedText);
+            
+            executeIntent(parsed);
+        } catch (e) {
+            console.error('Failed to parse intent:', e);
+            alert("I couldn't quite understand that command. Please try again.");
+        } finally {
+            setGlobalIsProcessing(false);
+        }
+    };
+
+    const executeIntent = async (data) => {
+        switch (data.intent) {
+            case 'SET_APPOINTMENT':
+                if (!data.clientId) { alert('Could not identify the client.'); return; }
+                const linkedClient = linkedClients.find(c => c.id === data.clientId);
+                const defaultDate = new Date();
+                defaultDate.setDate(defaultDate.getDate() + 1);
+                
+                addAppointment({
+                    date: `${data.date || defaultDate.toISOString().split('T')[0]}T${data.time || '12:00'}`,
+                    stylistName: stylistContact.name || 'Your CrownCare Stylist',
+                    notes: data.notes || 'CrownCare Consultation',
+                    clientId: data.clientId,
+                    clientName: linkedClient ? linkedClient.name : 'Unknown Client'
+                });
+                alert(`Appointment scheduled for ${linkedClient?.name}!`);
+                setTab('calendar');
+                break;
+                
+            case 'OPEN_CLIENT_PROFILE':
+                if (!data.clientId) { alert('Could not identify the client.'); return; }
+                setSelectedClient(data.clientId);
+                setTab('profile');
+                break;
+                
+            case 'UPDATE_PROFILE':
+                if (!data.clientId) { alert('Could not identify the client.'); return; }
+                const targetClient = linkedClients.find(c => c.id === data.clientId);
+                if (!targetClient) return;
+                
+                const updatedRaw = {
+                    ...targetClient.rawProfile,
+                    hairType: data.hairType ? [data.hairType] : targetClient.rawProfile?.hairType,
+                    porosity: data.porosity || targetClient.rawProfile?.porosity,
+                    concern: data.concern || targetClient.rawProfile?.concern
+                };
+                
+                const success = await updateClientProfileData(data.clientId, updatedRaw);
+                if (success) {
+                    setLinkedClients(prev => prev.map(c => c.id === data.clientId ? { 
+                        ...c, 
+                        rawProfile: updatedRaw, 
+                        hairType: updatedRaw.hairType ? updatedRaw.hairType.join(', ') : c.hairType, 
+                        porosity: updatedRaw.porosity, 
+                        concern: updatedRaw.concern 
+                    } : c));
+                    alert(`Profile updated for ${targetClient.name}!`);
+                    setSelectedClient(data.clientId);
+                    setTab('profile');
+                }
+                break;
+                
+            default:
+                alert('Command not recognized or no matching client found.');
+        }
+    };
+
+    const handleAnalyzeNotes = async () => {
+        if (!aiChairNotes.trim()) return;
+        setIsAnalyzing(true);
+        try {
+            const prompt = `Extract the hair profile details from these stylist notes. Return ONLY a valid JSON object with the following exact keys:
+- "hairType": string (e.g. "4c", "3b", "straight")
+- "porosity": one of ["low", "normal", "high", "unsure"]
+- "concern": one of ["thinning", "shedding", "edges", "postpartum", "medical", "maintenance"]
+If you cannot determine a value, omit the key or set it to null. Do not include markdown formatting or backticks.
+Notes: ${aiChairNotes}`;
+            
+            const apiKey = loadApiKey();
+            const responseText = await askGemini(prompt, apiKey);
+            const cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+            const extractedData = JSON.parse(cleanedText);
+            
+            setEditProfileForm(prev => ({
+                ...prev,
+                hairType: extractedData.hairType || prev.hairType,
+                porosity: extractedData.porosity || prev.porosity,
+                concern: extractedData.concern || prev.concern
+            }));
+            
+            alert('AI Analysis Complete! Profile parameters have been updated.');
+        } catch (e) {
+            console.error('Failed to parse AI analysis:', e);
+            alert('Could not extract data. Please try rephrasing your notes or manually select the options.');
+        } finally {
+            setIsAnalyzing(false);
+        }
     };
 
     const handleSetAppointment = () => {
@@ -271,6 +504,21 @@ export default function StylistPortal() {
         const client = linkedClients.find(c => c.id === selectedClient);
         if (!client) return null;
 
+        let engagementWarning = null;
+        let isEngaged = true;
+        if (!client.visualDiary || client.visualDiary.length === 0) {
+            engagementWarning = "No diary entries shared yet. Reduced engagement — check in with the client to encourage diary activity.";
+            isEngaged = false;
+        } else {
+            const sortedDiary = [...client.visualDiary].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const newestDate = new Date(sortedDiary[0].date);
+            const daysSince = Math.floor((new Date() - newestDate) / (1000 * 60 * 60 * 24));
+            if (daysSince > 14) {
+                engagementWarning = `Reduced engagement — no diary activity in ${daysSince} days. Consider a check in.`;
+                isEngaged = false;
+            }
+        }
+
         return (
             <div style={{ animation: 'fadeIn 0.2s ease-out', maxWidth: '100%' }}>
                 <button className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: 'var(--space-md)', padding: '6px 12px', border: 'none', background: 'transparent' }} onClick={() => setTab('roster')}>
@@ -292,8 +540,133 @@ export default function StylistPortal() {
                                 <span className="badge" style={{ background: 'rgba(217, 119, 6, 0.1)', color: 'var(--gold-400)', border: '1px solid var(--gold-600)' }}>Concern: {client.concern}</span>
                             </div>
                         )}
+                        <button 
+                            className="btn btn-outline btn-sm" 
+                            style={{ marginTop: '12px', fontSize: '11px', padding: '4px 10px' }}
+                            onClick={() => {
+                                setEditProfileForm({
+                                    hairType: Array.isArray(client.rawProfile?.hairType) ? client.rawProfile.hairType.join(', ') : (client.rawProfile?.hairType || ''),
+                                    porosity: client.rawProfile?.porosity || '',
+                                    concern: client.rawProfile?.concern || ''
+                                });
+                                setAiChairNotes('');
+                                setIsEditingProfile(true);
+                            }}
+                        >
+                            Edit Clinical Profile
+                        </button>
                     </div>
                 </div>
+
+                {!isEngaged ? (
+                    <div style={{ background: 'rgba(239, 68, 68, 0.1)', borderLeft: '4px solid var(--error)', padding: '12px 16px', marginBottom: 'var(--space-md)', borderRadius: '0 8px 8px 0', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <AlertCircle size={20} color="var(--error)" style={{ flexShrink: 0 }} />
+                        <span style={{ fontSize: '13px', color: 'var(--error)', fontWeight: 600 }}>{engagementWarning}</span>
+                    </div>
+                ) : (
+                    <div style={{ background: 'var(--success-light)', borderLeft: '4px solid var(--success)', padding: '12px 16px', marginBottom: 'var(--space-md)', borderRadius: '0 8px 8px 0', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <CheckCircle2 size={20} color="var(--success)" style={{ flexShrink: 0 }} />
+                        <span style={{ fontSize: '13px', color: 'var(--success)', fontWeight: 600 }}>Active diary engagement (recent activity within 14 days)</span>
+                    </div>
+                )}
+
+                {isEditingProfile && (
+                    <div className="card-glass" style={{ marginBottom: 'var(--space-md)', padding: '16px', border: '1px solid var(--brand-400)', background: 'var(--bg-secondary)', borderRadius: '16px' }}>
+                        <h4 style={{ margin: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Sparkles size={16} color="var(--gold-primary)" /> Update Profile Evaluation
+                        </h4>
+
+                        <div style={{ marginBottom: '16px', padding: '12px', background: 'var(--bg-primary)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                <label style={{ fontSize: '12px', color: 'var(--brand-primary)', fontWeight: 700, margin: 0 }}>AI Chair Assistant</label>
+                                <button 
+                                    onClick={toggleListen}
+                                    style={{ 
+                                        background: isListening ? 'rgba(239, 68, 68, 0.1)' : 'transparent', 
+                                        border: isListening ? '1px solid var(--error)' : '1px solid var(--border-color)', 
+                                        borderRadius: '50%', 
+                                        padding: '6px', 
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        animation: isListening ? 'pulse 1.5s infinite' : 'none',
+                                        color: isListening ? 'var(--error)' : 'var(--text-secondary)'
+                                    }}
+                                    title="Tap to speak"
+                                >
+                                    <Mic size={16} />
+                                </button>
+                            </div>
+                            <textarea 
+                                className="form-input" 
+                                style={{ minHeight: '80px', marginBottom: '8px' }}
+                                placeholder="e.g., Client has tight 4c coils, struggling with postpartum shedding around the edges. Hair is very low porosity."
+                                value={aiChairNotes}
+                                onChange={e => setAiChairNotes(e.target.value)}
+                            />
+                            <button 
+                                className="btn btn-outline btn-sm" 
+                                style={{ width: '100%', borderColor: 'var(--gold-primary)', color: 'var(--gold-600)' }}
+                                onClick={handleAnalyzeNotes}
+                                disabled={isAnalyzing || !aiChairNotes.trim()}
+                            >
+                                {isAnalyzing ? 'Analyzing...' : '✨ Extract Profile Data'}
+                            </button>
+                        </div>
+
+                        <div style={{ marginBottom: '12px' }}>
+                            <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Hair Type (comma separated)</label>
+                            <input className="form-input" value={editProfileForm.hairType} onChange={e => setEditProfileForm({...editProfileForm, hairType: e.target.value})} placeholder="e.g. 4c, 4b" />
+                        </div>
+                        <div style={{ marginBottom: '12px' }}>
+                            <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Porosity</label>
+                            <select className="form-select" value={editProfileForm.porosity} onChange={e => setEditProfileForm({...editProfileForm, porosity: e.target.value})}>
+                                <option value="low">Low Porosity</option>
+                                <option value="normal">Normal Porosity</option>
+                                <option value="high">High Porosity</option>
+                                <option value="unsure">Unsure</option>
+                            </select>
+                        </div>
+                        <div style={{ marginBottom: '16px' }}>
+                            <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Primary Concern</label>
+                            <select className="form-select" value={editProfileForm.concern} onChange={e => setEditProfileForm({...editProfileForm, concern: e.target.value})}>
+                                <option value="thinning">General Thinning</option>
+                                <option value="shedding">Excessive Shedding</option>
+                                <option value="edges">Edges / Hairline</option>
+                                <option value="postpartum">Post-Partum</option>
+                                <option value="medical">Alopecia / PCOS</option>
+                                <option value="maintenance">Growth & Porosity</option>
+                            </select>
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <button className="btn btn-primary" style={{ flex: 1 }} onClick={async () => {
+                                const updatedRaw = {
+                                    ...client.rawProfile,
+                                    hairType: editProfileForm.hairType.split(',').map(s => s.trim()).filter(Boolean),
+                                    porosity: editProfileForm.porosity,
+                                    concern: editProfileForm.concern
+                                };
+                                const success = await updateClientProfileData(client.id, updatedRaw);
+                                if (success) {
+                                    alert('Clinical profile updated successfully!');
+                                    // Update local state to reflect change immediately
+                                    setLinkedClients(prev => prev.map(c => c.id === client.id ? { 
+                                        ...c, 
+                                        rawProfile: updatedRaw, 
+                                        hairType: updatedRaw.hairType.join(', '), 
+                                        porosity: updatedRaw.porosity, 
+                                        concern: updatedRaw.concern 
+                                    } : c));
+                                    setIsEditingProfile(false);
+                                } else {
+                                    alert('Failed to update profile. Please try again.');
+                                }
+                            }}>Save Changes</button>
+                            <button className="btn btn-outline" style={{ flex: 1 }} onClick={() => setIsEditingProfile(false)}>Cancel</button>
+                        </div>
+                    </div>
+                )}
 
                 {client.consentStatus ? (
                     <>
@@ -341,6 +714,7 @@ export default function StylistPortal() {
 
                         <div className="tracker-tabs" style={{ width: '100%', display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', WebkitOverflowScrolling: 'touch', gap: '4px', marginBottom: 'var(--space-lg)', marginTop: 'var(--space-xs)', paddingBottom: '4px' }}>
                             <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'activity' ? 'active' : ''}`} onClick={() => setProfileTab('activity')}>Activity</button>
+                            <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'diary' ? 'active' : ''}`} onClick={() => setProfileTab('diary')}><FileText size={14} style={{ marginRight: '4px' }}/> Diary Timeline</button>
                             <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'visuals' ? 'active' : ''}`} onClick={() => setProfileTab('visuals')}><Camera size={14} style={{ marginRight: '4px' }}/> Visuals</button>
                             <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'audits' ? 'active' : ''}`} onClick={() => setProfileTab('audits')}><Sparkles size={14} style={{ marginRight: '4px' }}/> Scans</button>
                             <button style={{ flex: '1 0 auto', minWidth: 'max-content', padding: '10px 16px' }} className={`tt ${profileTab === 'products' ? 'active' : ''}`} onClick={() => setProfileTab('products')}>Products</button>
@@ -435,6 +809,33 @@ export default function StylistPortal() {
                             </div>
                         ) : (
                             <div style={{ padding: 'var(--space-md)', textAlign: 'center', color: 'var(--text-muted)' }}>No clinical imagery uploaded yet.</div>
+                        )}
+                    </div>
+                )}
+
+                {profileTab === 'diary' && (
+                    <div className="card" style={{ marginTop: 'var(--space-lg)' }}>
+                        <h3 style={{ marginBottom: 'var(--space-md)' }}>Visual Diary Timeline</h3>
+                        {(!client.visualDiary || client.visualDiary.length === 0) ? (
+                            <div style={{ padding: 'var(--space-md)', textAlign: 'center', color: 'var(--text-muted)' }}>No diary entries shared yet.</div>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+                                {client.visualDiary.length >= 10 && (
+                                    <button className="btn btn-outline" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', border: '1px solid var(--gold-500)', color: 'var(--gold-500)', marginBottom: '8px' }} onClick={() => runStylistPatternAnalysis(client.visualDiary)}>
+                                        <Sparkles size={16} /> AI Pattern Insights
+                                    </button>
+                                )}
+                                {[...client.visualDiary].sort((a, b) => new Date(b.date) - new Date(a.date)).map(entry => (
+                                    <div key={entry.id} className="card-glass" style={{ display: 'flex', gap: '16px', padding: '16px', border: '1px solid var(--border-color)', borderRadius: '16px' }}>
+                                        <img src={entry.imageData} alt="Diary Entry" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '12px', border: '1px solid var(--border-color)' }} />
+                                        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                            <div style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px', textTransform: 'uppercase' }}>{entry.zone || 'OTHER'}</div>
+                                            <div style={{ fontSize: '11px', color: 'var(--brand-primary)', fontWeight: 600, marginBottom: '8px' }}>{new Date(entry.date).toLocaleDateString()}</div>
+                                            {entry.notes && <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>"{entry.notes}"</div>}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         )}
                     </div>
                 )}
@@ -609,6 +1010,36 @@ export default function StylistPortal() {
                         </div>
                         <div className="text-xs text-muted" style={{ marginBottom: 'var(--space-lg)', textAlign: 'right' }}>
                             ✓ Auto-saves to your local portal cache
+                        </div>
+                    </div>
+                )}
+
+                {/* AI Pattern Insights Modal (Stylist View) */}
+                {(stylistPatternLoading || stylistPatternResult) && (
+                    <div className="ai-overlay" style={{ zIndex: 1000, padding: '20px', alignItems: 'center', position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center' }}>
+                        <div className="card" style={{ maxWidth: '400px', margin: 'auto', background: 'var(--bg-secondary)', position: 'relative', border: '1px solid var(--brand-400)', width: '100%', borderRadius: '24px', boxShadow: '0 20px 50px rgba(0,0,0,0.8)' }}>
+                            <button onClick={() => { setStylistPatternResult(null); setStylistPatternLoading(false); }} style={{ position: 'absolute', top: 16, right: 16, background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', cursor: 'pointer', width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={18} /></button>
+                            
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: '#FCD34D' }}>
+                                <Sparkles size={22} />
+                                <h3 style={{ margin: 0, color: 'white', fontSize: '18px' }}>AI Pattern Insights</h3>
+                            </div>
+
+                            {stylistPatternLoading && (
+                                <div style={{ padding: '20px', textAlign: 'center' }}>
+                                    <div style={{ width: 40, height: 40, border: '3px solid rgba(252,211,77,0.2)', borderTop: '3px solid #FCD34D', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }}></div>
+                                    <p style={{ color: '#FCD34D', fontSize: '13px', fontWeight: 'bold', animation: 'pulse 1.5s infinite' }}>Analyzing {client.visualDiary.length} entries for patterns over time...</p>
+                                </div>
+                            )}
+
+                            {!stylistPatternLoading && stylistPatternResult && (
+                                <div style={{ background: 'rgba(0,0,0,0.5)', padding: '16px', borderRadius: '12px', maxHeight: '55vh', overflowY: 'auto', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <div style={{ fontSize: '13px', lineHeight: 1.6, color: 'rgba(255,255,255,0.9)', whiteSpace: 'pre-wrap' }} dangerouslySetInnerHTML={{ __html: stylistPatternResult.replace(/\*\*(.*?)\*\*/g, '<strong style="color: #FCD34D">$1</strong>') }} />
+                                </div>
+                            )}
+                            {!stylistPatternLoading && stylistPatternResult && (
+                                <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginTop: '16px', textAlign: 'center', lineHeight: 1.4 }}>*AI-supported insights based on this client's diary patterns over time. Non-medical.</p>
+                            )}
                         </div>
                     </div>
                 )}
@@ -871,6 +1302,42 @@ export default function StylistPortal() {
             {tab === 'pad' && renderPad()}
             {tab === 'reports' && renderGlobalReports()}
             <InviteClientModal isOpen={showInviteModal} onClose={() => setShowInviteModal(false)} />
+            
+            {/* Global AI Assistant FAB */}
+            <div 
+                style={{ 
+                    position: 'fixed', 
+                    bottom: '80px', 
+                    right: '24px', 
+                    zIndex: 1000 
+                }}
+            >
+                <button 
+                    onClick={toggleGlobalListen}
+                    style={{
+                        background: globalIsListening ? 'var(--error)' : 'var(--brand-primary)',
+                        color: globalIsListening ? 'white' : 'var(--gold-primary)',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '60px',
+                        height: '60px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                        animation: globalIsListening ? 'pulse 1.5s infinite' : 'none',
+                        cursor: 'pointer'
+                    }}
+                    title="Global AI Assistant"
+                >
+                    <Mic size={24} />
+                </button>
+                {globalIsProcessing && (
+                    <div style={{ position: 'absolute', top: '-40px', right: 0, background: 'var(--bg-secondary)', padding: '6px 12px', borderRadius: '12px', fontSize: '11px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', whiteSpace: 'nowrap' }}>
+                        Processing intent...
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

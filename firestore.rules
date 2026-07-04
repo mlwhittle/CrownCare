@@ -38,10 +38,10 @@ service cloud.firestore {
     }
 
     // Consumer app data backup. Clients can manage their own data.
-    // Active beta/pro stylists can read only connected, consenting clients.
+    // Active beta/pro stylists can read and update only connected, consenting clients.
     match /user_data/{userId} {
       allow read: if isOwner(userId) || clientSharedWithActiveStylist(userId) || isAdmin();
-      allow write: if isOwner(userId) || isAdmin();
+      allow write: if isOwner(userId) || clientSharedWithActiveStylist(userId) || isAdmin();
     }
 
     // User profile and consent mirror. Clients can write their own mirror fields.
@@ -155,6 +155,12 @@ service cloud.firestore {
 
     // Founders Program lead submissions: public can create, only admin can read/modify.
     match /founders_leads/{leadId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Client lead submissions: public can create, only admin can read/modify.
+    match /client_leads/{leadId} {
       allow create: if true;
       allow read, update, delete: if isAdmin();
     }

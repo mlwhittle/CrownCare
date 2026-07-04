@@ -136,3 +136,41 @@ export async function generateNewsletter(apiKey, rawIdea) {
         return "Error generating Newsletter.";
     }
 }
+
+export async function analyzeDiaryPatterns(apiKey, entries) {
+    if (!entries || entries.length < 10) {
+        return "More entries are needed before patterns can be found.";
+    }
+
+    const processedEntries = entries
+        .filter(entry => entry.notes && entry.notes.trim() !== '')
+        .map(entry => {
+            const dateStr = entry.date ? new Date(entry.date).toLocaleDateString() : 'Unknown Date';
+            return `Date: ${dateStr} | Category: ${entry.zone || 'OTHER'} | Notes: ${entry.notes.trim()}`;
+        });
+
+    if (processedEntries.length === 0) {
+        return "More written notes are needed before patterns can be found.";
+    }
+
+    const prompt = `
+Analyze the following diary entries from a user's hair care journey. 
+Identify any correlations or patterns over time (e.g., routines lining up with progress in growth categories). 
+Provide AI-supported pattern insights as a readable text string using **bold** markers for emphasis. 
+
+CRITICAL RULES:
+1. ALWAYS frame output as: "AI-supported insights", "patterns over time", "guided routines", "appears to correlate with".
+2. NEVER use the following terms or phrases: "cure", "treat hair loss", "guaranteed growth", "medical diagnosis", "clinically proven", "proven to regrow", "reverse hair loss".
+3. Speak only in terms of observed patterns. Avoid any medical claims.
+
+Diary Entries:
+${processedEntries.join('\n')}
+`;
+
+    try {
+        return await askGemini(prompt, apiKey);
+    } catch (e) {
+        console.error("AI Pattern Recognition Failed:", e);
+        return "Analysis Failed: Could not process diary patterns at this time.";
+    }
+}

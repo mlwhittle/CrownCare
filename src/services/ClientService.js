@@ -1,5 +1,5 @@
 import { db } from '../firebase';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs, setDoc } from 'firebase/firestore';
 
 /**
  * Normalizes JSON-stringified cc_* payloads from user_data into a unified client object.
@@ -11,7 +11,11 @@ export function normalizeClientRecord(uid, basicData, rawData) {
     };
 
     const onboarding = parse('cc_onboarding', {});
-    const photos = parse('cc_photos', []);
+    const photos = parse('cc_photos', []).map(p => ({
+        ...p,
+        zone: p.zone || 'OTHER',
+        notes: p.notes || ''
+    }));
     const treatments = parse('cc_treatments', []);
     const nutrition = parse('cc_nutrition', []);
     const routines = parse('cc_routines', []);
@@ -109,7 +113,8 @@ export function normalizeClientRecord(uid, basicData, rawData) {
         tier,
         consistencyScore,
         lastSeen: basicData.lastSeen || new Date().toISOString(),
-        consentStatus
+        consentStatus,
+        rawProfile: onboarding
     };
 
     if (!consentStatus) {
@@ -185,5 +190,20 @@ export async function fetchLinkedClients(stylistCode) {
     } catch (error) {
         console.error("Error fetching linked clients:", error);
         return [];
+    }
+}
+
+/**
+ * Updates a client's cc_onboarding profile directly in their user_data document.
+ */
+export async function updateClientProfileData(clientId, newProfileData) {
+    if (!clientId || !newProfileData) return false;
+    try {
+        const userDataRef = doc(db, 'user_data', clientId);
+        await setDoc(userDataRef, { cc_onboarding: JSON.stringify(newProfileData) }, { merge: true });
+        return true;
+    } catch (e) {
+        console.error("Error updating client profile:", e);
+        return false;
     }
 }

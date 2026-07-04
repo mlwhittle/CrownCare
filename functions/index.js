@@ -75,6 +75,33 @@ exports.stripeWebhook = onRequest((req, res) => {
         try {
             if (event.type === 'checkout.session.completed') {
                 const session = event.data.object;
+                
+                // If this is a setup session, set the default payment method and pay any open invoices
+                if (session.mode === 'setup' && session.setup_intent) {
+                    const setupIntent = await stripe.setupIntents.retrieve(session.setup_intent);
+                    if (setupIntent.payment_method) {
+                        // Set it as default for customer
+                        await stripe.customers.update(session.customer, {
+                            invoice_settings: {
+                                default_payment_method: setupIntent.payment_method,
+                            },
+                        });
+                        
+                        // Find any open invoices and pay them automatically
+                        const invoices = await stripe.invoices.list({
+                            customer: session.customer,
+                            status: 'open',
+                        });
+                        for (const inv of invoices.data) {
+                            try {
+                                await stripe.invoices.pay(inv.id);
+                            } catch (e) {
+                                logger.error(`Failed to pay open invoice ${inv.id}: ${e.message}`);
+                            }
+                        }
+                    }
+                }
+
                 const email = session.customer_details?.email || session.customer_email;
                 if (email) {
                     logger.info(`Web purchase completed for ${email}. Approving in database.`);
@@ -155,6 +182,91 @@ exports.claimWebSubscription = onRequest((req, res) => {
         } catch (error) {
             logger.error('Claim Web Subscription Error:', error);
             res.status(500).json({ error: error.message });
+        }
+    });
+});
+
+// API: Provisions a Stripe Customer & Subscription Schedule dynamically based on Plan Type
+exports.provisionStripeSubscription = onRequest((req, res) => {
+    cors(req, res, async () => {
+        try {
+            const { email, name, planType } = req.body;
+            if (!email || !planType) {
+                return res.status(400).json({ error: 'email and planType are required.' });
+            }
+
+            // 1. Create Customer
+            const customer = await stripe.customers.create({
+                email: email.toLowerCase().trim(),
+                name: name || '',
+            });
+
+            // 2. Build Subscription Schedule Phases based on plan
+            let phases = [];
+            if (planType === 'stylist') {
+                phases = [
+                    {
+                        items: [{ price: "price_1Tk4BfIunC29aUxh6vLkhZNe" }], // $19.99 for 3 months
+                        iterations: 3
+                    },
+                    {
+                        items: [{ price: "price_1Tk4BgIunC29aUxhYBWMKRH7" }], // $39.99 for 12 months
+                        iterations: 12
+                    },
+                    {
+                        items: [{ price: "price_1Tk4BhIunC29aUxhK0SXVRLK" }]  // $49.99 ongoing
+                    }
+                ];
+            } else if (planType === 'client') {
+                phases = [
+                    {
+                        items: [{ price: "price_1Tk4BiIunC29aUxhQJ6zrCzJ" }], // $14.99 for 3 months
+                        trial_end: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60), // 30 days free trial
+                        iterations: 3
+                    },
+                    {
+                        items: [{ price: "price_1Tk4BjIunC29aUxhep9gWFN2" }]  // $29.99 ongoing
+                    }
+                ];
+            } else {
+                 return res.status(400).json({ error: 'Invalid planType. Must be stylist or client.' });
+            }
+
+            // 3. Create Subscription Schedule (This kicks off the subscription immediately)
+            const schedule = await stripe.subscriptionSchedules.create({
+                customer: customer.id,
+                start_date: 'now',
+                end_behavior: 'release',
+                phases: phases
+            });
+
+            // 4. Record to Firestore
+            const normalizedEmail = email.toLowerCase().trim();
+            await admin.firestore().collection('web_subscriptions').doc(normalizedEmail).set({
+                active: false, // Activated via webhook after card is added
+                stripeCustomerId: customer.id,
+                scheduleId: schedule.id,
+                planType: planType,
+                updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+
+            // 5. Generate Checkout Session (Setup Mode) to collect credit card
+            // We use setup mode so they can securely provide their card to activate the schedule.
+            const session = await stripe.checkout.sessions.create({
+                mode: 'setup',
+                currency: 'usd',
+                customer: customer.id,
+                success_url: `https://crowncare-marketing-116e4.web.app/success.html`,
+                cancel_url: `https://crowncare-marketing-116e4.web.app/pricing.html`,
+                setup_intent_data: {
+                    description: `CrownCare ${planType === 'stylist' ? 'Pro' : 'Client'} Subscription Setup`
+                }
+            });
+
+            res.json({ url: session.url });
+        } catch (error) {
+            console.error('CRITICAL STRIPE PROVISIONING ERROR:', error);
+            res.status(500).json({ error: { message: error.message, stack: error.stack } });
         }
     });
 });
@@ -299,9 +411,8 @@ exports.onFoundersLeadCreated = onDocumentCreated("founders_leads/{leadId}", asy
                 <p>Here are the details to activate your 90-day free partnership and access your free B2B resources:</p>
                 
                 <div style="background-color: #f7fafc; border-left: 4px solid #D4AF37; padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0;">
-                    <p style="margin: 0; font-size: 14px; font-weight: bold; color: #001F3F;">Your 90-Day Activation Code:</p>
-                    <p style="margin: 5px 0 0 0; font-size: 20px; font-family: monospace; font-weight: bold; color: #D4AF37; letter-spacing: 2px;">STYLIST-FOUNDERS</p>
-                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Enter this code during checkout inside the mobile app to activate your trial.</p>
+                    <p style="margin: 0; font-size: 14px; font-weight: bold; color: #001F3F;">Your Billing is Secured via Stripe</p>
+                    <p style="margin: 5px 0 0 0; font-size: 13px; color: #666;">There are no in-app purchases required inside the CrownCare mobile app. Please manage all subscription upgrades securely through our web portal.</p>
                 </div>
 
                 <h3 style="color: #001F3F; font-family: Georgia, serif;">Next Steps:</h3>
